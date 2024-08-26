@@ -42,6 +42,18 @@ public class ClipReport {
         this.clipId = clipId;
     }
 
+    public void setReportCategoryId(Long reportCategoryId) {
+        this.reportCategoryId = reportCategoryId;
+    }
+
+    public void setClipReportTitle(String clipReportTitle) {
+        this.clipReportTitle = clipReportTitle;
+    }
+
+    public void setClipReportContent(String clipReportContent) {
+        this.clipReportContent = clipReportContent;
+    }
+
     public LocalDateTime getClipReportDateTime() {
         return clipReportDateTime;
     }

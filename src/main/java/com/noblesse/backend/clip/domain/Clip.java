@@ -42,6 +42,30 @@ public class Clip {
         this.tripId = tripId;
     }
 
+    public void setClipTitle(String clipTitle) {
+        this.clipTitle = clipTitle;
+    }
+
+    public void setClipUrl(String clipUrl) {
+        this.clipUrl = clipUrl;
+    }
+
+    public void setOpened(Boolean opened) {
+        isOpened = opened;
+    }
+
+    public void setUploadDatetime(LocalDateTime uploadDatetime) {
+        this.uploadDatetime = uploadDatetime;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setTripId(Long tripId) {
+        this.tripId = tripId;
+    }
+
     public Long getClipId() {
         return clipId;
     }

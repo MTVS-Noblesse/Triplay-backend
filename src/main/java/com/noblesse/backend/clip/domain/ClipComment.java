@@ -39,6 +39,10 @@ public class ClipComment {
         this.clipId = clipId;
     }
 
+    public void setClipCommentContent(String clipCommentContent) {
+        this.clipCommentContent = clipCommentContent;
+    }
+
     public LocalDateTime getModifiedDatetime() {
         return modifiedDatetime;
     }

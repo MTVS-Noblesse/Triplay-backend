@@ -19,6 +19,10 @@ public class ClipCoCommentService {
         return clipCoCommentRepository.findClipCoCommentByClipCoCommentId(clipCoCommentId);
     }
 
+    public List<ClipCoComment> findAllClipCoCOmmentByClipCommentId(Long clipCommentId) {
+        return clipCoCommentRepository.findClipCoCommentsByClipCommentId(clipCommentId);
+    }
+
     public List<ClipCoComment> findAll() {
         return clipCoCommentRepository.findAll();
     }
@@ -32,7 +36,10 @@ public class ClipCoCommentService {
     }
 
     public void updateClipCoCommentByClipCoCommentId(Long clipCoCommentId, String clipCoCommentContent) {
-        clipCoCommentRepository.updateClipCoCommentByClipCoCommentIdForContent(clipCoCommentContent, clipCoCommentId);
+        ClipCoComment clipCoComment = findClipCoCommentByClipCoCommentId(clipCoCommentId);
+        if (clipCoComment != null) {
+            clipCoComment.setClipCoCommentContent(clipCoCommentContent);
+        }
     }
 
     public void deleteClipCoCommentByClipCoCommentId(Long clipCoCommentId) {

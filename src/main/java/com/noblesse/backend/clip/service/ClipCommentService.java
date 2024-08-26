@@ -6,7 +6,6 @@ import com.noblesse.backend.clip.repository.ClipCommentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,8 +16,12 @@ public class ClipCommentService {
         this.clipCommentRepository = clipCommentRepository;
     }
 
-    public ClipComment findClipByClipId(Long clipCommentId) {
+    public ClipComment findClipCommentByClipCommentId(Long clipCommentId) {
         return clipCommentRepository.findClipCommentByClipCommentId(clipCommentId);
+    }
+
+    public List<ClipComment> findAllClipCommentByClipId(Long clipId) {
+        return clipCommentRepository.findClipCommentsByClipId(clipId);
     }
 
     public List<ClipComment> findAll() {
@@ -34,8 +37,11 @@ public class ClipCommentService {
     }
 
     @Transactional
-    public void updateClipReport(Long clipCommentId, String newContent) {
-        clipCommentRepository.updateClipComment(newContent, clipCommentId);
+    public void updateClipComment(Long clipCommentId, String newContent) {
+        ClipComment clipComment = findClipCommentByClipCommentId(clipCommentId);
+        if (clipComment != null) {
+            clipComment.setClipCommentContent(newContent);
+        }
     }
 
     @Transactional

@@ -14,10 +14,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "tbl_trip")
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class Trip {
 
     @Id
@@ -39,4 +35,51 @@ public class Trip {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    public Trip() {}
+
+    public Trip(Long tripId, String tripTitle, String tripParty, List<TripDate> tripDates, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.tripId = tripId;
+        this.tripTitle = tripTitle;
+        this.tripParty = tripParty;
+        this.tripDates = tripDates;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public void setTripId(Long tripId) {
+        this.tripId = tripId;
+    }
+
+    public void setTripTitle(String tripTitle) {
+        this.tripTitle = tripTitle;
+    }
+
+    public void setTripParty(String tripParty) {
+        this.tripParty = tripParty;
+    }
+
+    public void setTripDates(List<TripDate> tripDates) {
+        this.tripDates = tripDates;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Trip{" +
+                "tripId=" + tripId +
+                ", tripTitle='" + tripTitle + '\'' +
+                ", tripParty='" + tripParty + '\'' +
+                ", tripDates=" + tripDates +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }

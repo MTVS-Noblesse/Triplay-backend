@@ -12,10 +12,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "tbl_trip_date")
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class TripDate {
 
     @Id
@@ -35,4 +31,41 @@ public class TripDate {
 
     @OneToMany(mappedBy = "tripDate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Place> places = new ArrayList<>();
+
+    public TripDate() {}
+
+    public TripDate(long tripDateId, LocalDate tripStartDate, LocalDate tripEndDate, Trip trip, List<Place> places) {
+        this.tripDateId = tripDateId;
+        this.tripStartDate = tripStartDate;
+        this.tripEndDate = tripEndDate;
+        this.trip = trip;
+        this.places = places;
+    }
+
+    public void setTripStartDate(LocalDate tripStartDate) {
+        this.tripStartDate = tripStartDate;
+    }
+
+    public void setTripEndDate(LocalDate tripEndDate) {
+        this.tripEndDate = tripEndDate;
+    }
+
+    public void setTrip(Trip trip) {
+        this.trip = trip;
+    }
+
+    public void setPlaces(List<Place> places) {
+        this.places = places;
+    }
+
+    @Override
+    public String toString() {
+        return "TripDate{" +
+                "tripDateId=" + tripDateId +
+                ", tripStartDate=" + tripStartDate +
+                ", tripEndDate=" + tripEndDate +
+                ", trip=" + trip +
+                ", places=" + places +
+                '}';
+    }
 }

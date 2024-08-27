@@ -17,7 +17,7 @@
 
 ## 명명 규칙
 ### Github
-- `Github Branch` : feat-issue번호
+- `Github Branch` : commit 태그-issue번호 ex)feat-1, refactor-2
 - `Issue` : OO페이지 OO기능 구현
 - `Pull Request` : Title of last commit
 ### BackEnd
@@ -27,8 +27,9 @@
 - `Column` : snake_case
 ### FrontEnd
 - `Function` : camelCase
-- `useState` : camelCase
+- `Hook` : camelCase
 - `Styled Components` : PascalCase
+- `Custom Hook File Name` : kebab-case
 ### Common(공통)
 - `Class` : PascalCase
 - `Assets` : snake_case

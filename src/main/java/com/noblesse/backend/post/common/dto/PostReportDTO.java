@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 public class PostReportDTO {
     private Long postReportId;
     private String postReportContent;
-    private LocalDateTime createdDateTime;
-    private LocalDateTime processedDateTime;
+    private LocalDateTime createdDatetime;
+    private LocalDateTime processedDatetime;
     private Boolean isReported;
     private Long reportCategoryId;
     private Long userId;
@@ -30,27 +30,28 @@ public class PostReportDTO {
     }
 
     // Update 용 생성자
-    public PostReportDTO(Long postReportId, Boolean isReported, Long userId) {
+    public PostReportDTO(Long postReportId, String postReportContent, Boolean isReported, Long userId) {
         this.postReportId = postReportId;
         this.isReported = isReported;
+        this.postReportContent = postReportContent;
         this.userId = userId;
     }
 
     // Delete 용 생성자
-    public PostReportDTO(Long postReportId, Long userId) {
+    public PostReportDTO(Long postReportId) {
         this.postReportId = postReportId;
-        this.userId = userId;
+//        this.userId = userId;
     }
 
     // Entity로부터 DTO를 생성하는 생성자
     public PostReportDTO(PostReport postReport) {
         this.postReportId = postReport.getPostReportId();
         this.postReportContent = postReport.getPostReportContent();
-        this.createdDateTime = postReport.getCreatedDateTime();
-        this.processedDateTime = postReport.getProcessedDateTime();
-        this.isReported = postReport.isReported();
+        this.createdDatetime = postReport.getCreatedDatetime();
+        this.processedDatetime = postReport.getProcessedDatetime();
+        this.isReported = postReport.getIsReported();
         this.reportCategoryId = postReport.getReportCategoryId();
         this.userId = postReport.getUserId();
-        this.postId = postReport.getPost() != null ? postReport.getPost().getPostId() : null;
+        this.postId = postReport.getPostId();
     }
 }

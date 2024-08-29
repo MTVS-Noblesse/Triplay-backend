@@ -100,4 +100,11 @@ public class TripService {
         return tripRepository.findById(tripId)
                 .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
     }
+
+    @Transactional
+    public void deleteTrip(Long tripId) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new IllegalArgumentException("Trip with ID " + tripId + " not found"));
+        tripRepository.deleteById(tripId);
+    }
 }

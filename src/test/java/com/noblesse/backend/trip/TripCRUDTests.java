@@ -1,5 +1,6 @@
 package com.noblesse.backend.trip;
 
+import com.noblesse.backend.trip.domain.Place;
 import com.noblesse.backend.trip.domain.Trip;
 import com.noblesse.backend.trip.domain.TripDate;
 import com.noblesse.backend.trip.dto.*;
@@ -127,6 +128,14 @@ public class TripCRUDTests {
         TripDate secondDate = tripDates.get(1);
         Assertions.assertEquals(LocalDate.of(2024, 10, 4), secondDate.getTripStartDate());
         Assertions.assertEquals("Lake", secondDate.getPlaces().get(0).getPlaceTitle());
+    }
+
+    @Test
+    @Transactional
+    void testDeleteTrip() {
+        Trip savedTrip = registerSampleTrip();
+        Assertions.assertDoesNotThrow(() -> tripService.deleteTrip(savedTrip.getTripId()));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tripService.findTripById(savedTrip.getTripId()));
     }
 
 }

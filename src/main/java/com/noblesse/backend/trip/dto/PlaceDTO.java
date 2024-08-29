@@ -1,5 +1,7 @@
 package com.noblesse.backend.trip.dto;
 
+import com.noblesse.backend.trip.domain.Place;
+
 import java.time.LocalTime;
 
 public class PlaceDTO {
@@ -21,6 +23,9 @@ public class PlaceDTO {
         this.arrivalTime = arrivalTime;
         this.placeOrder = placeOrder;
         this.placeThumbnail = placeThumbnail;
+    }
+
+    public PlaceDTO(Place place) {
     }
 
     public String getPlaceTitle() {

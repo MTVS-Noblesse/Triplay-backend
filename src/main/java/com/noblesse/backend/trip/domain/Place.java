@@ -67,8 +67,9 @@ public class Place {
         this.updatedAt = updatedAt;
     }
 
-    public void setPlaceId(long placeId) {
-        this.placeId = placeId;
+
+    public String getPlaceTitle() {
+        return placeTitle;
     }
 
     public void setPlaceTitle(String placeTitle) {
@@ -103,14 +104,6 @@ public class Place {
         this.tripDate = tripDate;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     @Override
     public String toString() {
         return "Place{" +
@@ -127,4 +120,5 @@ public class Place {
                 ", updatedAt=" + updatedAt +
                 '}';
     }
+
 }

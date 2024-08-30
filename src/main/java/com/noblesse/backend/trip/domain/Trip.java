@@ -1,10 +1,6 @@
 package com.noblesse.backend.trip.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -47,8 +43,20 @@ public class Trip {
         this.updatedAt = updatedAt;
     }
 
-    public void setTripId(Long tripId) {
-        this.tripId = tripId;
+    public Long getTripId() {
+        return tripId;
+    }
+
+    public String getTripTitle() {
+        return tripTitle;
+    }
+
+    public String getTripParty() {
+        return tripParty;
+    }
+
+    public List<TripDate> getTripDates() {
+        return tripDates;
     }
 
     public void setTripTitle(String tripTitle) {
@@ -61,14 +69,6 @@ public class Trip {
 
     public void setTripDates(List<TripDate> tripDates) {
         this.tripDates = tripDates;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override

@@ -42,6 +42,26 @@ public class TripDate {
         this.places = places;
     }
 
+    public long getTripDateId() {
+        return tripDateId;
+    }
+
+    public LocalDate getTripStartDate() {
+        return tripStartDate;
+    }
+
+    public LocalDate getTripEndDate() {
+        return tripEndDate;
+    }
+
+    public Trip getTrip() {
+        return trip;
+    }
+
+    public List<Place> getPlaces() {
+        return places;
+    }
+
     public void setTripStartDate(LocalDate tripStartDate) {
         this.tripStartDate = tripStartDate;
     }
@@ -68,4 +88,5 @@ public class TripDate {
                 ", places=" + places +
                 '}';
     }
+
 }

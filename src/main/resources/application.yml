@@ -39,8 +39,6 @@ server:
     key-store-password: ${KEY_PASSWORD}
     key-store-type: PKCS12
     key-alias: triplay
-logging:
-  level:
-    org:
-      springframework:
-        security: debug
+app:
+  firebase-configuration-file: ./triplayServiceAccountKey.json
+  firebase-bucket: ${FIREBASE_STORAGE_BUCKET}

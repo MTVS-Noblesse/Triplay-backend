@@ -37,7 +37,6 @@ public class ImageFileService {
         InputStream content = new ByteArrayInputStream(file.getBytes());
         Blob blob = bucket.create(filePath + "/" + file.getOriginalFilename(), content, file.getContentType());
 
-
         return blob;
     }
 

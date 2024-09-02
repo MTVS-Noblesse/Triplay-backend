@@ -46,7 +46,7 @@ public class ClipController {
     @Operation(summary = "클립 추가")
     @Tag(name = "Clip Command")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Clip.class)))
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<?> registClip(@ModelAttribute ClipRegistRequestDTO clipRegistRequestDTO) {
         clipService.insertClip(clipRegistRequestDTO);
         return ResponseEntity.ok().build();

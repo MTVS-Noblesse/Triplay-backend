@@ -46,7 +46,7 @@ public class ClipCommentController {
     @Operation(summary = "클립에 댓글 추가")
     @Tag(name = "Clip Command")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClipComment.class)))
-    @PostMapping("/{clipId}")
+    @PostMapping
     public ResponseEntity<?> registClipComment(@ModelAttribute ClipCommentRegistRequestDTO clipCommentRegistRequestDTO) {
         clipCommentService.registClipComment(clipCommentRegistRequestDTO);
         return ResponseEntity.ok().build();

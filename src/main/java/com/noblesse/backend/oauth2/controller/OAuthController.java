@@ -26,11 +26,6 @@ public class OAuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
-
     @GetMapping("/home")
     public ResponseEntity<?> getUser(HttpServletRequest request) {
         String jwtToken = request.getHeader("Authorization").substring(7);

@@ -73,4 +73,8 @@ public class OAuthUser {
     public Long getUserId() {
         return id;
     }
+
+    public void setUsername(String userName) {
+        this.userName = userName;
+    }
 }

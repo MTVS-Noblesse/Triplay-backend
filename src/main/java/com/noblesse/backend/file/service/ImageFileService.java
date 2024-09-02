@@ -16,19 +16,15 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
 public class ImageFileService {
-    private final FileRepository fileRepository;
 
     @Value("${app.firebase-bucket}")
     private String firebaseBucket;
-
-    public ImageFileService(FileRepository fileRepository) {
-        this.fileRepository = fileRepository;
-    }
 
     @Transactional
     public Blob uploadImageFile(MultipartFile file, String filePath) throws IOException {
@@ -49,7 +45,7 @@ public class ImageFileService {
         for (int i = 0; i < fileList.length; i++) {
             InputStream content = new ByteArrayInputStream(fileList[i].getBytes());
             // 파일 이름에 디렉토리 이름을 포함하여 저장
-            Blob blob = bucket.create(filePath + "/" + fileList[i].getOriginalFilename(), content, fileList[i].getContentType());
+            Blob blob = bucket.create(filePath + fileList[i].getOriginalFilename(), content, fileList[i].getContentType());
             blobList.add(blob);
         }
 
@@ -58,18 +54,18 @@ public class ImageFileService {
 
     public String findImageDownloadLink(String directory, String fileName) {
         Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
-        Blob blob = bucket.get(directory + "/" + fileName);
+        Blob blob = bucket.get(directory + fileName);
         if(blob == null) return null;
-        return blob.getMediaLink();
+        return blob.signUrl(1, TimeUnit.HOURS).toString();
     }
 
     @Transactional
     public void deleteImage(String directory, String fileName) {
         Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
-        boolean isDeleted = bucket.get(directory + "/" + fileName).delete();
+        boolean isDeleted = bucket.get(directory + fileName).delete();
 
-        if(isDeleted) System.out.println("이미지 삭제 완료 : " + directory + "/" + fileName);
-        else System.out.println("이미지 삭제 오류 : " + directory + "/" + fileName);
+        if(isDeleted) System.out.println("이미지 삭제 완료 : " + directory + fileName);
+        else System.out.println("이미지 삭제 오류 : " + directory + fileName);
     }
 
     @Transactional

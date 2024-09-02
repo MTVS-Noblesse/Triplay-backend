@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -30,7 +31,7 @@ public class FileService {
             fileRepository.save(new File(
                     "image",
                     uploadedFileList.get(i).getName().substring(uploadedFileList.get(i).getName().lastIndexOf("/") + 1),
-                    uploadedFileList.get(i).getMediaLink(),
+                    uploadedFileList.get(i).signUrl(1, TimeUnit.HOURS).toString(),
                     postId,
                     i,
                     null,

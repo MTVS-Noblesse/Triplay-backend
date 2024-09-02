@@ -17,9 +17,6 @@ public class FireBaseInitializaer {
     @Value("${app.firebase-configuration-file}")
     private String firebaseConfigPath;
 
-    @Value("${app.firebase-bucket}")
-    private String firebaseBucket;
-
     @PostConstruct
     public void initializae() {
         try{
@@ -27,7 +24,7 @@ public class FireBaseInitializaer {
                     GoogleCredentials.fromStream(
                             new ClassPathResource(firebaseConfigPath).getInputStream()
                     )
-            ).setStorageBucket(firebaseBucket).build();
+            ).build();
 
             if(FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);

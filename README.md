@@ -3,6 +3,7 @@
 ### 커밋 이름
 - `Feat` : 새로운 기능 추가
 - `Add` : 파일 추가
+- `Del` : 파일 삭제
 - `Fix` : 버그 수정
 - `Docs` : 문서 수정
 - `Style` : 스타일 변경, semicolon 누락, 코드 변경이 없는 경우
@@ -16,7 +17,7 @@
 
 ## 명명 규칙
 ### Github
-- `Github Branch` : feat-issue번호
+- `Github Branch` : commit 태그-issue번호 ex)feat-1, refactor-2
 - `Issue` : OO페이지 OO기능 구현
 - `Pull Request` : Title of last commit
 ### BackEnd
@@ -26,8 +27,9 @@
 - `Column` : snake_case
 ### FrontEnd
 - `Function` : camelCase
-- `useState` : camelCase
+- `Hook` : camelCase
 - `Styled Components` : PascalCase
+- `Custom Hook File Name` : kebab-case
 ### Common(공통)
 - `Class` : PascalCase
 - `Assets` : snake_case

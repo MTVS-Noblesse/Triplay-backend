@@ -24,7 +24,7 @@ public class ClipCoCommentController {
         return ResponseEntity.ok(clipCoCommentService.findAllClipCoCOmmentByClipCommentId(clipCommentId));
     }
 
-    @PostMapping("/{clipCommentId}")
+    @PostMapping
     public ResponseEntity<?> registClipCoComment(@ModelAttribute ClipCoCommentRegistRequestDTO clipCoCommentRegistRequestDTO) {
         clipCoCommentService.registClipCoComment(clipCoCommentRegistRequestDTO);
         return ResponseEntity.ok().build();

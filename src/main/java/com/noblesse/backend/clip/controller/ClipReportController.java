@@ -24,6 +24,11 @@ public class ClipReportController {
         return ResponseEntity.ok(clipReportService.findClipReportsByClipId(clipId));
     }
 
+    @GetMapping("/{clipReportId}")
+    public ResponseEntity<?> findClipReportByClipReportId(@PathVariable Long clipReportId) {
+        return ResponseEntity.ok(clipReportService.findClipReportByClipReportId(clipReportId));
+    }
+
     @PostMapping
     public ResponseEntity<?> registClipReport(
             @ModelAttribute ClipReportRegistRequestDTO clipReportRegistRequestDTO) {
@@ -33,7 +38,10 @@ public class ClipReportController {
 
     @PutMapping("/{clipReportId}")
     public ResponseEntity<?> updateClipReportByClipReportId(
-            @PathVariable Long clipReportId, @ModelAttribute String newTitle, @ModelAttribute String newContent) {
+            @PathVariable Long clipReportId,
+            @ModelAttribute String newTitle,
+            @ModelAttribute String newContent) {
+
         clipReportService.updateClipReport(clipReportId, newTitle, newContent);
         return ResponseEntity.ok().build();
     }

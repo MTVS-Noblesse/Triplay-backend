@@ -24,7 +24,7 @@ public class ClipController {
         return ResponseEntity.ok(clipService.findClipByClipId(userId));
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<?> registClip(@ModelAttribute ClipRegistRequestDTO clipRegistRequestDTO) {
         clipService.insertClip(clipRegistRequestDTO);
         return ResponseEntity.ok().build();

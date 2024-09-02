@@ -43,6 +43,11 @@ public class ClipReportController {
         return ResponseEntity.ok(clipReportService.findClipReportsByClipId(clipId));
     }
 
+    @GetMapping("/{clipReportId}")
+    public ResponseEntity<?> findClipReportByClipReportId(@PathVariable Long clipReportId) {
+        return ResponseEntity.ok(clipReportService.findClipReportByClipReportId(clipReportId));
+    }
+
     @Operation(summary = "클립에 따른 신고 추가")
     @Tag(name = "Clip Command")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClipReport.class)))
@@ -58,7 +63,10 @@ public class ClipReportController {
     @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClipReport.class)))
     @PutMapping("/{clipReportId}")
     public ResponseEntity<?> updateClipReportByClipReportId(
-            @PathVariable Long clipReportId, @ModelAttribute String newTitle, @ModelAttribute String newContent) {
+            @PathVariable Long clipReportId,
+            @ModelAttribute String newTitle,
+            @ModelAttribute String newContent) {
+
         clipReportService.updateClipReport(clipReportId, newTitle, newContent);
         return ResponseEntity.ok().build();
     }

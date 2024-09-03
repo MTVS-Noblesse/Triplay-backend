@@ -62,7 +62,7 @@ public class FileService {
     }
 
     @Transactional
-    public void deleteImageFileByPostId(Long postId, String fileName) {
+    public void deleteImageFileByPostIdAndFileName(Long postId, String fileName) {
         imageFileService.deleteImage("/post/" + postId + "/", fileName);
         fileRepository.deleteFileByPostIdAndFileName(postId, fileName);
     }

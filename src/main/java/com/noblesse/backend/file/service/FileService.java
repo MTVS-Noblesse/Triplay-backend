@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +30,7 @@ public class FileService {
         List<Blob> uploadedFileList = imageFileService.uploadImageFiles(files, "/post/" + postId);
         for(int i = 0; i < uploadedFileList.size(); i++)
             fileRepository.save(new File(
-                    "image",
+                    "post",
                     uploadedFileList.get(i).getName().substring(uploadedFileList.get(i).getName().lastIndexOf("/") + 1),
                     uploadedFileList.get(i).signUrl(1, TimeUnit.HOURS).toString(),
                     postId,
@@ -40,7 +41,34 @@ public class FileService {
         System.out.println("파일 추가 시간 : " + LocalDateTime.now());
     }
 
-    public void deleteImageFilesBy(Long postId) {
+    @Transactional
+    public String findImageDownloadLinkByPostIdAndFileName(Long postId, String fileName) {
+        String newImageUrl = imageFileService.findImageDownloadLink("/post/" + postId, fileName);
+        File foundFile = fileRepository.findFileByPostIdAndFileName(postId, fileName);
+        foundFile.setFileUrl(newImageUrl);
+        return newImageUrl;
+    }
+
+    @Transactional
+    public List<String> findImageDownloadLinksByPostId(Long postId) {
+        List<File> foundFiles = fileRepository.findFilesByPostId(postId);
+        List<String> downloadLinks = new ArrayList<>();
+        foundFiles.forEach(file -> {
+            String newIamgeUrl = imageFileService.findImageDownloadLink("/post/" + postId + "/", file.getFileName());
+            file.setFileUrl(newIamgeUrl);
+            downloadLinks.add(newIamgeUrl);
+        });
+        return downloadLinks;
+    }
+
+    @Transactional
+    public void deleteImageFileByPostId(Long postId, String fileName) {
+        imageFileService.deleteImage("/post/" + postId + "/", fileName);
+        fileRepository.deleteFileByPostIdAndFileName(postId, fileName);
+    }
+
+    @Transactional
+    public void deleteImageFilesByPostId(Long postId) {
         imageFileService.deleteImagesByPostId(postId);
         fileRepository.deleteFilesByPostId(postId);
     }

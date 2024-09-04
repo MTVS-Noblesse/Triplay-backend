@@ -1,5 +1,6 @@
 package com.noblesse.backend.post.command.application.handler;
 
+import com.noblesse.backend.file.service.FileService;
 import com.noblesse.backend.post.command.domain.publisher.PostEventPublisher;
 import com.noblesse.backend.post.command.domain.service.PostDomainService;
 import com.noblesse.backend.post.common.dto.PostDTO;
@@ -17,6 +18,7 @@ public class DeletePostCommandHandler {
     private final PostRepository postRepository;
     private final PostDomainService postDomainService;
     private final PostEventPublisher postEventPublisher;
+    private final FileService fileService;
 
     @Transactional
     public void handle(PostDTO command) {
@@ -25,16 +27,19 @@ public class DeletePostCommandHandler {
                 .orElseThrow(() -> new PostNotFoundException(command.getPostId()));
 
         // 2. 삭제 권한 확인
-//        if (postDomainService.canUserDeletePost(post, command.getUserId())) {
-//            throw new IllegalStateException(
-//                    String.format("User %d is not allowed to delete post %d", command.getUserId(), command.getPostId())
-//            );
-//        }
+        if (postDomainService.canUserDeletePost(post, command.getUserId())) {
+            throw new IllegalStateException(
+                    String.format("User %d is not allowed to delete post %d", command.getUserId(), command.getPostId())
+            );
+        }
 
-        // 3. 게시물 삭제
+        // 3. 이미지 삭제
+        fileService.deleteImageFilesByPostId(post.getPostId());
+
+        // 4. 게시물 삭제
         postRepository.delete(post);
 
-        // 4. 삭제 이벤트 발행
+        // 5. 삭제 이벤트 발행
         postEventPublisher.publishPostDeletedEvent(post);
     }
 }

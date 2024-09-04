@@ -2,8 +2,10 @@ package com.noblesse.backend.post.common.dto;
 
 import com.noblesse.backend.post.common.entity.Post;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,7 +22,10 @@ public class PostDTO {
     private Long userId;
     private Long tripId;
     private Long clipId;
-//    private List<PostCommentDTO> comments;
+    // private List<PostCommentDTO> comments;
+
+    private List<MultipartFile> images;
+    private List<String> imageUrls;
 
     // Create 용 생성자
     public PostDTO(String postTitle, String postContent, Boolean isOpened, Long userId, Long tripId, Long clipId) {
@@ -32,9 +37,22 @@ public class PostDTO {
         this.clipId = clipId;
     }
 
-    // Update 용 생성자
-    public PostDTO(Long postId, String postTitle, String postContent, Boolean isOpened, Long userId) {
+    // Read 용 생성자
+    public PostDTO(Long postId, String postTitle, String postContent, LocalDateTime writtenDatetime, LocalDateTime modifiedDatetime, Boolean isOpened, Long userId, Long tripId, Long clipId, List<String> imageUrls) {
         this.postId = postId;
+        this.postTitle = postTitle;
+        this.postContent = postContent;
+        this.writtenDatetime = writtenDatetime;
+        this.modifiedDatetime = modifiedDatetime;
+        this.isOpened = isOpened;
+        this.userId = userId;
+        this.tripId = tripId;
+        this.clipId = clipId;
+        this.imageUrls = imageUrls;
+    }
+
+    // Update 용 생성자
+    public PostDTO(String postTitle, String postContent, Boolean isOpened, Long userId) {
         this.postTitle = postTitle;
         this.postContent = postContent;
         this.isOpened = isOpened;
@@ -42,9 +60,9 @@ public class PostDTO {
     }
 
     // Delete 용 생성자
-    public PostDTO(Long postId) {
+    public PostDTO(Long postId, Long userId) {
         this.postId = postId;
-//        this.userId = userId;
+        this.userId = userId;
     }
 
     // Entity로부터 DTO를 생성하는 생성자

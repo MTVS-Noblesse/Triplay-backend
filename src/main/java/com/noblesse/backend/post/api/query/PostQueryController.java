@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/post")
 @RequiredArgsConstructor
-@Tag(name = "Post Query Controller")
+@Tag(name = "Post Query")
 public class PostQueryController {
 
     private final PostQueryService postQueryService;

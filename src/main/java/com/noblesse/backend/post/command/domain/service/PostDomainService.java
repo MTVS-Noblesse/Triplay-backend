@@ -18,8 +18,8 @@ public class PostDomainService {
      * # Post #
      */
     public void validatePostContent(Post post) {
-        if (post.getPostContent().length() < 10) {
-            throw new IllegalArgumentException("# 포스트 본문은 최소 10자 이상으로 작성해 주세요...");
+        if (post.getPostContent().length() < 3) {
+            throw new IllegalArgumentException("# 포스트 본문은 최소 3자 이상으로 작성해 주세요...");
         }
 
         if (post.getPostTitle().length() < 3) {

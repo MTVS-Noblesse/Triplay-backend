@@ -20,7 +20,8 @@ public class File {
     // 따로 인터넷에서 접근 가능한 주소를 발급하는 service 코드를 통해 얻어야 함
     // 이렇게 저장하는 이유는 인터넷에서 접속하는 URL은 엑세스 토큰을 발급 받아 재조합된 URL이여서
     // 고정되지 않고 계속 URL이 달라지기 때문임.
-    @Column(name = "FILE_URL")
+//    @Column(name = "FILE_URL")
+    @Column(name = "FILE_URL", length = 1024)
     private String fileUrl;
 
     @Column(name = "POST_ID")

@@ -1,5 +1,6 @@
 package com.noblesse.backend.post.query.application.service;
 
+import com.noblesse.backend.file.service.FileService;
 import com.noblesse.backend.post.common.dto.PostCoCommentDTO;
 import com.noblesse.backend.post.common.dto.PostCommentDTO;
 import com.noblesse.backend.post.common.dto.PostDTO;
@@ -16,6 +17,7 @@ import com.noblesse.backend.post.query.infrastructure.persistence.repository.Pos
 import com.noblesse.backend.post.query.infrastructure.persistence.repository.PostCommentRepository;
 import com.noblesse.backend.post.query.infrastructure.persistence.repository.PostReportRepository;
 import com.noblesse.backend.post.query.infrastructure.persistence.repository.PostRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,19 +25,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PostQueryService {
 
     private final PostRepository postRepository;
     private final PostCommentRepository postCommentRepository;
     private final PostCoCommentRepository postCoCommentRepository;
     private final PostReportRepository postReportRepository;
-
-    public PostQueryService(PostRepository postRepository, PostCommentRepository postCommentRepository, PostCoCommentRepository postCoCommentRepository, PostReportRepository postReportRepository) {
-        this.postRepository = postRepository;
-        this.postCommentRepository = postCommentRepository;
-        this.postCoCommentRepository = postCoCommentRepository;
-        this.postReportRepository = postReportRepository;
-    }
+    private final FileService fileService;
 
     /**
      * ### PostDTO ###
@@ -44,23 +41,22 @@ public class PostQueryService {
     public PostDTO getPostById(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new PostNotFoundException(id));
-        return new PostDTO(post);
+        return convertToDTO(post);
     }
 
     /** 사용자 고유 ID(userId)로 해당 사용자의 모든 포스트를 조회하는 메서드 */
     public List<PostDTO> getPostsByUserId(Long userId) {
         List<Post> posts = postRepository.findByUserId(userId);
         return posts.stream()
-                .map(PostDTO::new)
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
     /** 모든 포스트를 조회하는 메서드 */
     public List<PostDTO> getAllPosts() {
         List<Post> posts = postRepository.findAll();
-
         return posts.stream()
-                .map(PostDTO::new)
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -70,6 +66,14 @@ public class PostQueryService {
         return posts.stream()
                 .map(PostDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    // Post 헬퍼 메서드
+    private PostDTO convertToDTO(Post post) {
+        PostDTO dto = new PostDTO(post);
+        List<String> imageUrls = fileService.findImageDownloadLinksByPostId(post.getPostId());
+        dto.setImageUrls(imageUrls);
+        return dto;
     }
 
     /**
@@ -93,7 +97,6 @@ public class PostQueryService {
     /** 모든 포스트 댓글을 조회하는 메서드 */
     public List<PostCommentDTO> getAllPostComments() {
         List<PostComment> postComments = postCommentRepository.findAll();
-
         return postComments.stream()
                 .map(PostCommentDTO::new)
                 .collect(Collectors.toList());
@@ -121,7 +124,6 @@ public class PostQueryService {
     /** 모든 포스트 대댓글을 조회하는 메서드 */
     public List<PostCoCommentDTO> getAllPostCoComments() {
         List<PostCoComment> postCoComments = postCoCommentRepository.findAll();
-
         return postCoComments.stream()
                 .map(PostCoCommentDTO::new)
                 .collect(Collectors.toList());
@@ -164,7 +166,6 @@ public class PostQueryService {
     /** 모든 포스트 신고를 조회하는 메서드 */
     public List<PostReportDTO> getAllPostReports() {
         List<PostReport> postReports = postReportRepository.findAll();
-
         return postReports.stream()
                 .map(PostReportDTO::new)
                 .collect(Collectors.toList());

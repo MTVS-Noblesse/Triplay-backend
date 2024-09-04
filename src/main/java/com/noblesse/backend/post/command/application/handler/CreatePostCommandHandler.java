@@ -1,5 +1,6 @@
 package com.noblesse.backend.post.command.application.handler;
 
+import com.noblesse.backend.file.service.FileService;
 import com.noblesse.backend.post.command.domain.publisher.PostEventPublisher;
 import com.noblesse.backend.post.command.domain.service.PostDomainService;
 import com.noblesse.backend.post.common.dto.PostDTO;
@@ -8,8 +9,11 @@ import com.noblesse.backend.post.query.infrastructure.persistence.repository.Pos
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -18,6 +22,7 @@ public class CreatePostCommandHandler {
     private final PostRepository postRepository;
     private final PostDomainService postDomainService;
     private final PostEventPublisher postEventPublisher;
+    private final FileService fileService;
 
     @Transactional
     public Long handle(PostDTO command) {
@@ -33,7 +38,16 @@ public class CreatePostCommandHandler {
         // 4. 저장소에 저장
         Post savedPost = postRepository.save(newPost);
 
-        // 5. 이벤트 발행
+        // 5. 이미지 업로드 처리
+        if (command.getImages() != null && !command.getImages().isEmpty()) {
+            try {
+                handleImageUpload(savedPost.getPostId(), command.getImages());
+            } catch (IOException e) {
+                throw new RuntimeException("이미지 업로드 중 오류가 발생했습니다.", e);
+            }
+        }
+
+        // 6. 이벤트 발행
         postEventPublisher.publishPostCreatedEvent(savedPost);
 
         return savedPost.getPostId();
@@ -64,5 +78,9 @@ public class CreatePostCommandHandler {
                 .tripId(command.getTripId())
                 .clipId(command.getClipId())
                 .build();
+    }
+
+    public void handleImageUpload(Long postId, List<MultipartFile> images) throws IOException {
+        fileService.insertImageFilesByPostId(images.toArray(new MultipartFile[0]), postId);
     }
 }

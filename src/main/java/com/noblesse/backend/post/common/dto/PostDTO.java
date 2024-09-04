@@ -37,22 +37,9 @@ public class PostDTO {
         this.clipId = clipId;
     }
 
-    // Read 용 생성자
-    public PostDTO(Long postId, String postTitle, String postContent, LocalDateTime writtenDatetime, LocalDateTime modifiedDatetime, Boolean isOpened, Long userId, Long tripId, Long clipId, List<String> imageUrls) {
-        this.postId = postId;
-        this.postTitle = postTitle;
-        this.postContent = postContent;
-        this.writtenDatetime = writtenDatetime;
-        this.modifiedDatetime = modifiedDatetime;
-        this.isOpened = isOpened;
-        this.userId = userId;
-        this.tripId = tripId;
-        this.clipId = clipId;
-        this.imageUrls = imageUrls;
-    }
-
     // Update 용 생성자
-    public PostDTO(String postTitle, String postContent, Boolean isOpened, Long userId) {
+    public PostDTO(Long postId, String postTitle, String postContent, Boolean isOpened, Long userId) {
+        this.postId = postId;
         this.postTitle = postTitle;
         this.postContent = postContent;
         this.isOpened = isOpened;
@@ -63,6 +50,10 @@ public class PostDTO {
     public PostDTO(Long postId, Long userId) {
         this.postId = postId;
         this.userId = userId;
+    }
+
+    public PostDTO(Long postId) {
+        this.postId = postId;
     }
 
     // Entity로부터 DTO를 생성하는 생성자

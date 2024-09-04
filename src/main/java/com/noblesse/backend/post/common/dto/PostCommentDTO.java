@@ -34,9 +34,13 @@ public class PostCommentDTO {
     }
 
     // Delete 용 생성자
+    public PostCommentDTO(Long postCommentId, Long userId) {
+        this.postCommentId = postCommentId;
+        this.userId = userId;
+    }
+
     public PostCommentDTO(Long postCommentId) {
         this.postCommentId = postCommentId;
-//        this.userId = userId;
     }
 
     // Entity로부터 DTO를 생성하는 생성자

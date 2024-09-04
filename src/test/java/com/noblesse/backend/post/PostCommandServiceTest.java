@@ -1,5 +1,9 @@
 package com.noblesse.backend.post;
 
+import com.noblesse.backend.file.service.FileService;
+import com.noblesse.backend.post.command.application.handler.CreatePostCommandHandler;
+import com.noblesse.backend.post.command.application.handler.DeletePostCommandHandler;
+import com.noblesse.backend.post.command.application.handler.UpdatePostCommandHandler;
 import com.noblesse.backend.post.command.application.service.PostCommandService;
 import com.noblesse.backend.post.command.domain.publisher.PostCoCommentEventPublisher;
 import com.noblesse.backend.post.command.domain.publisher.PostCommentEventPublisher;
@@ -26,8 +30,12 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,6 +58,8 @@ public class PostCommandServiceTest {
     PostReportRepository postReportRepository;
 
     @Mock
+    private FileService fileService;
+    @Mock
     private PostDomainService postDomainService;
 
     @Mock
@@ -61,6 +71,13 @@ public class PostCommandServiceTest {
     @Mock
     private PostReportEventPublisher postReportEventPublisher;
 
+    @Mock
+    private CreatePostCommandHandler createPostCommandHandler;
+    @Mock
+    private UpdatePostCommandHandler updatePostCommandHandler;
+    @Mock
+    private DeletePostCommandHandler deletePostCommandHandler;
+
     private PostCommandService postCommandService;
 
     private AutoCloseable closeable;
@@ -69,6 +86,7 @@ public class PostCommandServiceTest {
     void setUp() {
         closeable = openMocks(this);
         postCommandService = new PostCommandService(
+                fileService,
                 postRepository,
                 postCommentRepository,
                 postCoCommentRepository,
@@ -185,25 +203,25 @@ public class PostCommandServiceTest {
                 () -> postCommandService.createPost(createCommand));
     }
 
-//    @DisplayName("#06. 권한 없는 사용자의 포스트 삭제 시도 테스트")
-//    @Test
-//    @Order(6)
-//    void deletePostWithoutPermissionTest() {
-//        // Given
-//        Long postId = 1L;
-//        Long userId = 2L; // 포스트 작성자와 다른 사용자
-//        PostDTO deleteCommand = new PostDTO(postId, userId);
-//        Post existingPost = new Post(postId, "Title", "Content", LocalDateTime.now(), LocalDateTime.now(), true, 1L, 1L, 1L);
-//
-//        when(postRepository.findById(postId))
-//                .thenReturn(Optional.of(existingPost));
-//        when(postDomainService.canUserDeletePost(existingPost, userId))
-//                .thenReturn(true);
-//
-//        // When & Then
-//        assertThrows(IllegalStateException.class,
-//                () -> postCommandService.deletePost(deleteCommand));
-//    }
+    @DisplayName("#06. 권한 없는 사용자의 포스트 삭제 시도 테스트")
+    @Test
+    @Order(6)
+    void deletePostWithoutPermissionTest() {
+        // Given
+        Long postId = 1L;
+        Long userId = 2L; // 포스트 작성자와 다른 사용자
+        PostDTO deleteCommand = new PostDTO(postId, userId);
+        Post existingPost = new Post(postId, "Title", "Content", LocalDateTime.now(), LocalDateTime.now(), true, 1L, 1L, 1L);
+
+        when(postRepository.findById(postId))
+                .thenReturn(Optional.of(existingPost));
+        when(postDomainService.canUserDeletePost(existingPost, userId))
+                .thenReturn(true);
+
+        // When & Then
+        assertThrows(IllegalStateException.class,
+                () -> postCommandService.deletePost(deleteCommand));
+    }
 
     /**
      * ### PostCommentDTO Tests ###
@@ -304,25 +322,25 @@ public class PostCommandServiceTest {
                 () -> postCommandService.createPostComment(createCommand));
     }
 
-//    @DisplayName("#12. 권한 없는 사용자의 포스트 댓글 삭제 시도 테스트")
-//    @Test
-//    @Order(12)
-//    void deletePostCommentWithoutPermissionTest() {
-//        // Given
-//        Long commentId = 1L;
-//        Long userId = 2L; // 댓글 작성자와 다른 사용자
-//        PostCommentDTO deleteCommand = new PostCommentDTO(commentId, userId);
-//        PostComment existingComment = new PostComment(commentId, "Comment", LocalDateTime.now(), LocalDateTime.now(), 1L, 1L);
-//
-//        when(postCommentRepository.findById(commentId))
-//                .thenReturn(Optional.of(existingComment));
-//        when(postDomainService.canUserDeletePostComment(existingComment, userId))
-//                .thenReturn(true);
-//
-//        // When & Then
-//        assertThrows(IllegalStateException.class,
-//                () -> postCommandService.deletePostComment(deleteCommand));
-//    }
+    @DisplayName("#12. 권한 없는 사용자의 포스트 댓글 삭제 시도 테스트")
+    @Test
+    @Order(12)
+    void deletePostCommentWithoutPermissionTest() {
+        // Given
+        Long commentId = 1L;
+        Long userId = 2L; // 댓글 작성자와 다른 사용자
+        PostCommentDTO deleteCommand = new PostCommentDTO(commentId, userId);
+        PostComment existingComment = new PostComment(commentId, "Comment", LocalDateTime.now(), LocalDateTime.now(), 1L, 1L);
+
+        when(postCommentRepository.findById(commentId))
+                .thenReturn(Optional.of(existingComment));
+        when(postDomainService.canUserDeletePostComment(existingComment, userId))
+                .thenReturn(true);
+
+        // When & Then
+        assertThrows(IllegalStateException.class,
+                () -> postCommandService.deletePostComment(deleteCommand));
+    }
 
     /**
      * ### PostCoCommentDTO Tests ###
@@ -423,25 +441,25 @@ public class PostCommandServiceTest {
                 () -> postCommandService.createPostCoComment(createCommand));
     }
 
-//    @DisplayName("#18. 권한 없는 사용자의 포스트 대댓글 삭제 시도 테스트")
-//    @Test
-//    @Order(18)
-//    void deletePostCoCommentWithoutPermissionTest() {
-//        // Given
-//        Long coCommentId = 1L;
-//        Long userId = 2L; // 대댓글 작성자와 다른 사용자
-//        PostCoCommentDTO deleteCommand = new PostCoCommentDTO(coCommentId, userId);
-//        PostCoComment existingCoComment = new PostCoComment(coCommentId, "Co-Comment", LocalDateTime.now(), LocalDateTime.now(), 1L, 1L);
-//
-//        when(postCoCommentRepository.findById(coCommentId))
-//                .thenReturn(Optional.of(existingCoComment));
-//        when(postDomainService.canUserDeletePostCoComment(existingCoComment, userId))
-//                .thenReturn(true);
-//
-//        // When & Then
-//        assertThrows(IllegalStateException.class,
-//                () -> postCommandService.deletePostComment(deleteCommand));
-//    }
+    @DisplayName("#18. 권한 없는 사용자의 포스트 대댓글 삭제 시도 테스트")
+    @Test
+    @Order(18)
+    void deletePostCoCommentWithoutPermissionTest() {
+        // Given
+        Long coCommentId = 1L;
+        Long userId = 2L; // 대댓글 작성자와 다른 사용자
+        PostCoCommentDTO deleteCommand = new PostCoCommentDTO(coCommentId, userId);
+        PostCoComment existingCoComment = new PostCoComment(coCommentId, "Co-Comment", LocalDateTime.now(), LocalDateTime.now(), 1L, 1L);
+
+        when(postCoCommentRepository.findById(coCommentId))
+                .thenReturn(Optional.of(existingCoComment));
+        when(postDomainService.canUserDeletePostCoComment(existingCoComment, userId))
+                .thenReturn(true);
+
+        // When & Then
+        assertThrows(IllegalStateException.class,
+                () -> postCommandService.deletePostComment(deleteCommand));
+    }
 
     /**
      * ### PostReportDTO Tests ###
@@ -542,23 +560,117 @@ public class PostCommandServiceTest {
                 () -> postCommandService.createPostReport(createCommand));
     }
 
-//    @DisplayName("#24. 권한 없는 사용자의 포스트 신고 삭제 시도 테스트")
-//    @Test
-//    @Order(24)
-//    void deletePostReportWithoutPermissionTest() {
-//        // Given
-//        Long reportId = 1L;
-//        Long userId = 2L; // 신고 작성자와 다른 사용자
-//        PostReportDTO deleteCommand = new PostReportDTO(reportId, userId);
-//        PostReport existingReport = new PostReport(reportId, "Report", true, LocalDateTime.now(), null, 1L, 1L, 1L);
-//
-//        when(postReportRepository.findById(reportId))
-//                .thenReturn(Optional.of(existingReport));
-//        when(postDomainService.canUserDeletePostReport(existingReport, userId))
-//                .thenReturn(true);
-//
-//        // When & Then
-//        assertThrows(IllegalStateException.class,
-//                () -> postCommandService.deletePostComment(deleteCommand));
-//    }
+    @DisplayName("#24. 권한 없는 사용자의 포스트 신고 삭제 시도 테스트")
+    @Test
+    @Order(24)
+    void deletePostReportWithoutPermissionTest() {
+        // Given
+        Long reportId = 1L;
+        Long userId = 2L; // 신고 작성자와 다른 사용자
+        PostReportDTO deleteCommand = new PostReportDTO(reportId, userId);
+        PostReport existingReport = new PostReport(reportId, "Report", true, LocalDateTime.now(), null, 1L, 1L, 1L);
+
+        when(postReportRepository.findById(reportId))
+                .thenReturn(Optional.of(existingReport));
+        when(postDomainService.canUserDeletePostReport(existingReport, userId))
+                .thenReturn(true);
+
+        // When & Then
+        assertThrows(IllegalStateException.class,
+                () -> postCommandService.deletePostComment(deleteCommand));
+    }
+
+    @DisplayName("#25. 포스트 생성 시 이미지 업로드 테스트")
+    @Test
+    @Order(25)
+    void createPostWithImageUploadTest() throws IOException {
+        // Given
+        PostDTO createCommand = new PostDTO("Test Title", "Test Content", true, 1L, 1L, 1L);
+        MockMultipartFile mockImage = new MockMultipartFile("image", "test.jpg", "image/jpeg", "test image content".getBytes());
+        createCommand.setImages(Collections.singletonList(mockImage));
+
+        Post savedPost = new Post(1L, "Test Title", "Test Content", LocalDateTime.now(), LocalDateTime.now(), true, 1L, 1L, 1L);
+
+        when(postRepository.save(any(Post.class)))
+                .thenReturn(savedPost);
+        doNothing().when(postDomainService)
+                .validatePostContent(any(Post.class));
+        doNothing().when(postEventPublisher)
+                .publishPostCreatedEvent(any(Post.class));
+
+        // When
+        Long postId = postCommandService.createPost(createCommand);
+
+        // Then
+        assertEquals(1L, postId);
+        verify(postRepository).save(any(Post.class));
+        verify(postDomainService).validatePostContent(any(Post.class));
+        verify(postEventPublisher).publishPostCreatedEvent(any(Post.class));
+    }
+
+    @DisplayName("#26. 포스트 수정 시 이미지 업데이트 테스트")
+    @Test
+    @Order(26)
+    void updatePostWithImageUpdateTest() throws IOException {
+        // Given
+        Long postId = 1L;
+        PostDTO updateCommand = new PostDTO(postId, "Updated Title", "Updated Content", true, 1L);
+        MockMultipartFile mockImage = new MockMultipartFile("image", "updated.jpg", "image/jpeg", "updated image content".getBytes());
+        updateCommand.setImages(Collections.singletonList(mockImage));
+
+        Post existingPost = new Post(postId, "Old Title", "Old Content", LocalDateTime.now(), LocalDateTime.now(), true, 1L, 1L, 1L);
+
+        when(postRepository.findById(postId))
+                .thenReturn(Optional.of(existingPost));
+        when(postRepository.save(any(Post.class)))
+                .thenReturn(existingPost);
+        doNothing().when(postDomainService)
+                .validatePostUpdate(any(Post.class), anyLong());
+        doNothing().when(postDomainService)
+                .validatePostContent(any(Post.class));
+        doNothing().when(postEventPublisher)
+                .publishPostUpdatedEvent(any(Post.class));
+
+        // When
+        postCommandService.updatePost(updateCommand);
+
+        // Then
+        verify(postRepository).findById(postId);
+        verify(postRepository).save(any(Post.class));
+        verify(postDomainService).validatePostUpdate(any(Post.class), eq(1L));
+        verify(postDomainService).validatePostContent(any(Post.class));
+        verify(postEventPublisher).publishPostUpdatedEvent(any(Post.class));
+    }
+
+    @DisplayName("#27. 포스트 삭제 시 이미지 삭제 테스트")
+    @Test
+    @Order(27)
+    void deletePostWithImageDeletionTest() {
+        // Given
+        Long postId = 1L;
+        Long userId = 1L;
+        PostDTO deleteCommand = new PostDTO(postId, userId);
+        Post existingPost = new Post(postId, "Title", "Content", LocalDateTime.now(), LocalDateTime.now(), true, userId, 1L, 1L);
+
+        when(postRepository.findById(postId))
+                .thenReturn(Optional.of(existingPost));
+        when(postDomainService.canUserDeletePost(any(Post.class), anyLong()))
+                .thenReturn(false);
+        doNothing().when(fileService)
+                .deleteImageFilesByPostId(anyLong());
+        doNothing().when(postRepository)
+                .delete(any(Post.class));
+        doNothing().when(postEventPublisher)
+                .publishPostDeletedEvent(any(Post.class));
+
+        // When
+        postCommandService.deletePost(deleteCommand);
+
+        // Then
+        verify(postRepository).findById(postId);
+        verify(postDomainService).canUserDeletePost(existingPost, userId);
+        verify(fileService).deleteImageFilesByPostId(postId);
+        verify(postRepository).delete(existingPost);
+        verify(postEventPublisher).publishPostDeletedEvent(existingPost);
+    }
 }

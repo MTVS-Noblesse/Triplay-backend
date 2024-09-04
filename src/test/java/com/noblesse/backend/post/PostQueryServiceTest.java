@@ -1,5 +1,6 @@
 package com.noblesse.backend.post;
 
+import com.noblesse.backend.file.service.FileService;
 import com.noblesse.backend.post.common.dto.PostCoCommentDTO;
 import com.noblesse.backend.post.common.dto.PostCommentDTO;
 import com.noblesse.backend.post.common.dto.PostDTO;
@@ -48,6 +49,9 @@ public class PostQueryServiceTest {
 
     @Mock
     private PostReportRepository postReportRepository;
+
+    @Mock
+    private FileService fileService;
 
     @InjectMocks
     private PostQueryService postQueryService;
@@ -697,5 +701,59 @@ public class PostQueryServiceTest {
         assertTrue(result.stream().noneMatch(PostReportDTO::getIsReported));
         assertNull(result.get(0).getProcessedDatetime());
         assertNull(result.get(1).getProcessedDatetime());
+    }
+
+    @DisplayName("#33. 포스트 조회 시 이미지 URL 포함 테스트")
+    @Test
+    @Order(33)
+    void getPostByIdWithImageUrlsTest() {
+        // Arrange
+        Long postId = 1L;
+        Post post = new Post(postId, "Test Title", "Test Content", LocalDateTime.now(), LocalDateTime.now(), true, 1L, 1L, 1L);
+        List<String> mockImageUrls = Arrays.asList("http://example.com/image1.jpg", "http://example.com/image2.jpg");
+
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+        when(fileService.findImageDownloadLinksByPostId(postId)).thenReturn(mockImageUrls);
+
+        // Act
+        PostDTO result = postQueryService.getPostById(postId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(postId, result.getPostId());
+        assertEquals("Test Title", result.getPostTitle());
+        assertEquals("Test Content", result.getPostContent());
+        assertEquals(mockImageUrls, result.getImageUrls());
+        verify(postRepository, times(1)).findById(postId);
+        verify(fileService, times(1)).findImageDownloadLinksByPostId(postId);
+    }
+
+    @DisplayName("#34. 모든 포스트 조회 시 이미지 URL 포함 테스트")
+    @Test
+    @Order(34)
+    void getAllPostsWithImageUrlsTest() {
+        // Arrange
+        List<Post> posts = Arrays.asList(
+                new Post(1L, "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), true, 1L, 1L, 1L),
+                new Post(2L, "Title 2", "Content 2", LocalDateTime.now(), LocalDateTime.now(), true, 2L, 2L, 2L)
+        );
+        List<String> mockImageUrls1 = Arrays.asList("http://example.com/image1.jpg", "http://example.com/image2.jpg");
+        List<String> mockImageUrls2 = Arrays.asList("http://example.com/image3.jpg", "http://example.com/image4.jpg");
+
+        when(postRepository.findAll()).thenReturn(posts);
+        when(fileService.findImageDownloadLinksByPostId(1L)).thenReturn(mockImageUrls1);
+        when(fileService.findImageDownloadLinksByPostId(2L)).thenReturn(mockImageUrls2);
+
+        // Act
+        List<PostDTO> results = postQueryService.getAllPosts();
+
+        // Assert
+        assertNotNull(results);
+        assertEquals(2, results.size());
+        assertEquals(mockImageUrls1, results.get(0).getImageUrls());
+        assertEquals(mockImageUrls2, results.get(1).getImageUrls());
+        verify(postRepository, times(1)).findAll();
+        verify(fileService, times(1)).findImageDownloadLinksByPostId(1L);
+        verify(fileService, times(1)).findImageDownloadLinksByPostId(2L);
     }
 }

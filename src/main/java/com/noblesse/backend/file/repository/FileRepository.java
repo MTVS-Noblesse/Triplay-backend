@@ -13,5 +13,6 @@ public interface FileRepository extends JpaRepository<File, Long> {
     List<File> findFilesByPostId(Long postId);
     List<File> findFilesByClipId(Long clipId);
     void deleteFilesByPostId(Long postId);
+    void deleteFilesByClipId(Long clipId);
     void deleteFileByPostIdAndFileName(Long postId, String fileName);
 }

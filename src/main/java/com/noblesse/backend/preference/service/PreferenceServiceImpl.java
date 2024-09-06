@@ -20,7 +20,7 @@ public class PreferenceServiceImpl implements PreferenceService{
     @Autowired
     UserPreferenceRepository userPreferenceRepository;
 
-    public void registPreference(String preferenceName){
+    public void registerPreference(String preferenceName){
         preferenceRepository.save(new Preference(preferenceName));
     }
 
@@ -71,5 +71,10 @@ public class PreferenceServiceImpl implements PreferenceService{
 
     public List<PreferenceInfo> findSelectedUserPreferenceList(Long userId) {
         return userPreferenceRepository.findSelectedPreferenceInfoListByUserId(userId);
+    }
+
+    @Override
+    public void deletePreference(Long id) {
+        preferenceRepository.deleteById(id);
     }
 }

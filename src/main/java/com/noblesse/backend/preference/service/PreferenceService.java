@@ -6,7 +6,8 @@ import java.util.List;
 
 public interface PreferenceService {
 
-    void registPreference(String preferenceName);
+    void registerPreference(String preferenceName);
     void updatePreference(NewPreferenceDTO preferenceInfoDTO);
     void updateUserPreferences(List<Long> preferenceIds, Long userId);
+    void deletePreference(Long id);
 }

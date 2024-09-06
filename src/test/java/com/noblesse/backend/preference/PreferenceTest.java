@@ -69,7 +69,7 @@ public class PreferenceTest {
     @Test
     @Transactional
     void preferenceRegistTest() {
-        preferenceServiceImpl.registPreference("새로 추가된 취향");
+        preferenceServiceImpl.registerPreference("새로 추가된 취향");
 
         Assertions.assertThat(preferenceRepository.count()).isEqualTo(6);
     }
@@ -186,4 +186,6 @@ public class PreferenceTest {
         Assertions.assertThat(infoList.get(2).getPreference().getPreferenceName()).isEqualTo("예술적 감각을 깨우다");
 
     }
+
+
 }

@@ -16,6 +16,10 @@ public class File {
     @Column(name = "FILE_NAME")
     private String fileName;
 
+    // 해당 fileUrl은 파일이 저장된 위치 URL로 실제 인터넷에서 접속되는 URL과 다름
+    // 따로 인터넷에서 접근 가능한 주소를 발급하는 service 코드를 통해 얻어야 함
+    // 이렇게 저장하는 이유는 인터넷에서 접속하는 URL은 엑세스 토큰을 발급 받아 재조합된 URL이여서
+    // 고정되지 않고 계속 URL이 달라지기 때문임.
     @Column(name = "FILE_URL")
     private String fileUrl;
 

@@ -29,7 +29,7 @@ public class ImageFileController {
     @GetMapping("/{postId}")
     @ResponseBody
     public ResponseEntity<?> findImageDownloadLinksByPostId(
-            @PathVariable Long postId) throws IOException {
+            @PathVariable Long postId) {
 
         return ResponseEntity.ok(fileService.findImageDownloadLinksByPostId(postId));
     }
@@ -38,21 +38,24 @@ public class ImageFileController {
     @ResponseBody
     public ResponseEntity<?> findImageDownloadLinkByPostIdAndFileName(
             @PathVariable Long postId,
-            @PathVariable String fileName) throws IOException {
+            @PathVariable String fileName) {
 
         return ResponseEntity.ok(fileService.findImageDownloadLinkByPostIdAndFileName(postId, fileName));
     }
 
     @DeleteMapping("/{postId}")
     @ResponseBody
-    public ResponseEntity<?> deleteImageFileByPostId(@PathVariable Long postId) throws IOException {
+    public ResponseEntity<?> deleteImageFileByPostId(@PathVariable Long postId) {
         fileService.deleteImageFilesByPostId(postId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{postId}/{fileName}")
     @ResponseBody
-    public ResponseEntity<?> deleteImageFileByPostIdAndFileName(@PathVariable Long postId, @PathVariable String fileName) throws IOException {
+    public ResponseEntity<?> deleteImageFileByPostIdAndFileName(
+            @PathVariable Long postId,
+            @PathVariable String fileName) {
+
         fileService.deleteImageFileByPostIdAndFileName(postId, fileName);
         return ResponseEntity.ok().build();
     }

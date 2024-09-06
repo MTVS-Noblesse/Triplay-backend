@@ -59,6 +59,13 @@ public class ImageFileService {
         return blob.signUrl(1, TimeUnit.HOURS).toString();
     }
 
+    public String findImageDownloadLinkByFileUrl(String fileUrl) {
+        Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
+        Blob blob = bucket.get(fileUrl);
+        if(blob == null) return null;
+        return blob.signUrl(1, TimeUnit.HOURS).toString();
+    }
+
     @Transactional
     public void deleteImage(String directory, String fileName) {
         Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
@@ -73,6 +80,19 @@ public class ImageFileService {
         Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
 
         Iterable<Blob> blobs = bucket.list(Storage.BlobListOption.prefix("post/" + postId + "/")).getValues();
+        List<Blob> blobList = StreamSupport.stream(blobs.spliterator(), false).toList();
+
+        blobList.forEach(blob -> {
+            blob.delete();
+        });
+        System.out.println("이미지 파일들 삭제 성공 : " + LocalDateTime.now());
+    }
+
+    @Transactional
+    public void deleteImagesByClipId(Long clipId) {
+        Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
+
+        Iterable<Blob> blobs = bucket.list(Storage.BlobListOption.prefix("clip/" + clipId + "/")).getValues();
         List<Blob> blobList = StreamSupport.stream(blobs.spliterator(), false).toList();
 
         blobList.forEach(blob -> {

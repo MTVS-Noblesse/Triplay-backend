@@ -27,8 +27,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -61,8 +59,6 @@ public class PostCommandService {
                 .userId(createCommand.getUserId())
                 .tripId(createCommand.getTripId())
                 .clipId(createCommand.getClipId())
-//                .writtenDatetime(createCommand.getWrittenDatetime())
-//                .modifiedDatetime(createCommand.getModifiedDatetime())
                 .build();
 
         postDomainService.validatePostContent(newPost);

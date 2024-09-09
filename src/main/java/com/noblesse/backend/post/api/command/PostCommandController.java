@@ -8,10 +8,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/post")
@@ -30,10 +32,23 @@ public class PostCommandController {
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> createPost(
-            @ModelAttribute PostDTO command
+            @RequestParam("postTitle") String postTitle,
+            @RequestParam("userId") Long userId,
+            @RequestParam(value = "postContent", required = false) String postContent,
+            @RequestParam(value = "isOpened", required = false) Boolean isOpened,
+            @RequestParam(value = "tripId", required = false) Long tripId,
+            @RequestParam(value = "clipId", required = false) Long clipId,
+            @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages
     ) {
+        PostDTO command = new PostDTO(postTitle, userId);
+        command.setPostContent(postContent);
+        command.setIsOpened(isOpened);
+        command.setTripId(tripId);
+        command.setClipId(clipId);
+        command.setNewImages(newImages);
+
         Long postId = createPostCommandHandler.handle(command);
-        return ResponseEntity.status(HttpStatus.CREATED).body(postId);
+        return ResponseEntity.ok(postId);
     }
 
     @Operation(summary = "포스트 수정 (이미지 포함)")
@@ -43,10 +58,27 @@ public class PostCommandController {
     )
     @PutMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updatePost(
-            @PathVariable("postId") Long postId,
-            @ModelAttribute PostDTO command
+            @PathVariable Long postId,
+            @RequestParam(value = "postTitle", required = false) String postTitle,
+            @RequestParam(value = "postContent", required = false) String postContent,
+            @RequestParam("userId") Long userId,
+            @RequestParam(value = "isOpened", required = false) Boolean isOpened,
+            @RequestParam(value = "tripId", required = false) Long tripId,
+            @RequestParam(value = "clipId", required = false) Long clipId,
+            @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
+            @RequestParam(value = "imageUrlsToRemove", required = false) List<String> imageUrlsToRemove
     ) {
+        PostDTO command = new PostDTO();
         command.setPostId(postId);
+        command.setPostTitle(postTitle);
+        command.setPostContent(postContent);
+        command.setUserId(userId);
+        command.setIsOpened(isOpened);
+        command.setTripId(tripId);
+        command.setClipId(clipId);
+        command.setNewImages(newImages);
+        command.setImageUrlsToRemove(imageUrlsToRemove);
+
         updatePostCommandHandler.handle(command);
         return ResponseEntity.noContent().build();
     }
@@ -61,9 +93,10 @@ public class PostCommandController {
             @PathVariable("postId") Long postId,
             @RequestParam("userId") Long userId
     ) {
-        PostDTO command = new PostDTO();
-        command.setPostId(postId);
-        command.setUserId(userId);
+        PostDTO command = PostDTO.builder()
+                .postId(postId)
+                .userId(userId)
+                .build();
         deletePostCommandHandler.handle(command);
         return ResponseEntity.noContent().build();
     }

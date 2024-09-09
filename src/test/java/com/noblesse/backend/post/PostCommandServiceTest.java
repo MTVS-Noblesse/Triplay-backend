@@ -1,9 +1,6 @@
 package com.noblesse.backend.post;
 
 import com.noblesse.backend.file.service.FileService;
-import com.noblesse.backend.post.command.application.handler.CreatePostCommandHandler;
-import com.noblesse.backend.post.command.application.handler.DeletePostCommandHandler;
-import com.noblesse.backend.post.command.application.handler.UpdatePostCommandHandler;
 import com.noblesse.backend.post.command.application.service.PostCommandService;
 import com.noblesse.backend.post.command.domain.publisher.PostCoCommentEventPublisher;
 import com.noblesse.backend.post.command.domain.publisher.PostCommentEventPublisher;
@@ -31,12 +28,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -70,13 +64,6 @@ public class PostCommandServiceTest {
     private PostCoCommentEventPublisher postCoCommentEventPublisher;
     @Mock
     private PostReportEventPublisher postReportEventPublisher;
-
-    @Mock
-    private CreatePostCommandHandler createPostCommandHandler;
-    @Mock
-    private UpdatePostCommandHandler updatePostCommandHandler;
-    @Mock
-    private DeletePostCommandHandler deletePostCommandHandler;
 
     private PostCommandService postCommandService;
 
@@ -583,11 +570,11 @@ public class PostCommandServiceTest {
     @DisplayName("#25. 포스트 생성 시 이미지 업로드 테스트")
     @Test
     @Order(25)
-    void createPostWithImageUploadTest() throws IOException {
+    void createPostWithImageUploadTest() {
         // Given
         PostDTO createCommand = new PostDTO("Test Title", "Test Content", true, 1L, 1L, 1L);
         MockMultipartFile mockImage = new MockMultipartFile("image", "test.jpg", "image/jpeg", "test image content".getBytes());
-        createCommand.setImages(Collections.singletonList(mockImage));
+        createCommand.setNewImages(Collections.singletonList(mockImage));
 
         Post savedPost = new Post(1L, "Test Title", "Test Content", LocalDateTime.now(), LocalDateTime.now(), true, 1L, 1L, 1L);
 
@@ -611,12 +598,12 @@ public class PostCommandServiceTest {
     @DisplayName("#26. 포스트 수정 시 이미지 업데이트 테스트")
     @Test
     @Order(26)
-    void updatePostWithImageUpdateTest() throws IOException {
+    void updatePostWithImageUpdateTest() {
         // Given
         Long postId = 1L;
         PostDTO updateCommand = new PostDTO(postId, "Updated Title", "Updated Content", true, 1L);
         MockMultipartFile mockImage = new MockMultipartFile("image", "updated.jpg", "image/jpeg", "updated image content".getBytes());
-        updateCommand.setImages(Collections.singletonList(mockImage));
+        updateCommand.setNewImages(Collections.singletonList(mockImage));
 
         Post existingPost = new Post(postId, "Old Title", "Old Content", LocalDateTime.now(), LocalDateTime.now(), true, 1L, 1L, 1L);
 

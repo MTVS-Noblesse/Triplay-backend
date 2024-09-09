@@ -37,7 +37,7 @@ public class OAuth2Filter extends OncePerRequestFilter {
                 response.setContentType("application/json");
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write("{\"token\": \"" + jwtToken + "\"}");
-                return; // 필터 체인을 종료
+                return;
             }
         }
 

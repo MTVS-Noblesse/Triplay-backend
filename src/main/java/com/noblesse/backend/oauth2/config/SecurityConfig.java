@@ -5,18 +5,14 @@ import com.noblesse.backend.oauth2.filter.OAuth2Filter;
 import com.noblesse.backend.oauth2.service.OAuth2Service;
 import com.noblesse.backend.oauth2.util.JwtUtil;
 import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
-import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -34,8 +30,6 @@ public class SecurityConfig {
         this.oAuth2Filter = oAuth2Filter;
     }
 
-    private final String frontUrl = "https://localhost:5173";
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtUtil jwtUtil) throws Exception {
         http
@@ -45,13 +39,13 @@ public class SecurityConfig {
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage(frontUrl+"/login")
+                        .loginPage("/login")
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2Service))
-                        .failureUrl(frontUrl+"/login?error=true")
-                        .defaultSuccessUrl(frontUrl + "/main", true)
+                        .failureUrl("/login?error=true")
+                        .defaultSuccessUrl("/main", true)
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl(frontUrl + "/login")) // 로그아웃 후 리다이렉트 URL
+                        .logoutSuccessUrl("/login")) // 로그아웃 후 리다이렉트 URL
                 .addFilterBefore(oAuth2Filter, BasicAuthenticationFilter.class)
                 .addFilterBefore(new JwtFilter(oAuth2Service, jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable);

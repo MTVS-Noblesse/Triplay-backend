@@ -1,10 +1,6 @@
 package com.noblesse.backend.trip.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -25,6 +21,12 @@ public class Place {
 
     @Column(name = "address")
     private String address;
+
+    @Column(name = "latitude")
+    private double latitude;
+
+    @Column(name = "longitude")
+    private double longitude;
 
     @Column(name = "open_hour")
     private String openHour;
@@ -53,10 +55,12 @@ public class Place {
 
     public Place() {}
 
-    public Place(long placeId, String placeTitle, String address, String openHour, LocalTime departureTime, LocalTime arrivalTime, int placeOrder, String placeThumbnail, TripDate tripDate, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Place(long placeId, String placeTitle, String address, double latitude, double longitude, String openHour, LocalTime departureTime, LocalTime arrivalTime, int placeOrder, String placeThumbnail, TripDate tripDate, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.placeId = placeId;
         this.placeTitle = placeTitle;
         this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.openHour = openHour;
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
@@ -66,7 +70,6 @@ public class Place {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
 
     public String getPlaceTitle() {
         return placeTitle;
@@ -78,6 +81,14 @@ public class Place {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public void setOpenHour(String openHour) {
@@ -110,6 +121,8 @@ public class Place {
                 "placeId=" + placeId +
                 ", placeTitle='" + placeTitle + '\'' +
                 ", address='" + address + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
                 ", openHour='" + openHour + '\'' +
                 ", departureTime=" + departureTime +
                 ", arrivalTime=" + arrivalTime +

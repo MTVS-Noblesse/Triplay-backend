@@ -1,6 +1,7 @@
 package com.noblesse.backend.trip.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,8 +16,9 @@ import java.util.Map;
 @RestController
 @CrossOrigin(origins = "https://localhost:5173")  // React 앱이 실행되는 도메인
 public class PlaceApiController {
-    //    @Value("${GOOGLE_MAPS_API_KEY}")
-    String apiKey = "AIzaSyD691LEswsKvGnyp7IRoi06DwLQdQeAz8k";
+
+    @Value("${google.maps.api-key}")
+    private String apiKey;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping("/getGooglePlaceData")

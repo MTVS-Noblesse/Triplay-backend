@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 public class PostCoCommentDTO {
     private Long postCoCommentId;
     private String postCoCommentContent;
-    private LocalDateTime createdDateTime;
-    private LocalDateTime updatedDateTime;
+    private LocalDateTime writtenDatetime;
+    private LocalDateTime modifiedDatetime;
     private Long userId;
     private Long postCommentId;
 
@@ -33,9 +33,9 @@ public class PostCoCommentDTO {
     }
 
     // Delete 용 생성자
-    public PostCoCommentDTO(Long postCoCommentId, Long userId) {
+    public PostCoCommentDTO(Long postCoCommentId) {
         this.postCoCommentId = postCoCommentId;
-        this.userId = userId;
+//        this.userId = userId;
     }
 
 
@@ -43,9 +43,9 @@ public class PostCoCommentDTO {
     public PostCoCommentDTO(PostCoComment coComment) {
         this.postCoCommentId = coComment.getPostCoCommentId();
         this.postCoCommentContent = coComment.getPostCoCommentContent();
-        this.createdDateTime = coComment.getCreatedDateTime();
-        this.updatedDateTime = coComment.getUpdatedDateTime();
+        this.writtenDatetime = coComment.getWrittenDatetime();
+        this.modifiedDatetime = coComment.getModifiedDatetime();
         this.userId = coComment.getUserId();
-        this.postCommentId = coComment.getPostComment() != null ? coComment.getPostComment().getPostCommentId() : null;
+        this.postCommentId = coComment.getPostCommentId();
     }
 }

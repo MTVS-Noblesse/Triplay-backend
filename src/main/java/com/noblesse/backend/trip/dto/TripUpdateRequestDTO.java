@@ -2,17 +2,24 @@ package com.noblesse.backend.trip.dto;
 
 import java.util.List;
 
-public class TripRegisterDTO {
+public class TripUpdateRequestDTO {
+
+    private Long tripId;
     private String tripTitle;
     private String tripParty;
     private List<TripDateDTO> tripDates;
 
-    public TripRegisterDTO(){}
+    public TripUpdateRequestDTO() {}
 
-    public TripRegisterDTO(String tripTitle, String tripParty, List<TripDateDTO> tripDates) {
+    public TripUpdateRequestDTO(Long tripId, String tripTitle, String tripParty, List<TripDateDTO> tripDates) {
+        this.tripId = tripId;
         this.tripTitle = tripTitle;
         this.tripParty = tripParty;
         this.tripDates = tripDates;
+    }
+
+    public Long getTripId() {
+        return tripId;
     }
 
     public String getTripTitle() {
@@ -29,8 +36,9 @@ public class TripRegisterDTO {
 
     @Override
     public String toString() {
-        return "TripRegisterDTO{" +
-                "tripTitle='" + tripTitle + '\'' +
+        return "TripUpdateRequestDTO{" +
+                "tripId=" + tripId +
+                ", tripTitle='" + tripTitle + '\'' +
                 ", tripParty='" + tripParty + '\'' +
                 ", tripDates=" + tripDates +
                 '}';

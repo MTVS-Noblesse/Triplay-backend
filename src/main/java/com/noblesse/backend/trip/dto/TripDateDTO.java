@@ -1,5 +1,7 @@
 package com.noblesse.backend.trip.dto;
 
+import com.noblesse.backend.trip.domain.TripDate;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,6 +16,10 @@ public class TripDateDTO {
         this.tripStartDate = tripStartDate;
         this.tripEndDate = tripEndDate;
         this.places = places;
+    }
+
+    public TripDateDTO(TripDate tripDate) {
+        this.tripStartDate = tripDate.getTripStartDate();
     }
 
     public LocalDate getTripStartDate() {

@@ -7,7 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity(name = "ClipComment")
-@Table(name = "CLIP_COMMENT")
+@Table(name = "clip_comment")
 public class ClipComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

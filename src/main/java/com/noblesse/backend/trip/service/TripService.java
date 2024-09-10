@@ -19,6 +19,15 @@ public class TripService {
     @Autowired
     private TripRepository tripRepository;
 
+    public Trip findTripById(Long tripId) {
+        return tripRepository.findById(tripId)
+                .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
+    }
+
+    public List<Trip> findAll() {
+        return tripRepository.findAll();
+    }
+
     @Transactional
     public Trip registerNewTrip(TripRegisterRequestDTO requestDTO) {
         Trip trip = new Trip();
@@ -93,12 +102,6 @@ public class TripService {
         trip.setTripDates(tripDates);
 
         tripRepository.save(trip);
-    }
-
-    @Transactional(readOnly = true)
-    public Trip findTripById(Long tripId) {
-        return tripRepository.findById(tripId)
-                .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
     }
 
     @Transactional

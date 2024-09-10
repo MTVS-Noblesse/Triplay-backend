@@ -7,6 +7,8 @@ import java.time.LocalTime;
 public class PlaceDTO {
     private String placeTitle;
     private String address;
+    private double latitude;
+    private double longitude;
     private String openHour;
     private LocalTime departureTime;
     private LocalTime arrivalTime;
@@ -15,9 +17,11 @@ public class PlaceDTO {
 
     public PlaceDTO(){}
 
-    public PlaceDTO(String placeTitle, String address, String openHour, LocalTime departureTime, LocalTime arrivalTime, int placeOrder, String placeThumbnail) {
+    public PlaceDTO(String placeTitle, String address, double latitude, double longitude, String openHour, LocalTime departureTime, LocalTime arrivalTime, int placeOrder, String placeThumbnail) {
         this.placeTitle = placeTitle;
         this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.openHour = openHour;
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;

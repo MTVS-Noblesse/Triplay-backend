@@ -44,3 +44,7 @@ server:
 app:
   firebase-configuration-file: ./triplayServiceAccountKey.json
   firebase-bucket: ${FIREBASE_STORAGE_BUCKET}
+
+google:
+  maps:
+    api-key: ${GOOGLE_MAPS_API_KEY}

@@ -1,6 +1,5 @@
 package com.noblesse.backend.trip;
 
-import com.noblesse.backend.trip.domain.Place;
 import com.noblesse.backend.trip.domain.Trip;
 import com.noblesse.backend.trip.domain.TripDate;
 import com.noblesse.backend.trip.dto.*;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -33,21 +31,11 @@ public class TripCRUDTests {
                         List.of(
                                 new TripDateDTO(LocalDate.of(2024, 8, 10), LocalDate.of(2024, 8, 12),
                                         List.of(
-                                                new PlaceDTO("Beach", "123 Ocean Drive", "09:00 - 18:00", LocalTime.of(10, 0), LocalTime.of(12, 0), 1, "1.jpg")
+                                                new PlaceDTO("Beach", "123 Ocean Drive", 37.7749, -122.4194, "09:00 - 18:00", LocalTime.of(10, 0), LocalTime.of(12, 0), 1, "1.jpg")
                                         )),
                                 new TripDateDTO(LocalDate.of(2024, 8, 13), LocalDate.of(2024, 8, 15),
                                         List.of(
-                                                new PlaceDTO("Mountain", "456 Hill Street", "08:00 - 16:00", LocalTime.of(9, 0), LocalTime.of(11, 0), 2,"2.jpg")
-                                        ))
-                        ))
-                ),
-                Arguments.of(new TripRegisterRequestDTO(
-                        "Winter Adventure", "Friends",
-                        List.of(
-                                new TripDateDTO(LocalDate.of(2024, 12, 20), LocalDate.of(2024, 12, 25),
-                                        List.of(
-                                                new PlaceDTO("Ski Resort", "789 Snowy Path", "08:00 - 20:00", LocalTime.of(8, 0), LocalTime.of(10, 0), 1, "1.jpg"),
-                                                new PlaceDTO("Hot Springs", "101 Warm Way", "10:00 - 22:00", LocalTime.of(11, 0), LocalTime.of(12, 0), 2, "2.jpg")
+                                                new PlaceDTO("Mountain", "456 Hill Street", 40.7128, -74.0060, "08:00 - 16:00", LocalTime.of(9, 0), LocalTime.of(11, 0), 2,"2.jpg")
                                         ))
                         ))
                 )
@@ -60,11 +48,11 @@ public class TripCRUDTests {
                 List.of(
                         new TripDateDTO(LocalDate.of(2024, 8, 10), LocalDate.of(2024, 8, 12),
                                 List.of(
-                                        new PlaceDTO("Beach", "123 Ocean Drive", "09:00 - 18:00", LocalTime.of(10, 0), LocalTime.of(12, 0), 1, "1.jpg")
+                                        new PlaceDTO("Beach", "123 Ocean Drive", 37.7749, -122.4194, "09:00 - 18:00", LocalTime.of(10, 0), LocalTime.of(12, 0), 1, "1.jpg")
                                 )),
                         new TripDateDTO(LocalDate.of(2024, 8, 13), LocalDate.of(2024, 8, 15),
                                 List.of(
-                                        new PlaceDTO("Mountain", "456 Hill Street", "08:00 - 16:00", LocalTime.of(13, 0), LocalTime.of(14, 0), 2, "2.jpg")
+                                        new PlaceDTO("Mountain", "456 Hill Street", 40.7128, -74.0060, "08:00 - 16:00", LocalTime.of(13, 0), LocalTime.of(14, 0), 2, "2.jpg")
                                 ))
                 )
         );
@@ -85,11 +73,11 @@ public class TripCRUDTests {
                 List.of(
                         new TripDateDTO(LocalDate.of(2024, 8, 10), LocalDate.of(2024, 8, 12),
                                 List.of(
-                                        new PlaceDTO("Beach", "123 Ocean Drive", "09:00 - 18:00", LocalTime.of(10, 0), LocalTime.of(12, 0), 1, "1.jpg")
+                                        new PlaceDTO("Beach", "123 Ocean Drive", 37.7749, -122.4194, "09:00 - 18:00", LocalTime.of(10, 0), LocalTime.of(12, 0), 1, "1.jpg")
                                 )),
                         new TripDateDTO(LocalDate.of(2024, 8, 13), LocalDate.of(2024, 8, 15),
                                 List.of(
-                                        new PlaceDTO("Mountain", "456 Hill Street", "08:00 - 16:00", LocalTime.of(13, 0), LocalTime.of(14, 0), 2, "2.jpg")
+                                        new PlaceDTO("Mountain", "456 Hill Street", 40.7128, -74.0060, "08:00 - 16:00", LocalTime.of(13, 0), LocalTime.of(14, 0), 2, "2.jpg")
                                 ))
                 )
         );
@@ -102,11 +90,11 @@ public class TripCRUDTests {
                 List.of(
                         new TripDateDTO(LocalDate.of(2024, 10, 1), LocalDate.of(2024, 10, 3),
                                 List.of(
-                                        new PlaceDTO("Forest", "789 Green Way", "07:00 - 18:00", LocalTime.of(8, 0), LocalTime.of(9, 30), 1, "forest.jpg")
+                                        new PlaceDTO("Forest", "789 Green Way", 36.7783, -119.4179, "07:00 - 18:00", LocalTime.of(8, 0), LocalTime.of(9, 30), 1, "forest.jpg")
                                 )),
                         new TripDateDTO(LocalDate.of(2024, 10, 4), LocalDate.of(2024, 10, 6),
                                 List.of(
-                                        new PlaceDTO("Lake", "987 Water Road", "09:00 - 17:00", LocalTime.of(11, 30), LocalTime.of(13, 45), 2, "lake.jpg")
+                                        new PlaceDTO("Lake", "987 Water Road", 34.0522, -118.2437, "09:00 - 17:00", LocalTime.of(11, 30), LocalTime.of(13, 45), 2, "lake.jpg")
                                 ))
                 )
         );

@@ -1,4 +1,5 @@
 package com.noblesse.backend.oauth2.service;
+import com.noblesse.backend.oauth2.dto.TokenDTO;
 import com.noblesse.backend.oauth2.entity.OAuthUser;
 import com.noblesse.backend.oauth2.repository.OAuthRepository;
 import com.noblesse.backend.oauth2.security.PrincipalDetails;
@@ -15,6 +16,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,7 +46,7 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         this.clientSecret = clientSecret;
     }
 
-    public String authenticateNaver(String code, String state) {
+    public TokenDTO authenticateNaver(String code, String state) {
         // 1. 네이버 API를 통해 액세스 토큰 요청
         String tokenUrl = "https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&client_id="
                 + clientId + "&client_secret=" + clientSecret + "&code=" + code + "&state=" + state;
@@ -82,8 +86,10 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         }
 
         // 4. JWT 생성
-
-        return jwtUtil.generateToken(oAuthUser.getId()); // 생성된 JWT 토큰 반환
+        TokenDTO tokens = new TokenDTO();
+        tokens.setToken(jwtUtil.generateAccessToken(oAuthUser.getId()));
+        tokens.setRefresh(jwtUtil.generateRefreshToken(oAuthUser.getId()));
+        return tokens;
     }
     public UserDetails loadUser(Long userId) {
         // 사용자 정보를 데이터베이스에서 조회

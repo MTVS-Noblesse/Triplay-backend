@@ -11,13 +11,11 @@ public class OAuthUser {
 
     private String userName;
     private String email;
-    private String provider; // ex: naver
-    private String providerId; // 네이버에서 주는 고유 ID
+    private String provider;
+    private String providerId;
 
-    // 기본 생성자
     public OAuthUser() {}
 
-    // 모든 필드를 포함하는 생성자
     public OAuthUser(String userName, String email, String provider, String providerId) {
         this.userName = userName;
         this.email = email;
@@ -25,21 +23,13 @@ public class OAuthUser {
         this.providerId = providerId;
     }
 
-    // Getter 및 Setter 메소드
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getUserName() {
         return userName;
-    }
-
-    public void setUserName(String username) {
-        this.userName = username;
     }
 
     public String getEmail() {

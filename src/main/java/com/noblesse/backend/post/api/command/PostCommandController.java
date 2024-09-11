@@ -1,5 +1,6 @@
 package com.noblesse.backend.post.api.command;
 
+import com.noblesse.backend.oauth2.util.JwtUtil;
 import com.noblesse.backend.post.command.application.handler.CreatePostCommandHandler;
 import com.noblesse.backend.post.command.application.handler.DeletePostCommandHandler;
 import com.noblesse.backend.post.command.application.handler.UpdatePostCommandHandler;
@@ -24,6 +25,7 @@ public class PostCommandController {
     private final CreatePostCommandHandler createPostCommandHandler;
     private final UpdatePostCommandHandler updatePostCommandHandler;
     private final DeletePostCommandHandler deletePostCommandHandler;
+    private final JwtUtil jwtUtil;
 
     @Operation(summary = "포스트 추가 (이미지 포함)")
     @ApiResponse(
@@ -32,14 +34,17 @@ public class PostCommandController {
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> createPost(
+            @RequestHeader("Authorization") String authorizationHeader,
             @RequestParam("postTitle") String postTitle,
-            @RequestParam("userId") Long userId,
             @RequestParam(value = "postContent", required = false) String postContent,
             @RequestParam(value = "isOpened", required = false) Boolean isOpened,
             @RequestParam(value = "tripId", required = false) Long tripId,
             @RequestParam(value = "clipId", required = false) Long clipId,
             @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages
     ) {
+        String token = authorizationHeader.substring(7); // 앞의 "Bearer " 제거
+        Long userId = jwtUtil.extractUserId(token);
+
         PostDTO command = new PostDTO(postTitle, userId);
         command.setPostContent(postContent);
         command.setIsOpened(isOpened);
@@ -58,16 +63,19 @@ public class PostCommandController {
     )
     @PutMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updatePost(
+            @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable Long postId,
             @RequestParam(value = "postTitle", required = false) String postTitle,
             @RequestParam(value = "postContent", required = false) String postContent,
-            @RequestParam("userId") Long userId,
             @RequestParam(value = "isOpened", required = false) Boolean isOpened,
             @RequestParam(value = "tripId", required = false) Long tripId,
             @RequestParam(value = "clipId", required = false) Long clipId,
             @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
             @RequestParam(value = "imageUrlsToRemove", required = false) List<String> imageUrlsToRemove
     ) {
+        String token = authorizationHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+
         PostDTO command = new PostDTO();
         command.setPostId(postId);
         command.setPostTitle(postTitle);
@@ -90,9 +98,12 @@ public class PostCommandController {
     )
     @DeleteMapping(value = "/{postId}")
     public ResponseEntity<Void> deletePost(
-            @PathVariable("postId") Long postId,
-            @RequestParam("userId") Long userId
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable("postId") Long postId
     ) {
+        String token = authorizationHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+
         PostDTO command = PostDTO.builder()
                 .postId(postId)
                 .userId(userId)

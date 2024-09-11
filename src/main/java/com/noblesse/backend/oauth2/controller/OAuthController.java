@@ -4,6 +4,7 @@ import com.noblesse.backend.oauth2.entity.OAuthUser;
 import com.noblesse.backend.oauth2.repository.OAuthRepository;
 import com.noblesse.backend.oauth2.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
+import static com.fasterxml.jackson.databind.type.LogicalType.Map;
+
 @Controller
 public class OAuthController {
     @Autowired
@@ -26,17 +29,25 @@ public class OAuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @GetMapping("/home")
-    public ResponseEntity<?> getUser(HttpServletRequest request) {
-        String jwtToken = request.getHeader("Authorization").substring(7);
-        try {
-            Long userId = jwtUtil.extractUserId(jwtToken);
-            OAuthUser user = oAuthRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+    @GetMapping("/refresh")
+    public ResponseEntity<?> checkRefreshToken(HttpServletRequest request) {
+        String refreshToken = request.getHeader("Authorization").substring(7);
+        if (jwtUtil.validateRefreshToken(refreshToken)) {
+            Long userId = jwtUtil.extractUserId(refreshToken);
+            String jwtToken = jwtUtil.generateAccessToken(userId);
 
-            return ResponseEntity.ok(user);
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("Invalid JWT token");
+            // JSON 객체 생성
+            JSONObject jsonResponse = new JSONObject();
+            jsonResponse.put("token", jwtToken);
+
+            return ResponseEntity.ok(jsonResponse.toString());
+        } else {
+            // JSON 객체 생성
+            JSONObject errorResponse = new JSONObject();
+            errorResponse.put("code", "AUTH_001");
+            errorResponse.put("message", "Invalid JWT token");
+
+            return ResponseEntity.status(401).body(errorResponse.toString());
         }
     }
 }

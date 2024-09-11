@@ -30,8 +30,10 @@ spring:
             user-name-attribute: response
       resource-server:
         jwt:
+          header: Authorization
           secret: ${JWT_SECRET}
-          expiration: 86400
+          access-expiration: 86400000
+          refresh-expiration: 10800000
 server:
   port: 8443
   ssl:

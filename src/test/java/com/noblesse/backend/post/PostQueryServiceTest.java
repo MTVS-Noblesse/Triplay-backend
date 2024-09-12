@@ -1,5 +1,6 @@
 package com.noblesse.backend.post;
 
+import com.noblesse.backend.file.service.FileService;
 import com.noblesse.backend.post.common.dto.PostCoCommentDTO;
 import com.noblesse.backend.post.common.dto.PostCommentDTO;
 import com.noblesse.backend.post.common.dto.PostDTO;
@@ -48,6 +49,9 @@ public class PostQueryServiceTest {
 
     @Mock
     private PostReportRepository postReportRepository;
+
+    @Mock
+    private FileService fileService;
 
     @InjectMocks
     private PostQueryService postQueryService;
@@ -536,8 +540,8 @@ public class PostQueryServiceTest {
         List<Long> userIds = Arrays.asList(1L, 2L, 3L);
 
         List<Post> mockPosts = Arrays.asList(
-                new Post(1L, "Post 1", "Content", startDate.plusDays(1), startDate.plusDays(1), true, 1L, 1L, 1L),
-                new Post(2L, "Post 2", "Content", startDate.plusDays(2), startDate.plusDays(2), true, 2L, 1L, 1L)
+                new Post(1L, "Post 1", "Content", startDate.plusDays(1), startDate.plusDays(1), true, 1L, 1L, 1L, new ArrayList<>()),
+                new Post(2L, "Post 2", "Content", startDate.plusDays(2), startDate.plusDays(2), true, 2L, 1L, 1L, new ArrayList<>())
         );
 
         when(postRepository.findByWrittenDatetimeBetweenAndUserIdInAndIsOpened(startDate, endDate, userIds, true))
@@ -545,10 +549,14 @@ public class PostQueryServiceTest {
 
         List<PostDTO> result = postQueryService.searchPosts(startDate, endDate, userIds, true);
 
+        assertNotNull(result);
         assertEquals(2, result.size());
-        assertTrue(result.stream().allMatch(post -> post.getWrittenDatetime().isAfter(startDate) && post.getWrittenDatetime().isBefore(endDate)));
-        assertTrue(result.stream().allMatch(post -> userIds.contains(post.getUserId())));
-        assertTrue(result.stream().allMatch(PostDTO::getIsOpened));
+        for (PostDTO post : result) {
+            assertNotNull(post.getWrittenDatetime());
+            assertTrue(post.getWrittenDatetime().isAfter(startDate) && post.getWrittenDatetime().isBefore(endDate));
+            assertTrue(userIds.contains(post.getUserId()));
+            assertTrue(post.getIsOpened());
+        }
     }
 
     @DisplayName("#23. 대량 데이터 처리 성능 테스트")
@@ -697,5 +705,49 @@ public class PostQueryServiceTest {
         assertTrue(result.stream().noneMatch(PostReportDTO::getIsReported));
         assertNull(result.get(0).getProcessedDatetime());
         assertNull(result.get(1).getProcessedDatetime());
+    }
+
+    @DisplayName("#33. 포스트 조회 시 이미지 URL 포함 테스트")
+    @Test
+    @Order(33)
+    void getPostByIdWithImageUrlsTest() {
+        Long postId = 1L;
+        List<String> mockImageUrls = Arrays.asList("http://example.com/image1.jpg", "http://example.com/image2.jpg");
+        Post post = new Post(postId, "Test Title", "Test Content", LocalDateTime.now(), LocalDateTime.now(),
+                true, 1L, 1L, 1L, mockImageUrls);
+
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+
+        PostDTO result = postQueryService.getPostById(postId);
+
+        assertNotNull(result);
+        assertEquals(postId, result.getPostId());
+        assertEquals("Test Title", result.getPostTitle());
+        assertEquals("Test Content", result.getPostContent());
+        assertEquals(mockImageUrls, result.getImageUrls());
+        verify(postRepository, times(1)).findById(postId);
+    }
+
+    @DisplayName("#34. 모든 포스트 조회 시 이미지 URL 포함 테스트")
+    @Test
+    @Order(34)
+    void getAllPostsWithImageUrlsTest() {
+        List<String> mockImageUrls1 = Arrays.asList("http://example.com/image1.jpg", "http://example.com/image2.jpg");
+        List<String> mockImageUrls2 = Arrays.asList("http://example.com/image3.jpg", "http://example.com/image4.jpg");
+
+        List<Post> posts = Arrays.asList(
+                new Post(1L, "Title 1", "Content 1", LocalDateTime.now(), LocalDateTime.now(), true, 1L, 1L, 1L, mockImageUrls1),
+                new Post(2L, "Title 2", "Content 2", LocalDateTime.now(), LocalDateTime.now(), true, 2L, 2L, 2L, mockImageUrls2)
+        );
+
+        when(postRepository.findAll()).thenReturn(posts);
+
+        List<PostDTO> results = postQueryService.getAllPosts();
+
+        assertNotNull(results);
+        assertEquals(2, results.size());
+        assertEquals(mockImageUrls1, results.get(0).getImageUrls());
+        assertEquals(mockImageUrls2, results.get(1).getImageUrls());
+        verify(postRepository, times(1)).findAll();
     }
 }

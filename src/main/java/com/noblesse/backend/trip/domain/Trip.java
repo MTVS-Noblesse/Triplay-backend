@@ -4,12 +4,13 @@ import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "tbl_trip")
+@Table(name = "trip")
 public class Trip {
 
     @Id
@@ -23,8 +24,15 @@ public class Trip {
     @Column(name = "trip_party")
     private String tripParty;
 
-    @OneToMany(mappedBy = "trip", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TripDate> tripDates = new ArrayList<>();
+    @Column(name = "trip_start_date")
+    private LocalDate tripStartDate;
+
+    @Column(name = "trip_end_date")
+    private LocalDate tripEndDate;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "trip_id")
+    private List<Place> places = new ArrayList<>();
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -34,13 +42,13 @@ public class Trip {
 
     public Trip() {}
 
-    public Trip(Long tripId, String tripTitle, String tripParty, List<TripDate> tripDates, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Trip(Long tripId, String tripTitle, String tripParty, LocalDate tripStartDate, LocalDate tripEndDate, List<Place> places) {
         this.tripId = tripId;
         this.tripTitle = tripTitle;
         this.tripParty = tripParty;
-        this.tripDates = tripDates;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.tripStartDate = tripStartDate;
+        this.tripEndDate = tripEndDate;
+        this.places = places;
     }
 
     public Long getTripId() {
@@ -55,8 +63,24 @@ public class Trip {
         return tripParty;
     }
 
-    public List<TripDate> getTripDates() {
-        return tripDates;
+    public LocalDate getTripStartDate() {
+        return tripStartDate;
+    }
+
+    public LocalDate getTripEndDate() {
+        return tripEndDate;
+    }
+
+    public List<Place> getPlaces() {
+        return places;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public void setTripTitle(String tripTitle) {
@@ -67,8 +91,24 @@ public class Trip {
         this.tripParty = tripParty;
     }
 
-    public void setTripDates(List<TripDate> tripDates) {
-        this.tripDates = tripDates;
+    public void setTripStartDate(LocalDate tripStartDate) {
+        this.tripStartDate = tripStartDate;
+    }
+
+    public void setTripEndDate(LocalDate tripEndDate) {
+        this.tripEndDate = tripEndDate;
+    }
+
+    public void setPlaces(List<Place> places) {
+        this.places = places;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override
@@ -77,7 +117,9 @@ public class Trip {
                 "tripId=" + tripId +
                 ", tripTitle='" + tripTitle + '\'' +
                 ", tripParty='" + tripParty + '\'' +
-                ", tripDates=" + tripDates +
+                ", tripStartDate=" + tripStartDate +
+                ", tripEndDate=" + tripEndDate +
+                ", places=" + places +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

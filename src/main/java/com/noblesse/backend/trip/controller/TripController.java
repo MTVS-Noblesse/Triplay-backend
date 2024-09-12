@@ -31,14 +31,14 @@ public class TripController {
 
     @Operation(summary = "새 여행 일정 추가")
     @PostMapping
-    public ResponseEntity<?> registerTrip(@ModelAttribute TripRegisterRequestDTO tripRegisterRequestDTO) {
+    public ResponseEntity<?> registerTrip(@RequestBody TripRegisterRequestDTO tripRegisterRequestDTO) {
         tripService.registerNewTrip(tripRegisterRequestDTO);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "여행 일정 수정")
     @PatchMapping("/{tripId}")
-    public ResponseEntity<?> updateTripById(@ModelAttribute TripUpdateRequestDTO tripUpdateRequestDTO) {
+    public ResponseEntity<?> updateTripById(@RequestBody TripUpdateRequestDTO tripUpdateRequestDTO) {
         tripService.updateTrip(tripUpdateRequestDTO);
         return ResponseEntity.ok().build();
     }

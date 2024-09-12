@@ -19,19 +19,20 @@ public class NoticeServiceImpl implements NoticeService{
     }
 
     @Override
-    public void registNotice(Notice notice) {
-        noticeRepository.save(notice);
+    public Notice registNotice(Notice notice) {
+        return noticeRepository.save(notice);
     }
 
     @Override
-    public void updateNotice(Long id, NewNoticeDTO newNoticeDTO) {
-        Notice foundNotice = noticeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Not found notice with id: " + id));
+    public NewNoticeDTO updateNotice(NewNoticeDTO newNoticeDTO) {
+        Notice foundNotice = noticeRepository.findById(newNoticeDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Not found notice with id: " + newNoticeDTO.getId()));
 
         foundNotice.setTitle(newNoticeDTO.getTitle());
         foundNotice.setContent(newNoticeDTO.getContent());
 
         noticeRepository.save(foundNotice);
+        return newNoticeDTO;
     }
 
     @Override

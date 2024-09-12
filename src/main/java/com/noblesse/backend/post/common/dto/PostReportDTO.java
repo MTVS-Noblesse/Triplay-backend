@@ -38,9 +38,13 @@ public class PostReportDTO {
     }
 
     // Delete 용 생성자
+    public PostReportDTO(Long postReportId, Long userId) {
+        this.postReportId = postReportId;
+        this.userId = userId;
+    }
+
     public PostReportDTO(Long postReportId) {
         this.postReportId = postReportId;
-//        this.userId = userId;
     }
 
     // Entity로부터 DTO를 생성하는 생성자

@@ -2,8 +2,11 @@ package com.noblesse.backend.post.common.dto;
 
 import com.noblesse.backend.post.common.entity.Post;
 import lombok.*;
+import org.springframework.lang.Nullable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,7 +23,17 @@ public class PostDTO {
     private Long userId;
     private Long tripId;
     private Long clipId;
-//    private List<PostCommentDTO> comments;
+    // private List<PostCommentDTO> comments;
+
+    @Nullable
+    private List<String> imageUrls;
+
+    @Nullable
+    private List<String> imageUrlsToRemove;
+
+    @Nullable
+    private List<MultipartFile> newImages;
+//    private MultipartFile[] newImages;
 
     // Create 용 생성자
     public PostDTO(String postTitle, String postContent, Boolean isOpened, Long userId, Long tripId, Long clipId) {
@@ -30,6 +43,12 @@ public class PostDTO {
         this.userId = userId;
         this.tripId = tripId;
         this.clipId = clipId;
+    }
+
+    // Create 용 생성자
+    public PostDTO(String postTitle, Long userId) {
+        this.postTitle = postTitle;
+        this.userId = userId;
     }
 
     // Update 용 생성자
@@ -42,9 +61,13 @@ public class PostDTO {
     }
 
     // Delete 용 생성자
+    public PostDTO(Long postId, Long userId) {
+        this.postId = postId;
+        this.userId = userId;
+    }
+
     public PostDTO(Long postId) {
         this.postId = postId;
-//        this.userId = userId;
     }
 
     // Entity로부터 DTO를 생성하는 생성자
@@ -58,5 +81,6 @@ public class PostDTO {
         this.userId = post.getUserId();
         this.tripId = post.getTripId();
         this.clipId = post.getClipId();
+        this.imageUrls = post.getImageUrls(); // 이미지 URL 추가
     }
 }

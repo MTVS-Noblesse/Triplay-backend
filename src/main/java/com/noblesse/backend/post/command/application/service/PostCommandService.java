@@ -1,5 +1,7 @@
+
 package com.noblesse.backend.post.command.application.service;
 
+import com.noblesse.backend.file.service.FileService;
 import com.noblesse.backend.post.command.domain.publisher.PostCoCommentEventPublisher;
 import com.noblesse.backend.post.command.domain.publisher.PostCommentEventPublisher;
 import com.noblesse.backend.post.command.domain.publisher.PostEventPublisher;
@@ -35,6 +37,7 @@ public class PostCommandService {
      * 2. 트랜잭션 관리, 보안, 로깅 등 인프라스트럭처 관심사를 다룸
      * 3. Command Handler의 역할을 대신함
      */
+    private final FileService fileService;
     private final PostRepository postRepository;
     private final PostCommentRepository postCommentRepository;
     private final PostCoCommentRepository postCoCommentRepository;
@@ -56,8 +59,6 @@ public class PostCommandService {
                 .userId(createCommand.getUserId())
                 .tripId(createCommand.getTripId())
                 .clipId(createCommand.getClipId())
-                .writtenDatetime(createCommand.getWrittenDatetime())
-                .modifiedDatetime(createCommand.getModifiedDatetime())
                 .build();
 
         postDomainService.validatePostContent(newPost);
@@ -81,6 +82,10 @@ public class PostCommandService {
         postEventPublisher.publishPostUpdatedEvent(updatedPost);
     }
 
+    public void deletePostImages(Long postId) {
+        fileService.deleteImageFilesByPostId(postId);
+    }
+
     public void deletePost(PostDTO deleteCommand) {
         Post post = postRepository.findById(deleteCommand.getPostId())
                 .orElseThrow(() -> new PostNotFoundException(deleteCommand.getPostId()));
@@ -89,6 +94,7 @@ public class PostCommandService {
             throw new IllegalStateException("# 포스트를 작성한 사용자가 일치하지 않아요...");
         }
 
+        deletePostImages(post.getPostId());
         postRepository.delete(post);
         postEventPublisher.publishPostDeletedEvent(post);
     }

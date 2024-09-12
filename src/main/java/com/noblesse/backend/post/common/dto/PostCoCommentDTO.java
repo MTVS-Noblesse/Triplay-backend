@@ -33,9 +33,13 @@ public class PostCoCommentDTO {
     }
 
     // Delete 용 생성자
+    public PostCoCommentDTO(Long postCoCommentId, Long userId) {
+        this.postCoCommentId = postCoCommentId;
+        this.userId = userId;
+    }
+
     public PostCoCommentDTO(Long postCoCommentId) {
         this.postCoCommentId = postCoCommentId;
-//        this.userId = userId;
     }
 
 

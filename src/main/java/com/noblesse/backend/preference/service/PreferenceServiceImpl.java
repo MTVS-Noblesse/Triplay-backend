@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PreferenceServiceImpl implements PreferenceService{
@@ -19,6 +20,11 @@ public class PreferenceServiceImpl implements PreferenceService{
 
     @Autowired
     UserPreferenceRepository userPreferenceRepository;
+
+    @Override
+    public Preference getPreferenceBypreferenceId(Long preferenceId) {
+        return preferenceRepository.findPreferenceByPreferenceId(preferenceId).orElseThrow(() -> new IllegalArgumentException("not found preference id: " + preferenceId));
+    }
 
     public void registerPreference(String preferenceName){
         preferenceRepository.save(new Preference(preferenceName));
@@ -44,7 +50,7 @@ public class PreferenceServiceImpl implements PreferenceService{
         List<PreferenceInfo> preferenceInfoList = userPreference.getPreferenceInfoList();
 
         for(PreferenceInfo info : preferenceInfoList){
-            boolean isSelected = preferenceIds.contains(info.getPreference().getPreferenceId());
+            boolean isSelected = preferenceIds.contains(info.getPreferenceId());
             info.setSelected(isSelected);
         }
 
@@ -53,18 +59,18 @@ public class PreferenceServiceImpl implements PreferenceService{
 
         for(Long id : allPreferenceIds){
             boolean isExist = preferenceInfoList.stream()
-                    .anyMatch(info -> info.getPreference().getPreferenceId().equals(id));
+                    .anyMatch(info -> info.getPreferenceId().equals(id));
             if(!isExist){
                 Preference newPreference = preferenceRepository.findPreferenceByPreferenceId(id)
                         .orElseThrow(() -> new IllegalArgumentException("preference not found " + id));
 
-                PreferenceInfo newInfo = new PreferenceInfo(newPreference, false);
+                PreferenceInfo newInfo = new PreferenceInfo(newPreference.getPreferenceId(), false);
                 preferenceInfoList.add(newInfo);
             }
         }
 
         // 5. 삭제된 취향을 처리 (기존 preferenceInfoList에서 삭제)
-        preferenceInfoList.removeIf(info -> !allPreferenceIds.contains(info.getPreference().getPreferenceId()));
+        preferenceInfoList.removeIf(info -> !allPreferenceIds.contains(info.getPreferenceId()));
 
         userPreferenceRepository.save(userPreference);
     }

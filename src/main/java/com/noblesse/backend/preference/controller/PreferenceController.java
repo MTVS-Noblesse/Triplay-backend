@@ -8,34 +8,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/preference")
 public class PreferenceController {
 
-    final private PreferenceRepository preferenceRepository;
     final private PreferenceServiceImpl preferenceServiceImpl;
 
     @Autowired
-    public PreferenceController(PreferenceRepository preferenceRepository, PreferenceServiceImpl preferenceServiceImpl) {
-        this.preferenceRepository = preferenceRepository;
+    public PreferenceController(PreferenceServiceImpl preferenceServiceImpl) {
         this.preferenceServiceImpl = preferenceServiceImpl;
     }
 
-    @GetMapping("/preference")
+    @GetMapping
     Preference getPreference(@RequestBody Long preferenceId) {
-        return preferenceRepository.findPreferenceByPreferenceId(preferenceId)
-                .orElseThrow(() -> new RuntimeException("not found preference id: " + preferenceId));
+        return preferenceServiceImpl.getPreferenceBypreferenceId(preferenceId);
     }
 
-    @PostMapping("/preference")
+    @PostMapping
     public void registerPreference(@RequestBody String preferenceName) {
         preferenceServiceImpl.registerPreference(preferenceName);
     }
 
-    @PatchMapping("/preference")
+    @PatchMapping
     public void updatePreference(@RequestBody NewPreferenceDTO newPreferenceDTO) {
         preferenceServiceImpl.updatePreference(newPreferenceDTO);
     }
 
-    @DeleteMapping("/preference")
+    @DeleteMapping
     public void deletePreference(@RequestParam Long preferenceId) {
         preferenceServiceImpl.deletePreference(preferenceId);
     }

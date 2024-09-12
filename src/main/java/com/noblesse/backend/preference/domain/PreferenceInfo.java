@@ -11,9 +11,8 @@ import lombok.Setter;
 @Embeddable
 public class PreferenceInfo {
 
-    @ManyToOne
-    @JoinColumn(name = "preference_id")
-    private Preference preference;
+    @Column(name = "preference_id")
+    private Long preferenceId;
 
     @Column(name = "is_selected")
     private boolean isSelected;
@@ -21,15 +20,15 @@ public class PreferenceInfo {
     public PreferenceInfo() {
     }
 
-    public PreferenceInfo(Preference preference, boolean isSelected) {
-        this.preference = preference;
+    public PreferenceInfo(Long preferenceId, boolean isSelected) {
+        this.preferenceId = preferenceId;
         this.isSelected = isSelected;
     }
 
     @Override
     public String toString() {
         return "PreferenceInfo{" +
-                "preference=" + preference +
+                "preferenceId=" + preferenceId +
                 ", isSelected=" + isSelected +
                 '}';
     }

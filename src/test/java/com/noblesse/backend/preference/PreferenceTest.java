@@ -58,7 +58,7 @@ public class PreferenceTest {
             List<PreferenceInfo> newPreferenceInfos = new ArrayList<>();
             List<Preference> allPreferences = preferenceRepository.findAll();
             for(Preference p : allPreferences) {
-                newPreferenceInfos.add(new PreferenceInfo(p, false));  // 기본 선택되지 않음
+                newPreferenceInfos.add(new PreferenceInfo(p.getPreferenceId(), false));  // 기본 선택되지 않음
             }
             userPreferenceRepository.save(new UserPreference(1L, newPreferenceInfos));
         }
@@ -109,11 +109,11 @@ public class PreferenceTest {
         Assertions.assertThat(preferenceInfoList.get(3).isSelected()).isEqualTo(false);
         Assertions.assertThat(preferenceInfoList.get(4).isSelected()).isEqualTo(true);
 
-        Assertions.assertThat(preferenceInfoList.get(0).getPreference().getPreferenceName()).isEqualTo("신나는 액티비티");
-        Assertions.assertThat(preferenceInfoList.get(1).getPreference().getPreferenceName()).isEqualTo("SNS에서 본 곳");
-        Assertions.assertThat(preferenceInfoList.get(2).getPreference().getPreferenceName()).isEqualTo("맛있는 여행");
-        Assertions.assertThat(preferenceInfoList.get(3).getPreference().getPreferenceName()).isEqualTo("쇼핑은 필수");
-        Assertions.assertThat(preferenceInfoList.get(4).getPreference().getPreferenceName()).isEqualTo("예술적 감각을 깨우다");
+        Assertions.assertThat(preferenceServiceImpl.getPreferenceBypreferenceId(preferenceInfoList.get(0).getPreferenceId()).getPreferenceName()).isEqualTo("신나는 액티비티");
+        Assertions.assertThat(preferenceServiceImpl.getPreferenceBypreferenceId(preferenceInfoList.get(1).getPreferenceId()).getPreferenceName()).isEqualTo("SNS에서 본 곳");
+        Assertions.assertThat(preferenceServiceImpl.getPreferenceBypreferenceId(preferenceInfoList.get(2).getPreferenceId()).getPreferenceName()).isEqualTo("맛있는 여행");
+        Assertions.assertThat(preferenceServiceImpl.getPreferenceBypreferenceId(preferenceInfoList.get(3).getPreferenceId()).getPreferenceName()).isEqualTo("쇼핑은 필수");
+        Assertions.assertThat(preferenceServiceImpl.getPreferenceBypreferenceId(preferenceInfoList.get(4).getPreferenceId()).getPreferenceName()).isEqualTo("예술적 감각을 깨우다");
 
     }
 
@@ -138,15 +138,8 @@ public class PreferenceTest {
         Assertions.assertThat(preferenceInfoList.get(3).isSelected()).isEqualTo(false);
         Assertions.assertThat(preferenceInfoList.get(4).isSelected()).isEqualTo(true);
 
-        Assertions.assertThat(preferenceInfoList.get(0).getPreference().getPreferenceName()).isEqualTo("신나는 액티비티");
-        Assertions.assertThat(preferenceInfoList.get(1).getPreference().getPreferenceName()).isEqualTo("SNS에서 본 곳");
-        Assertions.assertThat(preferenceInfoList.get(2).getPreference().getPreferenceName()).isEqualTo("맛있는 여행");
-        Assertions.assertThat(preferenceInfoList.get(3).getPreference().getPreferenceName()).isEqualTo("쇼핑은 필수");
-        Assertions.assertThat(preferenceInfoList.get(4).getPreference().getPreferenceName()).isEqualTo("예술적 감각을 깨우다");
-
 
         // 수정했을 때임
-
         List<Long> newSelectedPreferenceIds = new ArrayList<>();
         newSelectedPreferenceIds.add(2L);
         newSelectedPreferenceIds.add(5L);
@@ -159,12 +152,6 @@ public class PreferenceTest {
         Assertions.assertThat(newPreferenceInfoList.get(2).isSelected()).isEqualTo(false);
         Assertions.assertThat(newPreferenceInfoList.get(3).isSelected()).isEqualTo(false);
         Assertions.assertThat(newPreferenceInfoList.get(4).isSelected()).isEqualTo(true);
-
-        Assertions.assertThat(newPreferenceInfoList.get(0).getPreference().getPreferenceName()).isEqualTo("신나는 액티비티");
-        Assertions.assertThat(newPreferenceInfoList.get(1).getPreference().getPreferenceName()).isEqualTo("SNS에서 본 곳");
-        Assertions.assertThat(newPreferenceInfoList.get(2).getPreference().getPreferenceName()).isEqualTo("맛있는 여행");
-        Assertions.assertThat(newPreferenceInfoList.get(3).getPreference().getPreferenceName()).isEqualTo("쇼핑은 필수");
-        Assertions.assertThat(newPreferenceInfoList.get(4).getPreference().getPreferenceName()).isEqualTo("예술적 감각을 깨우다");
     }
 
 
@@ -181,10 +168,9 @@ public class PreferenceTest {
 
         List<PreferenceInfo> infoList = preferenceServiceImpl.findSelectedUserPreferenceList(1L);
 
-        Assertions.assertThat(infoList.get(0).getPreference().getPreferenceName()).isEqualTo("신나는 액티비티");
-        Assertions.assertThat(infoList.get(1).getPreference().getPreferenceName()).isEqualTo("맛있는 여행");
-        Assertions.assertThat(infoList.get(2).getPreference().getPreferenceName()).isEqualTo("예술적 감각을 깨우다");
-
+        Assertions.assertThat(preferenceServiceImpl.getPreferenceBypreferenceId(infoList.get(0).getPreferenceId()).getPreferenceName()).isEqualTo("신나는 액티비티");
+        Assertions.assertThat(preferenceServiceImpl.getPreferenceBypreferenceId(infoList.get(1).getPreferenceId()).getPreferenceName()).isEqualTo("맛있는 여행");
+        Assertions.assertThat(preferenceServiceImpl.getPreferenceBypreferenceId(infoList.get(2).getPreferenceId()).getPreferenceName()).isEqualTo("예술적 감각을 깨우다");
     }
 
 

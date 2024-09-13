@@ -1,6 +1,8 @@
 package com.noblesse.backend.file.controller;
 
 import com.noblesse.backend.file.service.FileService;
+import com.noblesse.backend.oauth2.util.JwtUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,9 +13,11 @@ import java.io.IOException;
 @RequestMapping("/file/image")
 public class ImageFileController {
     private final FileService fileService;
+    private final JwtUtil jwtUtil;
 
-    public ImageFileController(FileService fileService) {
+    public ImageFileController(FileService fileService, JwtUtil jwtUtil) {
         this.fileService = fileService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/{postId}/new")
@@ -22,7 +26,7 @@ public class ImageFileController {
             @RequestParam MultipartFile[] files,
             @PathVariable Long postId) throws IOException {
 
-        fileService.insertImageFilesByPostId(files, postId);
+        fileService.insertPostImageFilesByPostId(files, postId);
         return ResponseEntity.ok().build();
     }
 
@@ -58,5 +62,30 @@ public class ImageFileController {
 
         fileService.deleteImageFileByPostIdAndFileName(postId, fileName);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/user/profile")
+    @ResponseBody
+    public ResponseEntity<?> registUserProfileImage(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestBody MultipartFile file) throws IOException {
+
+        String token = authorizationHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+
+        fileService.insertProfileImageFileByUserId(file, userId);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/user/profile")
+    @ResponseBody
+    public ResponseEntity<?> deleteUserProfileImage(
+        @RequestHeader("Authorization") String authorizationHeader) {
+
+        String token = authorizationHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+
+        fileService.deleteProfileImageFileByUserId(userId);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

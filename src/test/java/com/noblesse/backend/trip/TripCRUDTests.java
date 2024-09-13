@@ -103,11 +103,11 @@ public class TripCRUDTests {
 
         Place firstPlace = places.get(0);
         Assertions.assertEquals("부산 해운대", firstPlace.getPlaceTitle());
-        Assertions.assertEquals(LocalDate.of(2024, 12, 1), firstPlace.getvisitDay());
+        Assertions.assertEquals(1, firstPlace.getvisitDay());
 
         Place secondPlace = places.get(1);
         Assertions.assertEquals("울산 대왕암", secondPlace.getPlaceTitle());
-        Assertions.assertEquals(LocalDate.of(2024, 12, 1), secondPlace.getvisitDay());
+        Assertions.assertEquals(1, secondPlace.getvisitDay());
     }
 
     @Test

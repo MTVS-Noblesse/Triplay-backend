@@ -47,7 +47,7 @@ public class TripService {
                     place.setArrivalTime(placeDTO.getArrivalTime());
                     place.setPlaceOrder(placeDTO.getPlaceOrder());
                     place.setPlaceThumbnail(placeDTO.getPlaceThumbnail());
-                    place.setVisitDate(placeDTO.getVisitDate());
+                    place.setvisitDay(placeDTO.getvisitDay());
                     return place;
                 }).collect(Collectors.toList());
 
@@ -80,7 +80,7 @@ public class TripService {
                     place.setArrivalTime(placeDTO.getArrivalTime());
                     place.setPlaceOrder(placeDTO.getPlaceOrder());
                     place.setPlaceThumbnail(placeDTO.getPlaceThumbnail());
-                    place.setVisitDate(placeDTO.getVisitDate());
+                    place.setvisitDay(placeDTO.getvisitDay());
                     return place;
                 }).collect(Collectors.toList());
 

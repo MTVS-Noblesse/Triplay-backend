@@ -45,7 +45,7 @@ public class Place {
     private String placeThumbnail;
 
     @Column(name = "visit_date")
-    private LocalDate visitDate;
+    private int visitDay;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -55,7 +55,7 @@ public class Place {
 
     public Place() {}
 
-    public Place(String placeTitle, String address, double latitude, double longitude, String openHour, LocalTime departureTime, LocalTime arrivalTime, int placeOrder, String placeThumbnail, LocalDate visitDate) {
+    public Place(String placeTitle, String address, double latitude, double longitude, String openHour, LocalTime departureTime, LocalTime arrivalTime, int placeOrder, String placeThumbnail, int visitDay) {
         this.placeTitle = placeTitle;
         this.address = address;
         this.latitude = latitude;
@@ -65,7 +65,7 @@ public class Place {
         this.arrivalTime = arrivalTime;
         this.placeOrder = placeOrder;
         this.placeThumbnail = placeThumbnail;
-        this.visitDate = visitDate;
+        this.visitDay = visitDay;
     }
 
     public long getPlaceId() {
@@ -144,12 +144,12 @@ public class Place {
         this.placeThumbnail = placeThumbnail;
     }
 
-    public LocalDate getVisitDate() {
-        return visitDate;
+    public int getvisitDay() {
+        return visitDay;
     }
 
-    public void setVisitDate(LocalDate visitDate) {
-        this.visitDate = visitDate;
+    public void setvisitDay(int visitDay) {
+        this.visitDay = visitDay;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -181,7 +181,7 @@ public class Place {
                 ", arrivalTime=" + arrivalTime +
                 ", placeOrder=" + placeOrder +
                 ", placeThumbnail='" + placeThumbnail + '\'' +
-                ", visitDate=" + visitDate +
+                ", visitDay=" + visitDay +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

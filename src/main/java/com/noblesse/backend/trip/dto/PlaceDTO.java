@@ -14,11 +14,11 @@ public class PlaceDTO {
     private LocalTime arrivalTime;
     private int placeOrder;
     private String placeThumbnail;
-    private LocalDate visitDate;
+    private int visitDay;
 
     public PlaceDTO() {}
 
-    public PlaceDTO(String placeTitle, String address, double latitude, double longitude, String openHour, LocalTime departureTime, LocalTime arrivalTime, int placeOrder, String placeThumbnail, LocalDate visitDate) {
+    public PlaceDTO(String placeTitle, String address, double latitude, double longitude, String openHour, LocalTime departureTime, LocalTime arrivalTime, int placeOrder, String placeThumbnail, int visitDay) {
         this.placeTitle = placeTitle;
         this.address = address;
         this.latitude = latitude;
@@ -28,7 +28,7 @@ public class PlaceDTO {
         this.arrivalTime = arrivalTime;
         this.placeOrder = placeOrder;
         this.placeThumbnail = placeThumbnail;
-        this.visitDate = visitDate;
+        this.visitDay = visitDay;
     }
 
     public String getPlaceTitle() {
@@ -103,12 +103,12 @@ public class PlaceDTO {
         this.placeThumbnail = placeThumbnail;
     }
 
-    public LocalDate getVisitDate() {
-        return visitDate;
+    public int getvisitDay() {
+        return visitDay;
     }
 
-    public void setVisitDate(LocalDate visitDate) {
-        this.visitDate = visitDate;
+    public void setvisitDay(int visitDay) {
+        this.visitDay = visitDay;
     }
 
     @Override
@@ -123,7 +123,7 @@ public class PlaceDTO {
                 ", arrivalTime=" + arrivalTime +
                 ", placeOrder=" + placeOrder +
                 ", placeThumbnail='" + placeThumbnail + '\'' +
-                ", visitDate=" + visitDate +
+                ", visitDay=" + visitDay +
                 '}';
     }
 }

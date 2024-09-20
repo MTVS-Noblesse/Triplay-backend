@@ -143,7 +143,7 @@ public class UpdatePostCommandHandler {
 
     private List<String> uploadNewImages(Long postId, List<MultipartFile> images) throws IOException {
         MultipartFile[] imageArray = images.toArray(new MultipartFile[0]);
-        fileService.insertImageFilesByPostId(imageArray, postId);
+        fileService.insertPostImageFilesByPostId(imageArray, postId);
         return fileService.findImageDownloadLinksByPostId(postId);
     }
 

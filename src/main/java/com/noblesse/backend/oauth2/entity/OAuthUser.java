@@ -13,14 +13,20 @@ public class OAuthUser {
     private String email;
     private String provider;
     private String providerId;
+    private Long profileId;
 
     public OAuthUser() {}
 
-    public OAuthUser(String userName, String email, String provider, String providerId) {
+    public OAuthUser(String userName, String email, String provider, String providerId, Long profileId) {
         this.userName = userName;
         this.email = email;
         this.provider = provider;
         this.providerId = providerId;
+        this.profileId = profileId;
+    }
+
+    public Long getProfileId() {
+        return profileId;
     }
 
     public Long getId() {
@@ -62,6 +68,10 @@ public class OAuthUser {
 
     public Long getUserId() {
         return id;
+    }
+
+    public void setProfileId(Long profileId) {
+        this.profileId = profileId;
     }
 
     public void setUsername(String userName) {

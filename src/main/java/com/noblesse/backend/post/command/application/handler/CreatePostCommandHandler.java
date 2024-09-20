@@ -85,12 +85,12 @@ public class CreatePostCommandHandler {
 //    }
 
 //    private void uploadNewImages(Long postId, List<MultipartFile> images) throws IOException {
-//        fileService.insertImageFilesByPostId(images.toArray(new MultipartFile[0]), postId);
+//        fileService.insertPostImageFilesByPostId(images.toArray(new MultipartFile[0]), postId);
 //    }
 
     private List<String> uploadNewImages(Long postId, List<MultipartFile> images) throws IOException {
         MultipartFile[] imageArray = images.toArray(new MultipartFile[0]);
-        fileService.insertImageFilesByPostId(imageArray, postId);
+        fileService.insertPostImageFilesByPostId(imageArray, postId);
         return fileService.findImageDownloadLinksByPostId(postId);
     }
 }

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -26,6 +27,12 @@ public class ImageFileService {
     @Value("${app.firebase-bucket}")
     private String firebaseBucket;
 
+    private static List<String> imageExtensions;
+
+    public ImageFileService() {
+        imageExtensions = Arrays.asList(".jpg", ".png", ".jpeg", ".gif", ".svg");
+    }
+
     @Transactional
     public Blob uploadImageFile(MultipartFile file, String filePath) throws IOException {
         Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
@@ -36,6 +43,8 @@ public class ImageFileService {
         return blob;
     }
 
+    // post 이미지 저장 경로 : "post/" + {postId} + "/" + {fileNameWithExtension}
+    // profile 이미지 저장 경로 : "profile/" + {userId} + ".확장자"
     @Transactional
     public List<Blob> uploadImageFiles(MultipartFile[] fileList, String filePath) throws IOException {
         List<Blob> blobList = new ArrayList<>();
@@ -73,6 +82,19 @@ public class ImageFileService {
 
         if(isDeleted) System.out.println("이미지 삭제 완료 : " + directory + fileName);
         else System.out.println("이미지 삭제 오류 : " + directory + fileName);
+    }
+
+    @Transactional
+    public void deleteProfileImageByUserId(Long userId) {
+        Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
+
+        boolean isDeleted = false;
+        for (String ex : imageExtensions) {
+            isDeleted = bucket.get("profile/" + userId + ex).delete();
+        }
+
+        if(isDeleted) System.out.println("프로필 삭제 완료 : " + userId);
+        else System.out.println("프로필 삭제 오류 : " + userId);
     }
 
     @Transactional

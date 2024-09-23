@@ -1,5 +1,6 @@
 package com.noblesse.backend.oauth2.controller;
 
+import com.noblesse.backend.oauth2.dto.UserDTO;
 import com.noblesse.backend.oauth2.entity.OAuthUser;
 import com.noblesse.backend.oauth2.repository.OAuthRepository;
 import com.noblesse.backend.oauth2.util.JwtUtil;
@@ -13,12 +14,16 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.fasterxml.jackson.databind.type.LogicalType.Map;
 
@@ -48,6 +53,21 @@ public class OAuthController {
             errorResponse.put("message", "Invalid JWT token");
 
             return ResponseEntity.status(401).body(errorResponse.toString());
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<UserDTO> getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
+        String accessToken = authorizationHeader.substring(7);
+        if (jwtUtil.validateAccessToken(accessToken)) {
+            Long userId = jwtUtil.extractUserId(accessToken);
+            String userName = jwtUtil.extractUserName(accessToken);
+
+            UserDTO userDTO = new UserDTO(userId, userName);
+            System.out.println("*******"+userDTO);
+            return ResponseEntity.ok(userDTO);
+        } else {
+            return ResponseEntity.status(401).body(null);
         }
     }
 }

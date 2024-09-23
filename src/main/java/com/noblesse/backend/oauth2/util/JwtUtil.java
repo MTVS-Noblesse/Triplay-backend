@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static javax.crypto.Cipher.SECRET_KEY;
+
 @Component
 public class JwtUtil {
 
@@ -98,5 +100,15 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
         return Long.valueOf(claims.get("sub").toString());
+    }
+
+    public String extractUserName(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("user_name", String.class);
     }
 }

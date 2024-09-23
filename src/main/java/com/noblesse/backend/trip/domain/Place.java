@@ -17,20 +17,20 @@ public class Place {
     @Column(name = "place_id")
     private long placeId;
 
-    @Column(name = "place_title")
-    private String placeTitle;
+    @Column(name = "location_name")
+    private String locationName;
 
     @Column(name = "address")
     private String address;
 
-    @Column(name = "latitude")
-    private double latitude;
+    @Column(name = "lat")
+    private double lat;
 
-    @Column(name = "longitude")
-    private double longitude;
+    @Column(name = "lng")
+    private double lng;
 
-    @Column(name = "open_hour")
-    private String openHour;
+    @Column(name = "open_data")
+    private String openData;
 
     @Column(name = "departure_time")
     private LocalTime departureTime;
@@ -38,14 +38,17 @@ public class Place {
     @Column(name = "arrival_time")
     private LocalTime arrivalTime;
 
-    @Column(name = "place_order")
-    private int placeOrder;
+    @Column(name = "idx")
+    private int idx;
 
-    @Column(name = "place_thumbnail")
-    private String placeThumbnail;
+    @Column(name = "photo_url")
+    private String photoUrl;
 
-    @Column(name = "visit_day")
-    private int visitDay;
+    @Column(name = "plan_day")
+    private int planDay;
+    
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -55,29 +58,30 @@ public class Place {
 
     public Place() {}
 
-    public Place(String placeTitle, String address, double latitude, double longitude, String openHour, LocalTime departureTime, LocalTime arrivalTime, int placeOrder, String placeThumbnail, int visitDay) {
-        this.placeTitle = placeTitle;
+    public Place(String locationName, String address, double lat, double lng, String openData, LocalTime departureTime, LocalTime arrivalTime, int idx, String photoUrl, int planDay, String phoneNumber) {
+        this.locationName = locationName;
         this.address = address;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.openHour = openHour;
+        this.lat = lat;
+        this.lng = lng;
+        this.openData = openData;
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
-        this.placeOrder = placeOrder;
-        this.placeThumbnail = placeThumbnail;
-        this.visitDay = visitDay;
+        this.idx = idx;
+        this.photoUrl = photoUrl;
+        this.planDay = planDay;
+        this.phoneNumber = phoneNumber;
     }
 
     public long getPlaceId() {
         return placeId;
     }
 
-    public String getPlaceTitle() {
-        return placeTitle;
+    public String getLocationName() {
+        return locationName;
     }
 
-    public void setPlaceTitle(String placeTitle) {
-        this.placeTitle = placeTitle;
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 
     public String getAddress() {
@@ -88,28 +92,28 @@ public class Place {
         this.address = address;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public double getLat() {
+        return lat;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setLat(double lat) {
+        this.lat = lat;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public double getLng() {
+        return lng;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setLng(double lng) {
+        this.lng = lng;
     }
 
-    public String getOpenHour() {
-        return openHour;
+    public String getOpenData() {
+        return openData;
     }
 
-    public void setOpenHour(String openHour) {
-        this.openHour = openHour;
+    public void setOpenData(String openData) {
+        this.openData = openData;
     }
 
     public LocalTime getDepartureTime() {
@@ -128,28 +132,28 @@ public class Place {
         this.arrivalTime = arrivalTime;
     }
 
-    public int getPlaceOrder() {
-        return placeOrder;
+    public int getIdx() {
+        return idx;
     }
 
-    public void setPlaceOrder(int placeOrder) {
-        this.placeOrder = placeOrder;
+    public void setIdx(int idx) {
+        this.idx = idx;
     }
 
-    public String getPlaceThumbnail() {
-        return placeThumbnail;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
-    public void setPlaceThumbnail(String placeThumbnail) {
-        this.placeThumbnail = placeThumbnail;
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
-    public int getvisitDay() {
-        return visitDay;
+    public int getPlanDay() {
+        return planDay;
     }
 
-    public void setvisitDay(int visitDay) {
-        this.visitDay = visitDay;
+    public void setPlanDay(int planDay) {
+        this.planDay = planDay;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -168,20 +172,29 @@ public class Place {
         this.updatedAt = updatedAt;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     @Override
     public String toString() {
         return "Place{" +
                 "placeId=" + placeId +
-                ", placeTitle='" + placeTitle + '\'' +
+                ", locationName='" + locationName + '\'' +
                 ", address='" + address + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", openHour='" + openHour + '\'' +
+                ", lat=" + lat +
+                ", lng=" + lng +
+                ", openData='" + openData + '\'' +
                 ", departureTime=" + departureTime +
                 ", arrivalTime=" + arrivalTime +
-                ", placeOrder=" + placeOrder +
-                ", placeThumbnail='" + placeThumbnail + '\'' +
-                ", visitDay=" + visitDay +
+                ", idx=" + idx +
+                ", photoUrl='" + photoUrl + '\'' +
+                ", planDay=" + planDay +
+                ", phoneNumber=" + phoneNumber +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

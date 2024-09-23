@@ -88,4 +88,20 @@ public class ImageFileController {
         fileService.deleteProfileImageFileByUserId(userId);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    @GetMapping("/profile/{userId}")
+    public ResponseEntity<String> getProfileImageUrl(
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        String token = authorizationHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+
+        String imageUrl = fileService.findProfileImageUrlByUserId(userId);
+
+        if (imageUrl != null) {
+            return ResponseEntity.ok(imageUrl);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profile image not found");
+        }
+    }
 }

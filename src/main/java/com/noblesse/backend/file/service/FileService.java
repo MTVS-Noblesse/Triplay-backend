@@ -91,6 +91,12 @@ public class FileService {
     }
 
     @Transactional
+    public String findProfileImageUrlByUserId(Long userId) {
+        String prefix = "profile/" + userId;
+        return imageFileService.findImageDownloadLinkWithPrefix(prefix);
+    }
+
+    @Transactional
     public void deleteImageFileByPostIdAndFileName(Long postId, String fileName) {
         imageFileService.deleteImage("post/" + postId + "/", fileName);
         fileRepository.deleteFileByPostIdAndFileName(postId, fileName);

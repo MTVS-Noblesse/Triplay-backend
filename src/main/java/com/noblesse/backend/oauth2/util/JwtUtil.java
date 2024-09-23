@@ -108,7 +108,6 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-
-        return claims.get("user_name", String.class);
+        return claims.get("userName", String.class);
     }
 }

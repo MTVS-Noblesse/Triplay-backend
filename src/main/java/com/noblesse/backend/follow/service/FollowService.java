@@ -8,11 +8,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class FollowService {
 
-    @Autowired
-    FollowRepository followRepository;
+    private final FollowRepository followRepository;
 
-    public void follow(Long toUserId, Long fromUserId){
-        followRepository.save(new Follow(toUserId, fromUserId));
+    @Autowired
+    public FollowService(FollowRepository followRepository) {
+        this.followRepository = followRepository;
+    }
+
+    public Follow follow(Long toUserId, Long fromUserId){
+        return followRepository.save(new Follow(toUserId, fromUserId));
     }
 
     public void unFollow(Long toUserId, Long fromUserId){

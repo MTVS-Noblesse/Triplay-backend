@@ -90,13 +90,10 @@ public class ImageFileController {
     }
 
     @GetMapping("/profile/{userId}")
-    public ResponseEntity<String> getProfileImageUrl(
-            @RequestHeader("Authorization") String authorizationHeader) {
-
-        String token = authorizationHeader.substring(7);
-        Long userId = jwtUtil.extractUserId(token);
+    public ResponseEntity<String> getProfileImageUrlByUserId(@PathVariable Long userId) {
 
         String imageUrl = fileService.findProfileImageUrlByUserId(userId);
+        System.out.println("Image URL from userId: " + imageUrl);
 
         if (imageUrl != null) {
             return ResponseEntity.ok(imageUrl);
@@ -104,4 +101,5 @@ public class ImageFileController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profile image not found");
         }
     }
+
 }

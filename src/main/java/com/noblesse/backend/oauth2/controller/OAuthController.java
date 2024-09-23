@@ -66,7 +66,6 @@ public class OAuthController {
             String userName = jwtUtil.extractUserName(accessToken);
 
             UserDTO userDTO = new UserDTO(userId, userName);
-            System.out.println("*******" + userDTO);
             return ResponseEntity.ok(userDTO);
         } else {
             return ResponseEntity.status(401).body(null);

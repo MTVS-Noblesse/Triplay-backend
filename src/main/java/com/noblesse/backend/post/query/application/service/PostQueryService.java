@@ -72,7 +72,7 @@ public class PostQueryService {
     private PostDTO convertToDTO(Post post) {
         PostDTO dto = new PostDTO(post);
         List<String> imageUrls = fileService.findImageDownloadLinksByPostId(post.getPostId());
-        dto.setImageUrlsToRemove(imageUrls);
+        dto.setImageUrls(imageUrls);
         return dto;
     }
 

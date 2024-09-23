@@ -93,7 +93,7 @@ public class TripCRUDTests {
 
         Assertions.assertDoesNotThrow(() -> tripService.updateTrip(updatedTrip));
 
-        Trip updatedTripFromDB = tripService.findTripById(savedTrip.getTripId());
+        TripDTO updatedTripFromDB = tripService.findTripById(savedTrip.getTripId());
 
         Assertions.assertEquals("겨울 여행", updatedTripFromDB.getTripTitle());
         Assertions.assertEquals("가족", updatedTripFromDB.getTripParty());

@@ -75,6 +75,20 @@ public class ImageFileService {
         return blob.signUrl(1, TimeUnit.HOURS).toString();
     }
 
+    public String findImageDownloadLinkWithPrefix(String prefix) {
+        Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
+
+        Iterable<Blob> blobs = bucket.list(Storage.BlobListOption.prefix(prefix)).iterateAll();
+
+        for (Blob blob : blobs) {
+            if (blob != null) {
+                return blob.signUrl(1, TimeUnit.HOURS).toString();
+            }
+        }
+
+        return null;
+    }
+
     @Transactional
     public void deleteImage(String directory, String fileName) {
         Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);

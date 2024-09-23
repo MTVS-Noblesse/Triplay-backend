@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -83,11 +84,33 @@ public class FileService {
         List<File> foundFiles = fileRepository.findFilesByPostId(postId);
         List<String> downloadLinks = new ArrayList<>();
         foundFiles.forEach(file -> {
-            String newIamgeUrl = imageFileService.findImageDownloadLink("post/" + postId + "/", file.getFileName());
-            file.setFileUrl(newIamgeUrl);
-            downloadLinks.add(newIamgeUrl);
+            String newImageUrl = imageFileService.findImageDownloadLink("post/" + postId + "/", file.getFileName());
+            file.setFileUrl(newImageUrl);
+            downloadLinks.add(newImageUrl);
         });
         return downloadLinks;
+    }
+
+    @Transactional
+    public String findProfileImageUrlByUserId(Long userId) {
+        Optional<OAuthUser> userOptional = oAuthRepository.findById(userId);
+
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found with id: " + userId);
+        }
+
+        OAuthUser user = userOptional.get();
+        Long profileFileId = user.getProfileId();
+
+        if (profileFileId == null) {
+            throw new RuntimeException("Profile image not set for user: " + userId);
+        }
+
+        File profileImageFile = fileRepository.findFileByFileId(profileFileId);
+        String newImageUrl = imageFileService.findImageDownloadLink("profile/" + userId + "/", profileImageFile.getFileName());
+        profileImageFile.setFileUrl(newImageUrl);
+
+        return newImageUrl;
     }
 
     @Transactional

@@ -2,6 +2,7 @@ package com.noblesse.backend.trip.service;
 
 import com.noblesse.backend.trip.domain.Place;
 import com.noblesse.backend.trip.domain.Trip;
+import com.noblesse.backend.trip.dto.TripDTO;
 import com.noblesse.backend.trip.dto.TripRegisterRequestDTO;
 import com.noblesse.backend.trip.dto.TripUpdateRequestDTO;
 import com.noblesse.backend.trip.repository.TripRepository;
@@ -18,8 +19,9 @@ public class TripService {
     @Autowired
     private TripRepository tripRepository;
 
-    public Trip findTripById(Long tripId) {
+    public TripDTO findTripById(Long tripId) {
         return tripRepository.findById(tripId)
+                .map(TripDTO::new)
                 .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
     }
 

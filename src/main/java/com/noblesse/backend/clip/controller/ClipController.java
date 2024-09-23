@@ -38,9 +38,9 @@ public class ClipController {
             @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Clip.class))),
             @ApiResponse(responseCode = "404")
     })
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> findClipById(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(clipService.findClipByClipId(userId));
+    @GetMapping("/{clipId}")
+    public ResponseEntity<?> findClipById(@PathVariable("clipId") Long clipId) {
+        return ResponseEntity.ok(clipService.findClipByClipId(clipId));
     }
 
     @Operation(summary = "클립 추가")

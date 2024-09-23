@@ -44,7 +44,7 @@ public class Place {
     @Column(name = "place_thumbnail")
     private String placeThumbnail;
 
-    @Column(name = "visit_date")
+    @Column(name = "visit_day")
     private int visitDay;
 
     @CreatedDate

@@ -35,7 +35,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource)) // CORS 설정
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/login", "/oauth2/callback", "/swagger-ui/**", "/v3/api-docs/**", "/refresh").permitAll() // 로그인 페이지 허용
+                        .requestMatchers("/", "/login", "/oauth2/callback", "/swagger-ui/**", "/v3/api-docs/**", "/refresh", "/admin/login", "/admin/refresh").permitAll() // 로그인 페이지 허용
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
                 .oauth2Login(oauth2 -> oauth2

@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
 
-    boolean existsByToUserIdAndFromUserId(@Param("to_user_id") Long toUserId, @Param("from_user_id") Long fromUserId);
+    boolean existsByToUserIdAndFromUserId(@Param("toUserId") Long toUserId, @Param("fromUserId") Long fromUserId);
 
-    void deleteByToUserIdAndFromUserId(@Param("to_user_id") Long toUserId, @Param("from_user_id") Long fromUserId);
+    void deleteByToUserIdAndFromUserId(@Param("toUserId") Long toUserId, @Param("fromUserId") Long fromUserId);
 
-    List<Follow> findByFromUserId(@Param("user_id") Long userId);
+    List<Follow> findByFromUserId(@Param("fromUserId") Long fromUserId);
 
-    List<Follow> findByToUserId(@Param("user_id") Long userId);
+    List<Follow> findByToUserId(@Param("toUserId") Long toUserId);
 }

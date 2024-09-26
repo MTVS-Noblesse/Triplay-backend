@@ -29,7 +29,7 @@ public class Place {
     @Column(name = "lng")
     private double lng;
 
-    @Column(name = "open_data")
+    @Column(name = "open_data", columnDefinition = "json")
     private String openData;
 
     @Column(name = "departure_time")

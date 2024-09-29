@@ -41,7 +41,7 @@ public class ImageFileService {
 
         InputStream content = new ByteArrayInputStream(file.getBytes());
 
-        return bucket.create(filePath + "/" + file.getOriginalFilename(), content, file.getContentType());
+        return bucket.create(filePath + file.getOriginalFilename(), content, file.getContentType());
     }
 
     @Transactional

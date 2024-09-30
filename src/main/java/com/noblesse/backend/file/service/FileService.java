@@ -31,21 +31,18 @@ public class FileService {
     @Transactional
     public void insertPostImageFilesByPostId(List<Map<String, Object>> files, Long postId) throws IOException {
 
-        files.forEach(System.out::println);
-
-        for (Map<String, Object> fileMap : files)
+        for (Map<String, Object> fileMap : files) {
             imageFileService.uploadImageFile((MultipartFile) fileMap.get("file"), "post/" + postId + "/");
-
-        for (Map<String, Object> file : files)
             fileRepository.save(new File(
                     "post",
-                    ((MultipartFile) file.get("file")).getOriginalFilename(),
-                    "post/" + postId + "/" + ((MultipartFile) file.get("file")).getOriginalFilename(),
+                    ((MultipartFile) fileMap.get("file")).getOriginalFilename(),
+                    "post/" + postId + "/" + ((MultipartFile) fileMap.get("file")).getOriginalFilename(),
                     postId,
-                    (Long) file.get("placeId"),
-                    (Long) file.get("placeImageOrder"),
+                    (Long) fileMap.get("placeId"),
+                    (Long) fileMap.get("placeImageOrder"),
                     null,
                     null));
+        }
 
         System.out.println("파일 추가 시간 : " + LocalDateTime.now());
     }

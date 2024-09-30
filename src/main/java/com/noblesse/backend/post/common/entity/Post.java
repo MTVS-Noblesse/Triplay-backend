@@ -117,6 +117,14 @@ public class Post {
         );
     }
 
+    public Post updateImageUrls(List<String> newImageUrls) {
+        return new Post(
+                this.postId, this.postTitle, this.postContent, this.writtenDatetime,
+                LocalDateTime.now(), this.isOpened, this.userId, this.tripId, this.clipId,
+                new ArrayList<>(newImageUrls)
+        );
+    }
+
     public Post removeImageUrl(String imageUrl) {
         List<String> updatedImageUrls = new ArrayList<>(this.imageUrls);
         updatedImageUrls.remove(imageUrl);

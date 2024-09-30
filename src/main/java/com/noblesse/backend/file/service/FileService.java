@@ -83,8 +83,7 @@ public class FileService {
         List<File> foundFiles = fileRepository.findFilesByPostId(postId);
         List<String> downloadLinks = new ArrayList<>();
         foundFiles.forEach(file -> {
-            String newImageUrl = imageFileService.findImageDownloadLink("post/" + postId + "/", file.getFileName());
-            file.setFileUrl(newImageUrl);
+            String newImageUrl = imageFileService.findImageDownloadLinkByFileUrl(file.getFileUrl());
             downloadLinks.add(newImageUrl);
         });
         return downloadLinks;

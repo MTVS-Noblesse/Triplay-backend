@@ -1,5 +1,9 @@
 package com.noblesse.backend.post.api.command;
 
+import aj.org.objectweb.asm.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.noblesse.backend.oauth2.util.JwtUtil;
 import com.noblesse.backend.post.command.application.handler.CreatePostCommandHandler;
 import com.noblesse.backend.post.command.application.handler.DeletePostCommandHandler;
@@ -14,7 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "/post")
@@ -36,17 +43,35 @@ public class PostCommandController {
     public ResponseEntity<Long> createPost(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestParam("postTitle") String postTitle,
-            @RequestParam(value = "postContent", required = false) String postContent,
             @RequestParam(value = "isOpened", required = false) Boolean isOpened,
             @RequestParam(value = "tripId", required = false) Long tripId,
             @RequestParam(value = "clipId", required = false) Long clipId,
-            @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages
-    ) {
+            @RequestParam(value = "newImages", required = false) String newImagesJson, // 문자열로 받음
+            @RequestParam(value = "files", required = false) MultipartFile[] files // 파일 리스트로 받음
+    ) throws JsonProcessingException {
         String token = authorizationHeader.substring(7); // 앞의 "Bearer " 제거
         Long userId = jwtUtil.extractUserId(token);
 
+        // JSON 문자열을 List<Map<String, Object>>로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        // 모든 정수를 Long으로 변환하도록 설정
+        objectMapper.configure(DeserializationFeature.USE_LONG_FOR_INTS, true);
+        List<Map<String, Object>> newImageInfos = objectMapper.readValue(newImagesJson, List.class);
+
+        // newImages 리스트를 ArrayList로 초기화
+        List<Map<String, Object>> newImages = new ArrayList<>();
+
+        // 파일과 JSON 데이터 매칭
+        for (int i = 0; i < newImageInfos.size(); i++) {
+            Map<String, Object> newImageInfo = newImageInfos.get(i);
+            if (i < files.length) {
+                newImageInfo.put("file", files[i]);
+            }
+            newImages.add(newImageInfo);
+        }
+
+
         PostDTO command = new PostDTO(postTitle, userId);
-        command.setPostContent(postContent);
         command.setIsOpened(isOpened);
         command.setTripId(tripId);
         command.setClipId(clipId);
@@ -70,7 +95,7 @@ public class PostCommandController {
             @RequestParam(value = "isOpened", required = false) Boolean isOpened,
             @RequestParam(value = "tripId", required = false) Long tripId,
             @RequestParam(value = "clipId", required = false) Long clipId,
-            @RequestParam(value = "newImages", required = false) List<MultipartFile> newImages,
+            @RequestParam(value = "newImages", required = false) List<Map<String, Object>> newImages,
             @RequestParam(value = "imageUrlsToRemove", required = false) List<String> imageUrlsToRemove
     ) {
         String token = authorizationHeader.substring(7);

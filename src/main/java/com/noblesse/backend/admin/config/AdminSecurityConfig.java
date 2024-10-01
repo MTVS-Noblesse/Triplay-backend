@@ -27,7 +27,7 @@ public class AdminSecurityConfig {
         http
                 .securityMatcher("/admin/**")
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/admin/login", "/admin/refresh").permitAll()
+                        .requestMatchers("/admin/login", "/admin/refresh", "/api/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

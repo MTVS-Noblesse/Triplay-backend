@@ -40,16 +40,16 @@ public class TripService {
         List<Place> places = requestDTO.getPlaces().stream()
                 .map(placeDTO -> {
                     Place place = new Place();
-                    place.setPlaceTitle(placeDTO.getPlaceTitle());
+                    place.setLocationName(placeDTO.getLocationName());
                     place.setAddress(placeDTO.getAddress());
-                    place.setLatitude(placeDTO.getLatitude());
-                    place.setLongitude(placeDTO.getLongitude());
-                    place.setOpenHour(placeDTO.getOpenHour());
+                    place.setLat(placeDTO.getLat());
+                    place.setLng(placeDTO.getLng());
+                    place.setOpenData(placeDTO.getOpenData());
                     place.setDepartureTime(placeDTO.getDepartureTime());
                     place.setArrivalTime(placeDTO.getArrivalTime());
-                    place.setPlaceOrder(placeDTO.getPlaceOrder());
-                    place.setPlaceThumbnail(placeDTO.getPlaceThumbnail());
-                    place.setvisitDay(placeDTO.getvisitDay());
+                    place.setIdx(placeDTO.getIdx());
+                    place.setPhotoUrl(placeDTO.getPhotoUrl());
+                    place.setPlanDay(placeDTO.getPlanDay());
                     return place;
                 }).collect(Collectors.toList());
 
@@ -73,16 +73,16 @@ public class TripService {
         List<Place> updatedPlaces = updateDTO.getPlaces().stream()
                 .map(placeDTO -> {
                     Place place = new Place();
-                    place.setPlaceTitle(placeDTO.getPlaceTitle());
+                    place.setLocationName(placeDTO.getLocationName());
                     place.setAddress(placeDTO.getAddress());
-                    place.setLatitude(placeDTO.getLatitude());
-                    place.setLongitude(placeDTO.getLongitude());
-                    place.setOpenHour(placeDTO.getOpenHour());
+                    place.setLat(placeDTO.getLat());
+                    place.setLng(placeDTO.getLng());
+                    place.setOpenData(placeDTO.getOpenData());
                     place.setDepartureTime(placeDTO.getDepartureTime());
                     place.setArrivalTime(placeDTO.getArrivalTime());
-                    place.setPlaceOrder(placeDTO.getPlaceOrder());
-                    place.setPlaceThumbnail(placeDTO.getPlaceThumbnail());
-                    place.setvisitDay(placeDTO.getvisitDay());
+                    place.setIdx(placeDTO.getIdx());
+                    place.setPhotoUrl(placeDTO.getPhotoUrl());
+                    place.setPlanDay(placeDTO.getPlanDay());
                     return place;
                 }).collect(Collectors.toList());
 

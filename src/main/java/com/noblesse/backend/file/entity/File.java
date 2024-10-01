@@ -1,9 +1,11 @@
 package com.noblesse.backend.file.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity(name = "File")
 @Table(name = "file")
+@Getter
 public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,69 +22,40 @@ public class File {
     // 따로 인터넷에서 접근 가능한 주소를 발급하는 service 코드를 통해 얻어야 함
     // 이렇게 저장하는 이유는 인터넷에서 접속하는 URL은 엑세스 토큰을 발급 받아 재조합된 URL이여서
     // 고정되지 않고 계속 URL이 달라지기 때문임.
-//    @Column(name = "FILE_URL")
     @Column(name = "FILE_URL", length = 1024)
     private String fileUrl;
 
     @Column(name = "POST_ID")
     private Long postId;
 
-    @Column(name = "POST_ORDER")
-    private Integer postOrder;
+    @Column(name = "POST_PLACE_ID")
+    private Long postPlaceId;
+
+    @Column(name = "POST_IMAGE_ORDER")
+    private Long postImageOrder;
 
     @Column(name = "CLIP_ID")
     private Long clipId;
 
     @Column(name = "CLIP_ORDER")
-    private Integer clipOrder;
+    private Long clipOrder;
 
     public File() {
     }
 
-    public File(String fileType, String fileName, String fileUrl, Long postId, Integer postOrder, Long clipId, Integer clipOrder) {
+    public File(String fileType, String fileName, String fileUrl, Long postId, Long postPlaceId, Long postImageOrder, Long clipId, Long clipOrder) {
         this.fileType = fileType;
         this.fileName = fileName;
         this.fileUrl = fileUrl;
         this.postId = postId;
-        this.postOrder = postOrder;
+        this.postPlaceId = postPlaceId;
+        this.postImageOrder = postImageOrder;
         this.clipId = clipId;
         this.clipOrder = clipOrder;
     }
 
-    public Integer getPostOrder() {
-        return postOrder;
-    }
-
-    public Integer getClipOrder() {
-        return clipOrder;
-    }
-
-    public Long getFileId() {
-        return fileId;
-    }
-
-    public String getFileType() {
-        return fileType;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public String getFileUrl() {
-        return fileUrl;
-    }
-
-    public Long getPostId() {
-        return postId;
-    }
-
-    public Long getClipId() {
-        return clipId;
-    }
-
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
+    public void setPostId(Long postId) {
+        this.postId = postId;
     }
 
     public void setFileName(String fileName) {
@@ -93,11 +66,19 @@ public class File {
         this.fileUrl = fileUrl;
     }
 
-    public void setPostId(Long postId) {
-        this.postId = postId;
+    public void setPostPlaceId(Long postPlaceId) {
+        this.postPlaceId = postPlaceId;
+    }
+
+    public void setPostImageOrder(Long postImageOrder) {
+        this.postImageOrder = postImageOrder;
     }
 
     public void setClipId(Long clipId) {
         this.clipId = clipId;
+    }
+
+    public void setClipOrder(Long clipOrder) {
+        this.clipOrder = clipOrder;
     }
 }

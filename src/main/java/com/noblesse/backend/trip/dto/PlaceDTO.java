@@ -2,41 +2,44 @@ package com.noblesse.backend.trip.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 public class PlaceDTO {
 
-    private String placeTitle;
+    private String locationName;
     private String address;
-    private double latitude;
-    private double longitude;
-    private String openHour;
+    private double lat;
+    private double lng;
+    private List<String> openData;
     private LocalTime departureTime;
     private LocalTime arrivalTime;
-    private int placeOrder;
-    private String placeThumbnail;
-    private int visitDay;
+    private int idx;
+    private String photoUrl;
+    private int planDay;
+    private String phoneNumber;
 
     public PlaceDTO() {}
 
-    public PlaceDTO(String placeTitle, String address, double latitude, double longitude, String openHour, LocalTime departureTime, LocalTime arrivalTime, int placeOrder, String placeThumbnail, int visitDay) {
-        this.placeTitle = placeTitle;
+    public PlaceDTO(String locationName, String address, double lat, double lng, List<String> openData, LocalTime departureTime, LocalTime arrivalTime, int idx, String photoUrl, int planDay, String phoneNumber) {
+        this.locationName = locationName;
         this.address = address;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.openHour = openHour;
+        this.lat = lat;
+        this.lng = lng;
+        this.openData = openData;
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
-        this.placeOrder = placeOrder;
-        this.placeThumbnail = placeThumbnail;
-        this.visitDay = visitDay;
+        this.idx = idx;
+        this.photoUrl = photoUrl;
+        this.planDay = planDay;
+        this.phoneNumber = phoneNumber;
     }
 
-    public String getPlaceTitle() {
-        return placeTitle;
+    public String getLocationName() {
+        return locationName;
     }
 
-    public void setPlaceTitle(String placeTitle) {
-        this.placeTitle = placeTitle;
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
     }
 
     public String getAddress() {
@@ -47,28 +50,28 @@ public class PlaceDTO {
         this.address = address;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public double getLat() {
+        return lat;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setLat(double lat) {
+        this.lat = lat;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public double getLng() {
+        return lng;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setLng(double lng) {
+        this.lng = lng;
     }
 
-    public String getOpenHour() {
-        return openHour;
+    public List<String> getOpenData() {
+        return openData;
     }
 
-    public void setOpenHour(String openHour) {
-        this.openHour = openHour;
+    public void setOpenData(List<String> openData) {
+        this.openData = openData;
     }
 
     public LocalTime getDepartureTime() {
@@ -87,43 +90,51 @@ public class PlaceDTO {
         this.arrivalTime = arrivalTime;
     }
 
-    public int getPlaceOrder() {
-        return placeOrder;
+    public int getIdx() {
+        return idx;
     }
 
-    public void setPlaceOrder(int placeOrder) {
-        this.placeOrder = placeOrder;
+    public void setIdx(int idx) {
+        this.idx = idx;
     }
 
-    public String getPlaceThumbnail() {
-        return placeThumbnail;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
-    public void setPlaceThumbnail(String placeThumbnail) {
-        this.placeThumbnail = placeThumbnail;
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
-    public int getvisitDay() {
-        return visitDay;
+    public int getPlanDay() {
+        return planDay;
     }
 
-    public void setvisitDay(int visitDay) {
-        this.visitDay = visitDay;
+    public void setPlanDay(int planDay) {
+        this.planDay = planDay;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     @Override
     public String toString() {
         return "PlaceDTO{" +
-                "placeTitle='" + placeTitle + '\'' +
+                "locationName='" + locationName + '\'' +
                 ", address='" + address + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", openHour='" + openHour + '\'' +
+                ", lat=" + lat +
+                ", lng=" + lng +
+                ", openData='" + openData + '\'' +
                 ", departureTime=" + departureTime +
                 ", arrivalTime=" + arrivalTime +
-                ", placeOrder=" + placeOrder +
-                ", placeThumbnail='" + placeThumbnail + '\'' +
-                ", visitDay=" + visitDay +
+                ", idx=" + idx +
+                ", photoUrl='" + photoUrl + '\'' +
+                ", planDay=" + planDay +
                 '}';
     }
 }

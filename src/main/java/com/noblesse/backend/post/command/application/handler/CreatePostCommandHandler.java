@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -88,9 +89,8 @@ public class CreatePostCommandHandler {
 //        fileService.insertPostImageFilesByPostId(images.toArray(new MultipartFile[0]), postId);
 //    }
 
-    private List<String> uploadNewImages(Long postId, List<MultipartFile> images) throws IOException {
-        MultipartFile[] imageArray = images.toArray(new MultipartFile[0]);
-        fileService.insertPostImageFilesByPostId(imageArray, postId);
+    private List<String> uploadNewImages(Long postId, List<Map<String, Object>> images) throws IOException {
+        fileService.insertPostImageFilesByPostId(images, postId);
         return fileService.findImageDownloadLinksByPostId(postId);
     }
 }

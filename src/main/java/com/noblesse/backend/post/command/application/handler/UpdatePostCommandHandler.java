@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -89,61 +90,79 @@ public class UpdatePostCommandHandler {
         return post; // 변경사항이 없으면 원본 Post 객체 반환
     }
 
-    //    private void handleImageUpdates(Post post, PostDTO command) {
-//        if (command.getImageUrlsToRemove() != null && !command.getImageUrlsToRemove().isEmpty()) {
-//            System.out.println("삭제 요청된 이미지 URL: " + command.getImageUrlsToRemove());
-//            for (String imageUrl : command.getImageUrlsToRemove()) {
-//                try {
-//                    String fileName = extractFileNameFromUrl(imageUrl);
-//                    System.out.println("삭제 시도 중인 파일 이름: " + fileName);
-//                    fileService.deleteImageFileByPostIdAndFileName(post.getPostId(), fileName);
-//                } catch (Exception e) {
-//                    System.out.println("이미지 삭제 중 오류 발생: " + imageUrl);
-//                    e.printStackTrace();
-//                }
-//            }
-//            post.removeImageUrls(command.getImageUrlsToRemove());
-//        }
-//
-//        if (command.getNewImages() != null && !command.getNewImages().isEmpty()) {
-//            try {
-//                List<String> newImageUrls = uploadNewImages(post.getPostId(), command.getNewImages());
-//                post.addImageUrls(newImageUrls);
-//            } catch (IOException e) {
-//                throw new RuntimeException("새 이미지 업로드 중 오류가 발생했습니다.", e);
-//            }
-//        }
-//    }
     private Post handleImageUpdates(Post post, PostDTO command) {
         Post updatedPost = post;
 
-        if (command.getImageUrlsToRemove() != null && !command.getImageUrlsToRemove().isEmpty()) {
-            for (String imageUrl : command.getImageUrlsToRemove()) {
-                try {
-                    String fileName = extractFileNameFromUrl(imageUrl);
+        // 현재 포스트의 이미지 URL 목록을 복사
+        List<String> currentImageUrls = new ArrayList<>(post.getImageUrls());
+
+        // 삭제할 이미지 URL 목록 (없으면 빈 리스트 사용)
+        List<String> imageUrlsToRemove = command.getImageUrlsToRemove() != null ? command.getImageUrlsToRemove() : new ArrayList<>();
+
+        // 새로 추가하거나 수정할 이미지 정보 목록 (없으면 빈 리스트 사용)
+        List<Map<String, Object>> newImages = command.getNewImages() != null ? command.getNewImages() : new ArrayList<>();
+
+        // 1. 삭제할 이미지 처리
+        for (String imageUrl : imageUrlsToRemove) {
+            try {
+                // URL에서 파일명 추출
+                String fileName = extractFileNameFromUrl(imageUrl);
+                // 파일 시스템에서 이미지 파일 삭제
+                fileService.deleteImageFileByPostIdAndFileName(post.getPostId(), fileName);
+                // 현재 이미지 URL 목록에서 해당 URL 제거
+                currentImageUrls.remove(imageUrl);
+            } catch (Exception e) {
+                System.out.println("이미지 삭제 중 오류 발생: " + imageUrl);
+            }
+        }
+
+        // 2. 새 이미지 및 수정된 이미지 처리
+        List<Map<String, Object>> imagesToUpload = new ArrayList<>();
+        for (Map<String, Object> newImage : newImages) {
+            MultipartFile file = (MultipartFile) newImage.get("file");
+            String fileName = file.getOriginalFilename();
+
+            // 현재 이미지 URL 목록에 같은 파일명을 가진 이미지가 있는지 확인
+            boolean isExistingImage = currentImageUrls.stream()
+                    .anyMatch(url -> url.contains(fileName));
+
+            if (isExistingImage) {
+                // 기존 이미지가 수정된 경우
+                String existingUrl = currentImageUrls.stream()
+                        .filter(url -> url.contains(fileName))
+                        .findFirst()
+                        .orElse(null);
+                if (existingUrl != null) {
+                    // 현재 URL 목록에서 기존 이미지 URL 제거
+                    currentImageUrls.remove(existingUrl);
+                    // 파일 시스템에서 기존 이미지 파일 삭제
                     fileService.deleteImageFileByPostIdAndFileName(post.getPostId(), fileName);
-                    updatedPost = updatedPost.removeImageUrl(imageUrl);
-                } catch (Exception e) {
-                    System.out.println("이미지 삭제 중 오류 발생: " + imageUrl);
                 }
             }
+
+            // 업로드할 이미지 목록에 추가 (새 이미지 또는 수정된 이미지)
+            imagesToUpload.add(newImage);
         }
 
-        if (command.getNewImages() != null && !command.getNewImages().isEmpty()) {
+        // 3. 새 이미지 및 수정된 이미지 업로드
+        if (!imagesToUpload.isEmpty()) {
             try {
-                List<String> newImageUrls = uploadNewImages(post.getPostId(), command.getNewImages());
-                updatedPost = updatedPost.addImageUrls(newImageUrls);
+                // 이미지 파일들을 업로드하고 새로운 URL 목록 받기
+                List<String> uploadedImageUrls = uploadNewImages(post.getPostId(), imagesToUpload);
+                // 현재 URL 목록에 새로 업로드된 이미지 URL들 추가
+                currentImageUrls.addAll(uploadedImageUrls);
             } catch (IOException e) {
-                throw new RuntimeException("새 이미지 업로드 중 오류가 발생했습니다.", e);
+                throw new RuntimeException("이미지 업로드 중 오류가 발생했습니다.", e);
             }
         }
 
+        // 4. 최종적으로 업데이트된 이미지 URL 목록으로 포스트 업데이트
+        updatedPost = updatedPost.updateImageUrls(currentImageUrls);
         return updatedPost;
     }
 
-    private List<String> uploadNewImages(Long postId, List<MultipartFile> images) throws IOException {
-        MultipartFile[] imageArray = images.toArray(new MultipartFile[0]);
-        fileService.insertPostImageFilesByPostId(imageArray, postId);
+    private List<String> uploadNewImages(Long postId, List<Map<String, Object>> images) throws IOException {
+        fileService.insertPostImageFilesByPostId(images, postId);
         return fileService.findImageDownloadLinksByPostId(postId);
     }
 

@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -32,7 +33,7 @@ public class PostDTO {
     private List<String> imageUrlsToRemove;
 
     @Nullable
-    private List<MultipartFile> newImages;
+    private List<Map<String, Object>> newImages;
 //    private MultipartFile[] newImages;
 
     // Create 용 생성자

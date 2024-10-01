@@ -12,9 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -24,9 +22,6 @@ public class FileService {
     private final FileRepository fileRepository;
     private final OAuthRepository oAuthRepository;
 
-    @Value("${app.firebase-bucket}")
-    private String firebaseBucket;
-
     public FileService(ImageFileService imageFileService, FileRepository fileRepository, OAuthRepository oAuthRepository) {
         this.imageFileService = imageFileService;
         this.fileRepository = fileRepository;
@@ -34,17 +29,20 @@ public class FileService {
     }
 
     @Transactional
-    public void insertPostImageFilesByPostId(MultipartFile[] files, Long postId) throws IOException {
-        imageFileService.uploadImageFiles(files, "post/" + postId + "/");
-        for(int i = 0; i < files.length; i++)
+    public void insertPostImageFilesByPostId(List<Map<String, Object>> files, Long postId) throws IOException {
+
+        for (Map<String, Object> fileMap : files) {
+            imageFileService.uploadImageFile((MultipartFile) fileMap.get("file"), "post/" + postId + "/");
             fileRepository.save(new File(
                     "post",
-                    files[i].getOriginalFilename(),
-                    "post/" + postId + "/" + files[i].getOriginalFilename(),
+                    ((MultipartFile) fileMap.get("file")).getOriginalFilename(),
+                    "post/" + postId + "/" + ((MultipartFile) fileMap.get("file")).getOriginalFilename(),
                     postId,
-                    i,
+                    (Long) fileMap.get("placeId"),
+                    (Long) fileMap.get("placeImageOrder"),
                     null,
                     null));
+        }
 
         System.out.println("파일 추가 시간 : " + LocalDateTime.now());
     }
@@ -59,6 +57,7 @@ public class FileService {
                     "profile",
                     userId.toString(),
                     "profile/" + userId.toString() + originalFileName.substring(originalFileName.lastIndexOf(".") + 1),
+                    null,
                     null,
                     null,
                     null,
@@ -84,8 +83,7 @@ public class FileService {
         List<File> foundFiles = fileRepository.findFilesByPostId(postId);
         List<String> downloadLinks = new ArrayList<>();
         foundFiles.forEach(file -> {
-            String newImageUrl = imageFileService.findImageDownloadLink("post/" + postId + "/", file.getFileName());
-            file.setFileUrl(newImageUrl);
+            String newImageUrl = imageFileService.findImageDownloadLinkByFileUrl(file.getFileUrl());
             downloadLinks.add(newImageUrl);
         });
         return downloadLinks;

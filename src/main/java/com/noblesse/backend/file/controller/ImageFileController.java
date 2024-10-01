@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/file/image")
@@ -23,7 +25,7 @@ public class ImageFileController {
     @PostMapping("/{postId}/new")
     @ResponseBody
     public ResponseEntity<?> registNewImagesByPostId(
-            @RequestParam MultipartFile[] files,
+            @RequestParam List<Map<String, Object>> files,
             @PathVariable Long postId) throws IOException {
 
         fileService.insertPostImageFilesByPostId(files, postId);

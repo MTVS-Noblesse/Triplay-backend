@@ -1,6 +1,5 @@
 package com.noblesse.backend.post.api.command;
 
-import aj.org.objectweb.asm.TypeReference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping(value = "/post")
@@ -70,7 +68,6 @@ public class PostCommandController {
             newImages.add(newImageInfo);
         }
 
-
         PostDTO command = new PostDTO(postTitle, userId);
         command.setIsOpened(isOpened);
         command.setTripId(tripId);
@@ -95,12 +92,31 @@ public class PostCommandController {
             @RequestParam(value = "isOpened", required = false) Boolean isOpened,
             @RequestParam(value = "tripId", required = false) Long tripId,
             @RequestParam(value = "clipId", required = false) Long clipId,
-            @RequestParam(value = "newImages", required = false) List<Map<String, Object>> newImages,
+            @RequestParam(value = "newImages", required = false) String newImagesJson,
+            @RequestParam(value = "files", required = false) MultipartFile[] files,
             @RequestParam(value = "imageUrlsToRemove", required = false) List<String> imageUrlsToRemove
-    ) {
-        String token = authorizationHeader.substring(7);
+    ) throws JsonProcessingException {
+        // 1. 인증 토큰에서 사용자 ID 추출
+        String token = authorizationHeader.substring(7); // "Bearer " 제거
         Long userId = jwtUtil.extractUserId(token);
 
+        // 2. JSON 문자열로 받은 newImages 파싱
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.USE_LONG_FOR_INTS, true);
+        List<Map<String, Object>> newImageInfos = objectMapper.readValue(newImagesJson, List.class);
+
+        // 3. 파싱된 이미지 정보와 실제 파일 매칭
+        List<Map<String, Object>> newImages = new ArrayList<>();
+        for (int i = 0; i < newImageInfos.size(); i++) {
+            Map<String, Object> newImageInfo = newImageInfos.get(i);
+            if (i < files.length) {
+                // 이미지 정보에 실제 파일 객체 추가
+                newImageInfo.put("file", files[i]);
+            }
+            newImages.add(newImageInfo);
+        }
+
+        // 4. PostDTO 객체 생성 및 데이터 설정
         PostDTO command = new PostDTO();
         command.setPostId(postId);
         command.setPostTitle(postTitle);
@@ -112,7 +128,10 @@ public class PostCommandController {
         command.setNewImages(newImages);
         command.setImageUrlsToRemove(imageUrlsToRemove);
 
+        // 5. UpdatePostCommandHandler를 통해 포스트 업데이트 처리
         updatePostCommandHandler.handle(command);
+
+        // 6. 응답 반환 (204 No Content)
         return ResponseEntity.noContent().build();
     }
 

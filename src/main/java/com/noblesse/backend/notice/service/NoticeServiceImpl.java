@@ -2,52 +2,70 @@ package com.noblesse.backend.notice.service;
 
 import com.noblesse.backend.notice.domain.Notice;
 import com.noblesse.backend.notice.dto.NewNoticeDTO;
+import com.noblesse.backend.notice.dto.NoticeDTO;
 import com.noblesse.backend.notice.repository.NoticeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
+@RequiredArgsConstructor
 public class NoticeServiceImpl implements NoticeService{
 
-    final private NoticeRepository noticeRepository;
+    private final NoticeRepository noticeRepository;
 
-    @Autowired
-    public NoticeServiceImpl(NoticeRepository noticeRepository) {
-        this.noticeRepository = noticeRepository;
+    @Override
+    public NoticeDTO registNotice(NewNoticeDTO newNoticeDTO) {
+        Notice notice = new Notice(newNoticeDTO.getTitle(), newNoticeDTO.getContent());
+        notice = noticeRepository.save(notice);
+        return convertToDTO(notice);
     }
 
     @Override
-    public Notice registNotice(Notice notice) {
-        return noticeRepository.save(notice);
-    }
-
-    @Override
-    public NewNoticeDTO updateNotice(NewNoticeDTO newNoticeDTO) {
-        Notice foundNotice = noticeRepository.findById(newNoticeDTO.getId())
-                .orElseThrow(() -> new RuntimeException("Not found notice with id: " + newNoticeDTO.getId()));
+    public NoticeDTO updateNotice(Long id, NewNoticeDTO newNoticeDTO) {
+        Notice foundNotice = noticeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Not found notice with id: " + id));
 
         foundNotice.setTitle(newNoticeDTO.getTitle());
         foundNotice.setContent(newNoticeDTO.getContent());
 
-        noticeRepository.save(foundNotice);
-        return newNoticeDTO;
+        foundNotice = noticeRepository.save(foundNotice);
+        return convertToDTO(foundNotice);
     }
 
     @Override
     public void deleteNotice(Long id) {
+        if (!noticeRepository.existsById(id)) {
+            throw new RuntimeException("Not found notice with id: " + id);
+        }
         noticeRepository.deleteById(id);
     }
 
     @Override
-    public List<Notice> getAllNotices() {
-        return noticeRepository.findAll();
+    public Page<NoticeDTO> getAllNotices(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        Page<Notice> noticePage = noticeRepository.findAll(pageable);
+        return noticePage.map(this::convertToDTO);
     }
 
     @Override
-    public Notice getNotice(Long id) {
-        return noticeRepository.findById(id)
+    public NoticeDTO getNotice(Long id) {
+        Notice notice = noticeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Not found notice with id: " + id));
+        return convertToDTO(notice);
+    }
+
+    private NoticeDTO convertToDTO(Notice notice) {
+        return new NoticeDTO(
+                notice.getId(),
+                notice.getTitle(),
+                notice.getContent(),
+                notice.getCreatedAt(),
+                notice.getUpdatedAt(),
+                notice.getAuthor()
+        );
     }
 }

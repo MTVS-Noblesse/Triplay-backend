@@ -2,6 +2,7 @@ package com.noblesse.backend.trip.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 public class PlaceDTO {
 
@@ -9,7 +10,7 @@ public class PlaceDTO {
     private String address;
     private double lat;
     private double lng;
-    private String openData;
+    private List<String> openData;
     private LocalTime departureTime;
     private LocalTime arrivalTime;
     private int idx;
@@ -19,7 +20,7 @@ public class PlaceDTO {
 
     public PlaceDTO() {}
 
-    public PlaceDTO(String locationName, String address, double lat, double lng, String openData, LocalTime departureTime, LocalTime arrivalTime, int idx, String photoUrl, int planDay, String phoneNumber) {
+    public PlaceDTO(String locationName, String address, double lat, double lng, List<String> openData, LocalTime departureTime, LocalTime arrivalTime, int idx, String photoUrl, int planDay, String phoneNumber) {
         this.locationName = locationName;
         this.address = address;
         this.lat = lat;
@@ -65,11 +66,11 @@ public class PlaceDTO {
         this.lng = lng;
     }
 
-    public String getOpenData() {
+    public List<String> getOpenData() {
         return openData;
     }
 
-    public void setOpenData(String openData) {
+    public void setOpenData(List<String> openData) {
         this.openData = openData;
     }
 

@@ -1,12 +1,13 @@
 package com.noblesse.backend.trip.domain;
 
+import com.noblesse.backend.trip.converter.StringListConverter;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "place")
@@ -29,8 +30,9 @@ public class Place {
     @Column(name = "lng")
     private double lng;
 
+    @Convert(converter = StringListConverter.class)
     @Column(name = "open_data", columnDefinition = "json")
-    private String openData;
+    private List<String> openData;
 
     @Column(name = "departure_time")
     private LocalTime departureTime;
@@ -46,7 +48,7 @@ public class Place {
 
     @Column(name = "plan_day")
     private int planDay;
-    
+
     @Column(name = "phone_number")
     private String phoneNumber;
 
@@ -58,7 +60,7 @@ public class Place {
 
     public Place() {}
 
-    public Place(String locationName, String address, double lat, double lng, String openData, LocalTime departureTime, LocalTime arrivalTime, int idx, String photoUrl, int planDay, String phoneNumber) {
+    public Place(String locationName, String address, double lat, double lng, List<String> openData, LocalTime departureTime, LocalTime arrivalTime, int idx, String photoUrl, int planDay, String phoneNumber) {
         this.locationName = locationName;
         this.address = address;
         this.lat = lat;
@@ -108,11 +110,11 @@ public class Place {
         this.lng = lng;
     }
 
-    public String getOpenData() {
+    public List<String> getOpenData() {
         return openData;
     }
 
-    public void setOpenData(String openData) {
+    public void setOpenData(List<String> openData) {
         this.openData = openData;
     }
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.function.Function;
 
 @Component
 public class JwtUtil {
@@ -31,21 +32,23 @@ public class JwtUtil {
 
     // JWT 생성
     public String generateAccessToken(Long userId) {
-        return Jwts.builder()
-                .setSubject(userId.toString())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
-                .claim("type", "access")
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+        return generateToken(userId, "access");
     }
 
     public String generateRefreshToken(Long userId) {
+        return generateToken(userId, "refresh");
+    }
+
+    public String generateAdminToken(Long adminId) {
+        return generateToken(adminId, "ROLE_ADMIN");
+    }
+
+    private String generateToken(Long id, String type) {
         return Jwts.builder()
-                .setSubject(userId.toString())
+                .setSubject(id.toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
-                .claim("type", "refresh")
+                .claim("type", type)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -59,6 +62,10 @@ public class JwtUtil {
         return validateToken(token, "refresh");
     }
 
+    public boolean validateAdminToken(String token) {
+        return validateToken(token, "ROLE_ADMIN");
+    }
+
     private boolean validateToken(String token, String type) {
         try {
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -68,31 +75,26 @@ public class JwtUtil {
         }
     }
 
-    // 사용자 ID 추출
-    public Long extractUserId(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return Long.valueOf(claims.get("sub").toString());
+    // 클레임 추출
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
     }
 
-    public Long extractUserIdFromToken(String token) {
-        try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-            return Long.parseLong(claims.getSubject());
-        } catch (Exception e) {
-            return null;
-        }
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    // 사용자 ID 추출
+    public Long extractUserId(String token) {
+        return Long.valueOf(getClaimFromToken(token, Claims::getSubject));
+    }
+
+    public String extractType(String token) {
+        return getClaimFromToken(token, claims -> claims.get("type", String.class));
     }
 
     public String extractUserName(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.get("userName", String.class);
+        return getClaimFromToken(token, claims -> claims.get("userName", String.class));
     }
 }

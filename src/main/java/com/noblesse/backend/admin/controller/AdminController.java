@@ -17,7 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/admin")
 @RequiredArgsConstructor
-@Tag(name = "관리자 API", description = "관리자 로그인 및 토큰 갱신 API")
+@Tag(name = "관리자 로그인", description = "관리자 로그인 및 토큰 갱신 API")
 public class AdminController {
 
     private final AdminService adminService;

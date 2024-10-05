@@ -20,35 +20,37 @@ public class AdminService {
 
     /** 관리자 로그인 메서드 */
     public Map<String, String> login(String email, String password) {
-        Admin admin = adminRepository.findByEmail(email);
-        if (admin != null && passwordEncoder.matches(password, admin.getPassword())) {
-            String accessToken = jwtUtil.generateAccessToken(admin.getAdminId());
+        Admin admin = adminRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        if (passwordEncoder.matches(password, admin.getPassword())) {
+            String accessToken = jwtUtil.generateAdminToken(admin.getAdminId());
             String refreshToken = jwtUtil.generateRefreshToken(admin.getAdminId());
 
             Map<String, String> tokens = new HashMap<>();
             tokens.put("token", accessToken);
             tokens.put("refresh", refreshToken);
             return tokens;
+        } else {
+            throw new RuntimeException("Invalid password");
         }
-        return null;
     }
 
     /** 관리자 로그인 시 리프레시 토큰 재발급 메서드 */
     public Map<String, String> refreshTokens(String refreshToken) {
         if (jwtUtil.validateRefreshToken(refreshToken)) {
-            Long adminId = jwtUtil.extractUserIdFromToken(refreshToken);
-            if (adminId != null) {
-                Admin admin = adminRepository.findById(adminId).orElse(null);
-                if (admin != null) {
-                    String newAccessToken = jwtUtil.generateAccessToken(adminId);
-                    String newRefreshToken = jwtUtil.generateRefreshToken(adminId);
+            Long adminId = jwtUtil.extractUserId(refreshToken);
+            return adminRepository.findById(adminId)
+                    .map(admin -> {
+                        String newAccessToken = jwtUtil.generateAdminToken(adminId);
+                        String newRefreshToken = jwtUtil.generateRefreshToken(adminId);
 
-                    Map<String, String> tokens = new HashMap<>();
-                    tokens.put("token", newAccessToken);
-                    tokens.put("refresh", newRefreshToken);
-                    return tokens;
-                }
-            }
+                        Map<String, String> tokens = new HashMap<>();
+                        tokens.put("token", newAccessToken);
+                        tokens.put("refresh", newRefreshToken);
+                        return tokens;
+                    })
+                    .orElse(null);
         }
         return null;
     }

@@ -20,33 +20,38 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final OAuth2Service oAuth2Service;
     private final JwtUtil jwtUtil;
+
     @Autowired
     public JwtFilter(OAuth2Service oAuth2Service, JwtUtil jwtUtil) {
         this.oAuth2Service = oAuth2Service;
         this.jwtUtil = jwtUtil;
     }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
-        if (request.getRequestURI().equals("/refresh") || request.getRequestURI().equals("/oauth2/callback") || request.getRequestURI().equals("/admin/login") || request.getRequestURI().equals("/admin/refresh") || request.getRequestURI().startsWith("/api/")) {
+
+        if (request.getRequestURI().equals("/refresh") || request.getRequestURI().equals("/oauth2/callback") || request.getRequestURI().equals("/admin/login") ) {
             filterChain.doFilter(request, response);
             return; // 로그인 요청은 필터를 통과하게 함
         }
+
         if (isSwaggerRequest(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
+
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
+            String tokenType = jwtUtil.extractType(token);
 
             try {
-                if (jwtUtil.validateAccessToken(token)) {
-                    Long userId = jwtUtil.extractUserId(token);
-                    UserDetails userDetails = oAuth2Service.loadUser(userId);
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                if ("access".equals(tokenType) && jwtUtil.validateAccessToken(token)) {
+                    processToken(token);
+                } else if ("ROLE_ADMIN".equals(tokenType) && jwtUtil.validateAdminToken(token)) {
+                    processAdminToken(token);
                 } else {
+                    SecurityContextHolder.clearContext();
                     // 토큰이 유효하지 않을 경우 AUTH_001 오류 코드와 함께 응답
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.getWriter().write("{\"code\": \"AUTH_001\", \"message\": \"Invalid JWT token\"}");
@@ -54,6 +59,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     return;
                 }
             } catch (Exception e) {
+                SecurityContextHolder.clearContext();
                 // 예외 발생 시 AUTH_001 오류 코드와 함께 응답
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("{\"code\": \"AUTH_001\", \"message\": \"Unauthorized: " + e.getMessage() + "\"}");
@@ -67,8 +73,27 @@ public class JwtFilter extends OncePerRequestFilter {
             response.setContentType("application/json");
             return;
         }
+
         filterChain.doFilter(request, response);
     }
+
+    private void processToken(String token) {
+        Long userId = jwtUtil.extractUserId(token);
+        UserDetails userDetails = oAuth2Service.loadUser(userId);
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    private void processAdminToken(String token) {
+        Long adminId = jwtUtil.extractUserId(token);
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+                adminId.toString(), "", java.util.Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_ADMIN")));
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
     private boolean isSwaggerRequest(String requestURI) {
         return requestURI.startsWith("/v3/api-docs") ||
                 requestURI.startsWith("/swagger-resources") ||
@@ -77,4 +102,3 @@ public class JwtFilter extends OncePerRequestFilter {
                 requestURI.startsWith("/swagger-ui.html");
     }
 }
-

@@ -1,14 +1,13 @@
 package com.noblesse.backend.notice.service;
 
-import com.noblesse.backend.notice.domain.Notice;
 import com.noblesse.backend.notice.dto.NewNoticeDTO;
-
-import java.util.List;
+import com.noblesse.backend.notice.dto.NoticeDTO;
+import org.springframework.data.domain.Page;
 
 public interface NoticeService {
-    Notice registNotice(Notice notice);
-    NewNoticeDTO updateNotice(NewNoticeDTO newNoticeDTO);
+    NoticeDTO registNotice(NewNoticeDTO newNoticeDTO);
+    NoticeDTO updateNotice(Long id, NewNoticeDTO newNoticeDTO);
     void deleteNotice(Long id);
-    List<Notice> getAllNotices();
-    Notice getNotice(Long id);
+    Page<NoticeDTO> getAllNotices(int page, int size, String sortBy);
+    NoticeDTO getNotice(Long id);
 }

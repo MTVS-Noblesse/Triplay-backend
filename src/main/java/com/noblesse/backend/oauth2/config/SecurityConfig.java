@@ -4,8 +4,6 @@ import com.noblesse.backend.oauth2.filter.JwtFilter;
 import com.noblesse.backend.oauth2.filter.OAuth2Filter;
 import com.noblesse.backend.oauth2.service.OAuth2Service;
 import com.noblesse.backend.oauth2.util.JwtUtil;
-import jakarta.servlet.Filter;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +33,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource)) // CORS 설정
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/login", "/oauth2/callback", "/swagger-ui/**", "/v3/api-docs/**", "/refresh").permitAll() // 로그인 페이지 허용
+                        .requestMatchers("/", "/login", "/oauth2/callback", "/swagger-ui/**", "/v3/api-docs/**", "/refresh", "/admin/login", "/admin/refresh", "/api/**").permitAll() // 로그인 페이지 허용
                         .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
                 .oauth2Login(oauth2 -> oauth2

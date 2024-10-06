@@ -1,48 +1,48 @@
 package com.noblesse.backend.notice.controller;
 
-import com.noblesse.backend.notice.domain.Notice;
 import com.noblesse.backend.notice.dto.NewNoticeDTO;
-import com.noblesse.backend.notice.service.NoticeServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.noblesse.backend.notice.dto.NoticeDTO;
+import com.noblesse.backend.notice.service.NoticeService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/notice")
+@RequestMapping("/api/notices")
+@RequiredArgsConstructor
 public class NoticeController {
 
-    private final NoticeServiceImpl noticeServiceImpl;
-
-    @Autowired
-    public NoticeController(NoticeServiceImpl noticeServiceImpl) {
-        this.noticeServiceImpl = noticeServiceImpl;
-    }
+    private final NoticeService noticeService;
 
     @GetMapping("/{noticeId}")
-    public ResponseEntity<Notice> getNotice(@PathVariable("noticeId") long noticeId) {
-        return ResponseEntity.ok(noticeServiceImpl.getNotice(noticeId));
+    public ResponseEntity<NoticeDTO> getNotice(@PathVariable("noticeId") long noticeId) {
+        return ResponseEntity.ok(noticeService.getNotice(noticeId));
     }
 
     @PostMapping
-    public ResponseEntity<Notice> registerNotice(@RequestBody Notice notice) {
-        return ResponseEntity.ok(noticeServiceImpl.registNotice(notice));
+    public ResponseEntity<NoticeDTO> registerNotice(@RequestBody NewNoticeDTO newNoticeDTO) {
+        NoticeDTO createdNotice = noticeService.registNotice(newNoticeDTO);
+        return new ResponseEntity<>(createdNotice, HttpStatus.CREATED);
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<List<Notice>> getAllNotices() {
-        return ResponseEntity.ok(noticeServiceImpl.getAllNotices());
+    @GetMapping
+    public ResponseEntity<Page<NoticeDTO>> getAllNotices(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy) {
+        return ResponseEntity.ok(noticeService.getAllNotices(page, size, sortBy));
     }
 
-    @PatchMapping
-    public ResponseEntity<NewNoticeDTO> updateNotice(@RequestBody NewNoticeDTO nnDTO) {
-        return ResponseEntity.ok(noticeServiceImpl.updateNotice(nnDTO));
+    @PutMapping("/{noticeId}")
+    public ResponseEntity<NoticeDTO> updateNotice(@PathVariable("noticeId") Long noticeId, @RequestBody NewNoticeDTO newNoticeDTO) {
+        return ResponseEntity.ok(noticeService.updateNotice(noticeId, newNoticeDTO));
     }
 
     @DeleteMapping("/{noticeId}")
-    public ResponseEntity<Notice> deleteNotice(@PathVariable("noticeId") long noticeId) {
-        noticeServiceImpl.deleteNotice(noticeId);
+    public ResponseEntity<Void> deleteNotice(@PathVariable("noticeId") Long noticeId) {
+        noticeService.deleteNotice(noticeId);
         return ResponseEntity.noContent().build();
     }
 }

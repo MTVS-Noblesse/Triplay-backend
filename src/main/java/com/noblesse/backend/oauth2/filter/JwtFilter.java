@@ -31,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
 
-        if (request.getRequestURI().equals("/refresh") || request.getRequestURI().equals("/oauth2/callback") || request.getRequestURI().equals("/admin/login") ) {
+        if (request.getRequestURI().equals("/refresh") || request.getRequestURI().equals("/oauth2/callback") || request.getRequestURI().equals("/admin/login") || request.getRequestURI().equals("/admin/refresh")) {
             filterChain.doFilter(request, response);
             return; // 로그인 요청은 필터를 통과하게 함
         }
@@ -47,6 +47,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
             try {
                 if ("access".equals(tokenType) && jwtUtil.validateAccessToken(token)) {
+                    processToken(token);
+                } else if ("refresh".equals(tokenType) && jwtUtil.validateRefreshToken(token)) {
                     processToken(token);
                 } else if ("ROLE_ADMIN".equals(tokenType) && jwtUtil.validateAdminToken(token)) {
                     processAdminToken(token);

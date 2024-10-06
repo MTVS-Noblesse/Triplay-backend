@@ -36,10 +36,12 @@ public class AdminController {
             JSONObject jsonResponse = new JSONObject();
             jsonResponse.put("token", tokens.get("token"));
             jsonResponse.put("refresh", tokens.get("refresh"));
-
             return ResponseEntity.ok(jsonResponse);
         } else {
-            return ResponseEntity.badRequest().body("Invalid credentials");
+            JSONObject errorResponse = new JSONObject();
+            errorResponse.put("code", "AUTH_003");
+            errorResponse.put("message", "Invalid credentials");
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 

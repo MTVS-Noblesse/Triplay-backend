@@ -17,7 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/admin")
 @RequiredArgsConstructor
-@Tag(name = "관리자 API", description = "관리자 로그인 및 토큰 갱신 API")
+@Tag(name = "관리자 로그인", description = "관리자 로그인 및 토큰 갱신 API")
 public class AdminController {
 
     private final AdminService adminService;
@@ -36,10 +36,12 @@ public class AdminController {
             JSONObject jsonResponse = new JSONObject();
             jsonResponse.put("token", tokens.get("token"));
             jsonResponse.put("refresh", tokens.get("refresh"));
-
             return ResponseEntity.ok(jsonResponse);
         } else {
-            return ResponseEntity.badRequest().body("Invalid credentials");
+            JSONObject errorResponse = new JSONObject();
+            errorResponse.put("code", "AUTH_003");
+            errorResponse.put("message", "Invalid credentials");
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 

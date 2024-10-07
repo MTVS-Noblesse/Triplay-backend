@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PreferenceServiceImpl implements PreferenceService{
@@ -75,6 +74,7 @@ public class PreferenceServiceImpl implements PreferenceService{
         userPreferenceRepository.save(userPreference);
     }
 
+    @Override
     public List<PreferenceInfo> findSelectedUserPreferenceList(Long userId) {
         return userPreferenceRepository.findSelectedPreferenceInfoListByUserId(userId);
     }

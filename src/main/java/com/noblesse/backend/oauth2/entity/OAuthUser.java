@@ -2,6 +2,8 @@ package com.noblesse.backend.oauth2.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name="user")
 public class OAuthUser {
@@ -15,6 +17,10 @@ public class OAuthUser {
     private String providerId;
     private Long profileId;
 
+    // 추가
+    private LocalDateTime firedAt; // 정지 일자
+    private boolean isFired; // 정지 유무
+
     public OAuthUser() {}
 
     public OAuthUser(String userName, String email, String provider, String providerId, Long profileId) {
@@ -25,17 +31,28 @@ public class OAuthUser {
         this.profileId = profileId;
     }
 
-    public Long getProfileId() {
-        return profileId;
-    }
-
     public Long getId() {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getProfileId() {
+        return profileId;
+    }
 
     public String getUserName() {
         return userName;
+    }
+
+    public void setUsername(String userName) {
+        this.userName = userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getEmail() {
@@ -62,10 +79,6 @@ public class OAuthUser {
         this.providerId = providerId;
     }
 
-    public String getUsername() {
-        return userName;
-    }
-
     public Long getUserId() {
         return id;
     }
@@ -74,7 +87,19 @@ public class OAuthUser {
         this.profileId = profileId;
     }
 
-    public void setUsername(String userName) {
-        this.userName = userName;
+    public LocalDateTime getFiredAt() {
+        return firedAt;
+    }
+
+    public void setFiredAt(LocalDateTime firedAt) {
+        this.firedAt = firedAt;
+    }
+
+    public boolean isFired() {
+        return isFired;
+    }
+
+    public void setFired(boolean fired) {
+        isFired = fired;
     }
 }

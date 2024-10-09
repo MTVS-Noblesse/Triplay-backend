@@ -100,7 +100,7 @@ public class ImageFileController {
         if (imageUrl != null) {
             return ResponseEntity.ok(imageUrl);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profile image not found");
+            return ResponseEntity.ok("default");
         }
     }
 

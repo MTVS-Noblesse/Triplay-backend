@@ -101,7 +101,7 @@ public class FileService {
         Long profileFileId = user.getProfileId();
 
         if (profileFileId == null) {
-            throw new RuntimeException("Profile image not set for user: " + userId);
+            return null;
         }
 
         File profileImageFile = fileRepository.findFileByFileId(profileFileId);

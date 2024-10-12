@@ -23,23 +23,27 @@ public class ClipReport {
     private String clipReportContent;
 
     @CreationTimestamp
-    @Column(name = "CLIP_REPORT_DATETIME")
-    private LocalDateTime clipReportDateTime;
+    @Column(name = "CLIP_REPORTED_AT")
+    private LocalDateTime clipReportedAt; // 클립 정지 일자
 
     @Column(name = "USER_ID")
     private Long userId;
 
-    @Column(name = "CLIP_ID")
-    private Long clipId;
+//    @Column(name = "CLIP_ID")
+//    private Long clipId;
+
+    @ManyToOne
+    @JoinColumn(name = "CLIP_ID")
+    private Clip clip;
 
     protected ClipReport() {}
 
-    public ClipReport(Long reportCategoryId, String clipReportTitle, String clipReportContent, Long userId, Long clipId) {
+    public ClipReport(Long reportCategoryId, String clipReportTitle, String clipReportContent, Long userId, Clip clip) {
         this.reportCategoryId = reportCategoryId;
         this.clipReportTitle = clipReportTitle;
         this.clipReportContent = clipReportContent;
         this.userId = userId;
-        this.clipId = clipId;
+        this.clip = clip;
     }
 
     public void setReportCategoryId(Long reportCategoryId) {
@@ -54,12 +58,16 @@ public class ClipReport {
         this.clipReportContent = clipReportContent;
     }
 
-    public LocalDateTime getClipReportDateTime() {
-        return clipReportDateTime;
+    public LocalDateTime getClipReportedAt() {
+        return clipReportedAt;
     }
 
     public String getClipReportTitle() {
         return clipReportTitle;
+    }
+
+    public void setClipReportedAt(LocalDateTime clipReportedAt) {
+        this.clipReportedAt = clipReportedAt;
     }
 
     public Long getClipReportId() {
@@ -78,8 +86,16 @@ public class ClipReport {
         return userId;
     }
 
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public Long getClipId() {
-        return clipId;
+        return clip != null ? clip.getClipId() : null;
+    }
+
+    public void setClip(Clip clip) {
+        this.clip = clip;
     }
 
     @Override
@@ -89,7 +105,8 @@ public class ClipReport {
                 ", reportCategoryId=" + reportCategoryId +
                 ", clipReportContent='" + clipReportContent + '\'' +
                 ", userId=" + userId +
-                ", clipId=" + clipId +
+                ", clipId=" + getClipId() +
+//                ", clipId=" + clipId +
                 '}';
     }
 }

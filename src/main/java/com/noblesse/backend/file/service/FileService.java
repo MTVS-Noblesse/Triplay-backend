@@ -69,6 +69,27 @@ public class FileService {
     }
 
     @Transactional
+    public void insertClipFile(MultipartFile file, Long clipId, String clipTitle) throws IOException {
+        String fileName = file.getOriginalFilename();
+        String fileUrl = "clip/" + clipId + "/" + fileName;
+
+        imageFileService.uploadImageFile(file, "clip/" + clipId + "/");
+
+        fileRepository.save(new File(
+                "clip",
+                fileName,
+                fileUrl,
+                null,
+                null,
+                null,
+                clipId,
+                null
+        ));
+
+        System.out.println("클립 파일 추가 시간 : " + LocalDateTime.now());
+    }
+
+    @Transactional
     public String findImageDownloadLinkByPostIdAndFileName(Long postId, String fileName) {
         return imageFileService.findImageDownloadLink("post/" + postId + "/", fileName);
     }
@@ -130,5 +151,11 @@ public class FileService {
             imageFileService.deleteProfileImageByUserId(userId);
             fileRepository.deleteById(foundUser.getProfileId());
         }
+    }
+
+    @Transactional
+    public void deleteClipFileByClipId(Long clipId) {
+        imageFileService.deleteImagesByClipId(clipId);
+        fileRepository.deleteFilesByClipId(clipId);
     }
 }

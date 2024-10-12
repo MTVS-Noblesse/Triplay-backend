@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/clipReport")
+@Tag(name = "클립 신고", description = "클립 신고 관련 API")
 public class ClipReportController {
     private final ClipReportService clipReportService;
 

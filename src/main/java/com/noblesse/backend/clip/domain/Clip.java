@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "Clip")
 @Table(name = "clip")
@@ -31,6 +33,9 @@ public class Clip {
 
     @Column(name = "TRIP_ID") // 해당 여행 TRIP_CODE
     private Long tripId;
+
+    @OneToMany(mappedBy = "clip", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ClipReport> reports = new ArrayList<>();
 
     protected Clip() {}
 

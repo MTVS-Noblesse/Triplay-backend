@@ -34,6 +34,10 @@ spring:
           secret: ${JWT_SECRET}
           access-expiration: 86400000
           refresh-expiration: 10800000
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 server:
   port: 8443
   ssl:
@@ -48,3 +52,10 @@ app:
 google:
   maps:
     api-key: ${GOOGLE_MAPS_API_KEY}
+
+logging:
+  level:
+    com.noblesse.backend: debug
+    com.noblesse.backend.clip: debug
+    com.noblesse.backend.file: debug
+    com.noblesse.backend.manage.clip: debug

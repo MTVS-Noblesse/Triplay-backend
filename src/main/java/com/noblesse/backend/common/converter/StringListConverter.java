@@ -1,4 +1,4 @@
-package com.noblesse.backend.trip.converter;
+package com.noblesse.backend.common.converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

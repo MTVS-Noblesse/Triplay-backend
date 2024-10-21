@@ -1,27 +1,35 @@
 package com.noblesse.backend.post.query.application.service;
 
+import com.noblesse.backend.file.entity.QFile;
 import com.noblesse.backend.file.service.FileService;
+import com.noblesse.backend.oauth2.entity.OAuthUser;
+import com.noblesse.backend.oauth2.entity.QOAuthUser;
+import com.noblesse.backend.oauth2.repository.OAuthRepository;
 import com.noblesse.backend.post.common.dto.PostCoCommentDTO;
 import com.noblesse.backend.post.common.dto.PostCommentDTO;
 import com.noblesse.backend.post.common.dto.PostDTO;
 import com.noblesse.backend.post.common.dto.PostReportDTO;
-import com.noblesse.backend.post.common.entity.Post;
-import com.noblesse.backend.post.common.entity.PostCoComment;
-import com.noblesse.backend.post.common.entity.PostComment;
-import com.noblesse.backend.post.common.entity.PostReport;
+import com.noblesse.backend.post.common.entity.*;
 import com.noblesse.backend.post.common.exception.PostCoCommentNotFoundException;
 import com.noblesse.backend.post.common.exception.PostCommentNotFoundException;
 import com.noblesse.backend.post.common.exception.PostNotFoundException;
 import com.noblesse.backend.post.common.exception.PostReportNotFoundException;
-import com.noblesse.backend.post.query.infrastructure.persistence.repository.PostCoCommentRepository;
-import com.noblesse.backend.post.query.infrastructure.persistence.repository.PostCommentRepository;
-import com.noblesse.backend.post.query.infrastructure.persistence.repository.PostReportRepository;
-import com.noblesse.backend.post.query.infrastructure.persistence.repository.PostRepository;
+import com.noblesse.backend.post.query.infrastructure.persistence.repository.*;
+import com.noblesse.backend.trip.domain.QTrip;
+import com.noblesse.backend.trip.domain.Trip;
+import com.noblesse.backend.trip.dto.TripDTO;
+import com.noblesse.backend.trip.repository.TripRepository;
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +40,7 @@ public class PostQueryService {
     private final PostCommentRepository postCommentRepository;
     private final PostCoCommentRepository postCoCommentRepository;
     private final PostReportRepository postReportRepository;
+    private final CustomPostRepositoryImpl customPostRepository;
     private final FileService fileService;
 
     /**
@@ -54,10 +63,31 @@ public class PostQueryService {
 
     /** 모든 포스트를 조회하는 메서드 */
     public List<PostDTO> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
-        return posts.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        List<Tuple> results = customPostRepository.findPostsWithDetails();
+
+        List<PostDTO> posts = new ArrayList<>();
+
+        for (Tuple result : results) {
+            Post post = result.get(QPost.post);
+            String userName = result.get(QOAuthUser.oAuthUser.userName);
+            String profileImageUrl = fileService.findImageDownloadLinkByFileUrl(result.get(new QFile("profileFile").fileUrl));
+            LocalDate tripStartDate = result.get(QTrip.trip.tripStartDate);
+            LocalDate tripEndDate = result.get(QTrip.trip.tripEndDate);
+            String tripParty = result.get(QTrip.trip.tripParty);
+            String thumbnailImage =fileService.findImageDownloadLinkByFileUrl(result.get(new QFile("thumbnailFile").fileUrl));
+
+            PostDTO dto = new PostDTO(post);
+            dto.setUserName(userName);
+            dto.setProfileImageUrl(profileImageUrl);
+            dto.setTripStartDate(tripStartDate);
+            dto.setTripEndDate(tripEndDate);
+            dto.setTripParty(tripParty);
+            dto.setThumbnailImageUrl(thumbnailImage);
+
+            posts.add(dto);
+            System.out.println("Generated PostDTO: " + dto.toString());
+        }
+        return posts;
     }
 
     /** 복잡한 조건의 게시물을 검색하는 메서드 */
@@ -71,8 +101,11 @@ public class PostQueryService {
     // Post 헬퍼 메서드
     private PostDTO convertToDTO(Post post) {
         PostDTO dto = new PostDTO(post);
-        List<String> imageUrls = fileService.findImageDownloadLinksByPostId(post.getPostId());
-        dto.setImageUrls(imageUrls);
+
+        if(post.getTripId() != null){
+            dto.setTripId(post.getTripId());
+        }
+
         return dto;
     }
 

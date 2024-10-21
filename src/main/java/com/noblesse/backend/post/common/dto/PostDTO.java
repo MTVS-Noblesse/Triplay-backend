@@ -5,12 +5,14 @@ import lombok.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 @Getter
 @Setter
+@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,6 +37,25 @@ public class PostDTO {
     @Nullable
     private List<Map<String, Object>> newImages;
 //    private MultipartFile[] newImages;
+
+
+    @Nullable
+    private LocalDate tripStartDate;
+
+    @Nullable
+    private LocalDate tripEndDate;
+
+    @Nullable
+    private String tripParty;
+
+    @Nullable
+    private String userName;
+
+    @Nullable
+    private String profileImageUrl;
+
+    @Nullable
+    private String thumbnailImageUrl;
 
     // Create 용 생성자
     public PostDTO(String postTitle, String postContent, Boolean isOpened, Long userId, Long tripId, Long clipId) {
@@ -82,6 +103,5 @@ public class PostDTO {
         this.userId = post.getUserId();
         this.tripId = post.getTripId();
         this.clipId = post.getClipId();
-        this.imageUrls = post.getImageUrls(); // 이미지 URL 추가
     }
 }

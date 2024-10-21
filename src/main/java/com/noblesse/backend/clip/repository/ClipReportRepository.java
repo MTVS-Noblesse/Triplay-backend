@@ -10,7 +10,6 @@ import java.util.List;
 @Repository
 public interface ClipReportRepository extends JpaRepository<ClipReport, Long> {
     ClipReport findClipReportByClipReportId(Long clipReportId);
-//    List<ClipReport> findClipReportsByClipId(Long clipId);
     List<ClipReport> findClipReportsByClip_ClipId(Long clipId);
     void deleteByClip(Clip clip);
 }

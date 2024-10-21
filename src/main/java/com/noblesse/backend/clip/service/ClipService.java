@@ -29,17 +29,6 @@ public class ClipService {
         return clipRepository.findAll();
     }
 
-//    @Transactional
-//    public void insertClip(ClipRegistRequestDTO clipRegistRequestDTO) {
-//        clipRepository.save(new Clip(
-//                clipRegistRequestDTO.getClipTitle(),
-//                clipRegistRequestDTO.getClipUrl(),
-//                clipRegistRequestDTO.getIsOpened(),
-//                clipRegistRequestDTO.getUserId(),
-//                clipRegistRequestDTO.getTripId()
-//        ));
-//    }
-
     @Transactional
     public void insertClip(ClipRegistRequestDTO clipRegistRequestDTO) throws IOException {
         try {

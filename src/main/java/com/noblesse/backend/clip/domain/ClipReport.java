@@ -29,9 +29,6 @@ public class ClipReport {
     @Column(name = "USER_ID")
     private Long userId;
 
-//    @Column(name = "CLIP_ID")
-//    private Long clipId;
-
     @ManyToOne
     @JoinColumn(name = "CLIP_ID")
     private Clip clip;
@@ -106,7 +103,6 @@ public class ClipReport {
                 ", clipReportContent='" + clipReportContent + '\'' +
                 ", userId=" + userId +
                 ", clipId=" + getClipId() +
-//                ", clipId=" + clipId +
                 '}';
     }
 }

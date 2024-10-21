@@ -25,7 +25,6 @@ public class ClipReportService {
     }
 
     public List<ClipReport> findClipReportsByClipId(Long clipId) {
-//        return clipReportRepository.findClipReportsByClipId(clipId);
         return clipReportRepository.findClipReportsByClip_ClipId(clipId);
     }
 
@@ -33,15 +32,6 @@ public class ClipReportService {
         return clipReportRepository.findAll();
     }
 
-    //    public void registClipReport(ClipReportRegistRequestDTO clipReportRegistRequestDTO) {
-//        clipReportRepository.save(new ClipReport(
-//                clipReportRegistRequestDTO.getReportCategoryId(),
-//                clipReportRegistRequestDTO.getClipReportTitle(),
-//                clipReportRegistRequestDTO.getClipReportContent(),
-//                clipReportRegistRequestDTO.getUserId(),
-//                clipReportRegistRequestDTO.getClipId()
-//        ));
-//    }
     @Transactional
     public void registClipReport(ClipReportRegistRequestDTO clipReportRegistRequestDTO) {
         Clip clip = clipRepository.findById(clipReportRegistRequestDTO.getClipId())

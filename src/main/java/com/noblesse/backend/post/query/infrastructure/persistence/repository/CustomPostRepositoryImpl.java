@@ -53,4 +53,28 @@ public class CustomPostRepositoryImpl implements CustomPostRepository {
                 .fetch();
     }
 
+    @Override
+    public Tuple findPostByPostId(Long id) {
+
+        QPost post = QPost.post;
+        QFile file = QFile.file;
+        QOAuthUser user = QOAuthUser.oAuthUser;
+        QTrip trip = QTrip.trip;
+
+        return queryFactory
+                .select(post,
+                        user.userName,
+                        file.fileUrl,
+                        trip.tripStartDate,
+                        trip.tripEndDate,
+                        trip.tripParty)
+                .from(post)
+                .leftJoin(user).on(post.userId.eq(user.id))
+                .leftJoin(file).on(user.profileId.eq(file.fileId)
+                        .and(file.fileType.eq("profile")))
+                .leftJoin(trip).on(post.tripId.eq(trip.tripId))
+                .where(post.postId.eq(id))
+                .fetchOne();
+    }
+
 }

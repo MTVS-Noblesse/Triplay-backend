@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface CustomPostRepository {
     List<Tuple> findPostsWithDetails();
+    Tuple findPostByPostId(Long id);
 }

@@ -1,5 +1,6 @@
 package com.noblesse.backend.post.common.dto;
 
+import com.noblesse.backend.file.dto.FileDTO;
 import com.noblesse.backend.post.common.entity.Post;
 import lombok.*;
 import org.springframework.lang.Nullable;
@@ -29,7 +30,7 @@ public class PostDTO {
     // private List<PostCommentDTO> comments;
 
     @Nullable
-    private List<String> imageUrls;
+    private List<FileDTO> files;
 
     @Nullable
     private List<String> imageUrlsToRemove;

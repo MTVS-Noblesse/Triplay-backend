@@ -1,6 +1,9 @@
 package com.noblesse.backend.post.query.application.service;
 
+import com.noblesse.backend.file.dto.FileDTO;
+import com.noblesse.backend.file.entity.File;
 import com.noblesse.backend.file.entity.QFile;
+import com.noblesse.backend.file.repository.FileRepository;
 import com.noblesse.backend.file.service.FileService;
 import com.noblesse.backend.oauth2.entity.OAuthUser;
 import com.noblesse.backend.oauth2.entity.QOAuthUser;
@@ -28,6 +31,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,15 +46,45 @@ public class PostQueryService {
     private final PostReportRepository postReportRepository;
     private final CustomPostRepositoryImpl customPostRepository;
     private final FileService fileService;
+    private final FileRepository fileRepository;
 
     /**
      * ### PostDTO ###
      */
     /** 포스트 고유 ID로 포스팅 검색하는 메서드 */
     public PostDTO getPostById(Long id) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException(id));
-        return convertToDTO(post);
+        Tuple result = customPostRepository.findPostByPostId(id);
+
+        if(result == null) {
+            throw new PostNotFoundException(id);
+        }
+
+        Post post = result.get(QPost.post);
+        String userName = result.get(QOAuthUser.oAuthUser.userName);
+        String profileImageUrl = fileService.findImageDownloadLinkByFileUrl(result.get(QFile.file.fileUrl));
+        LocalDate tripStartDate = result.get(QTrip.trip.tripStartDate);
+        LocalDate tripEndDate = result.get(QTrip.trip.tripEndDate);
+        String tripParty = result.get(QTrip.trip.tripParty);
+
+        List<File> postImages = fileRepository.findFilesByPostId(id)
+                .stream()
+                .sorted(Comparator.comparing(File::getPostImageOrder))
+                .collect(Collectors.toList());
+
+        List<FileDTO> fileDTOs = postImages.stream()
+                .map(file -> new FileDTO(file, fileService.findImageDownloadLinkByFileUrl(file.getFileUrl())))
+                .collect(Collectors.toList());
+
+        PostDTO dto = new PostDTO(post);
+        dto.setUserName(userName);
+        dto.setProfileImageUrl(profileImageUrl);
+        dto.setTripStartDate(tripStartDate);
+        dto.setTripEndDate(tripEndDate);
+        dto.setTripParty(tripParty);
+        dto.setFiles(fileDTOs);
+
+        System.out.println("DTO: " + dto.toString());
+        return dto;
     }
 
     /** 사용자 고유 ID(userId)로 해당 사용자의 모든 포스트를 조회하는 메서드 */
@@ -85,7 +119,6 @@ public class PostQueryService {
             dto.setThumbnailImageUrl(thumbnailImage);
 
             posts.add(dto);
-            System.out.println("Generated PostDTO: " + dto.toString());
         }
         return posts;
     }

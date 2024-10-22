@@ -36,6 +36,8 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         return user.getUserName(); // 사용자 이름 반환
     }
 
+    public String getEmail(){ return user.getEmail(); }
+
     @Override
     public boolean isAccountNonExpired() {
         return true; // 계정 만료 여부

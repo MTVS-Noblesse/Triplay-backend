@@ -25,8 +25,8 @@ public class ClipCRUDTests {
 
     private static Stream<Arguments> newClip() {
         return Stream.of(
-                Arguments.of(new ClipRegistRequestDTO("클립1", "클립URL주소1", true, 1L, 1L)),
-                Arguments.of(new ClipRegistRequestDTO("클립2", "클립URL주소2", true, 2L, 2L))
+                Arguments.of(new ClipRegistRequestDTO(null, "클립1", "클립URL주소1", true, 1L, 1L, null)),
+                Arguments.of(new ClipRegistRequestDTO(null, "클립2", "클립URL주소2", true, 2L, 2L, null))
         );
     }
 

@@ -78,7 +78,7 @@ public class FileService {
             fileRepository.save(new File(
                     "clip",
                     i + originalFileName.substring(originalFileName.lastIndexOf(".")),
-                    filePath,
+                    filePath + i + originalFileName.substring(originalFileName.lastIndexOf(".")),
                     null,
                     null,
                     null,

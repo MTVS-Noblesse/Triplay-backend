@@ -25,8 +25,8 @@ public class ClipCRUDTests {
 
     private static Stream<Arguments> newClip() {
         return Stream.of(
-                Arguments.of(new ClipRegistRequestDTO(null, "클립1", "클립URL주소1", true, 1L, 1L, null)),
-                Arguments.of(new ClipRegistRequestDTO(null, "클립2", "클립URL주소2", true, 2L, 2L, null))
+                Arguments.of(new ClipRegistRequestDTO("클립1", true)),
+                Arguments.of(new ClipRegistRequestDTO("클립2", false))
         );
     }
 
@@ -35,13 +35,14 @@ public class ClipCRUDTests {
     @MethodSource("newClip")
     void registClip(ClipRegistRequestDTO clipRegistRequestDTO) {
         Assertions.assertDoesNotThrow(() -> {
-            clipService.insertClip(clipRegistRequestDTO);
+            // 임의로 1L 값을 clipId로 사용
+            clipService.insertClip(clipRegistRequestDTO, 1L);
         });
     }
 
     @DisplayName("클립 조회 테스트")
     @ParameterizedTest
-    @ValueSource(longs = {1,2,3,4,5})
+    @ValueSource(longs = {1L, 2L, 3L, 4L, 5L})
     void findClipByClipId(Long clipId) {
         Assertions.assertDoesNotThrow(() -> {
             Clip clip = clipService.findClipByClipId(clipId);
@@ -57,10 +58,9 @@ public class ClipCRUDTests {
         });
     }
 
-
     @DisplayName("클립 수정 테스트")
     @ParameterizedTest
-    @ValueSource(longs = {1, 2})
+    @ValueSource(longs = {1L, 2L})
     void modifyClip(long clipId) {
         Assertions.assertDoesNotThrow(() -> {
             clipService.updateClipByClipIdForExposeYN(clipId);
@@ -69,7 +69,7 @@ public class ClipCRUDTests {
 
     @DisplayName("클립 삭제 테스트")
     @ParameterizedTest
-    @ValueSource(longs = {1,2})
+    @ValueSource(longs = {1L, 2L})
     void deleteClip(long clipId) {
         Assertions.assertDoesNotThrow(() -> {
             clipService.deleteClipByClipId(clipId);

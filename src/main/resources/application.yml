@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: triplay
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://223.130.152.102/test_triplay
@@ -38,6 +40,7 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+
 server:
   port: 8443
   ssl:
@@ -45,6 +48,7 @@ server:
     key-store-password: ${KEY_PASSWORD}
     key-store-type: PKCS12
     key-alias: triplay
+
 app:
   firebase-configuration-file: ./triplayServiceAccountKey.json
   firebase-bucket: ${FIREBASE_STORAGE_BUCKET}
@@ -53,9 +57,42 @@ google:
   maps:
     api-key: ${GOOGLE_MAPS_API_KEY}
 
+management:
+  metrics:
+    enable:
+      all: true
+    jdbc:
+      instrumentation:
+        enabled: true # JDBC 계측 활성화
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: ${spring.application.name}
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # 모든 엔드포인트 노출
+    enabled-by-default: true
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+
 logging:
   level:
     com.noblesse.backend: debug
     com.noblesse.backend.clip: debug
     com.noblesse.backend.file: debug
     com.noblesse.backend.manage.clip: debug
+
+    # Actuator 로깅
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.actuator: DEBUG
+
+    # 메트릭 디버깅을 위한 로깅
+    io.micrometer: DEBUG

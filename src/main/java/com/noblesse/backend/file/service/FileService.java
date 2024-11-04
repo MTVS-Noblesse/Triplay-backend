@@ -52,7 +52,7 @@ public class FileService {
         OAuthUser foundUser = oAuthRepository.findById(userId).orElse(null);
         if (foundUser != null) {
             String originalFileName = file.getOriginalFilename();
-            imageFileService.uploadImageFile(file, "profile/" + userId);
+            imageFileService.uploadImageFile(file, "profile/" + userId + "/");
             File savedfile = fileRepository.save(new File(
                     "profile",
                     originalFileName,

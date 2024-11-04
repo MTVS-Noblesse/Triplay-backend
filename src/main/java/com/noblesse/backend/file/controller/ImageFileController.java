@@ -68,7 +68,7 @@ public class ImageFileController {
 
     @PostMapping("/user/profile")
     @ResponseBody
-    public ResponseEntity<?> registUserProfileImage(
+    public ResponseEntity<?> registerUserProfileImage(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody MultipartFile file) throws IOException {
 

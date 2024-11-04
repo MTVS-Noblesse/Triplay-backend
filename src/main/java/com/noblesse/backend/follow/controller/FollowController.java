@@ -20,51 +20,28 @@ public class FollowController {
 
     private final FollowService followService;
     private final JwtUtil jwtUtil;
-    private final PostQueryService postQueryService;
 
 
     @Autowired
     public FollowController(FollowService followService, JwtUtil jwtUtil, PostQueryService postQueryService) {
         this.followService = followService;
         this.jwtUtil = jwtUtil;
-        this.postQueryService = postQueryService;
     }
 
-    @PostMapping
-    public ResponseEntity<Follow> follow(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("postId") Long postId) {
-
-        String token = authorizationHeader.substring(7);
-        Long myId = jwtUtil.extractUserId(token);
-
-        PostDTO postDTO = postQueryService.getPostById(postId);
-        Long targetId = postDTO.getUserId();
-
-        return ResponseEntity.ok(followService.follow(myId, targetId));
+    @PostMapping("/{targetId}")
+    public ResponseEntity<Follow> follow(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("targetId") Long targetId) {
+        return ResponseEntity.ok(followService.follow(authorizationHeader, targetId));
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> unFollow(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("postId") Long postId) {
-
-        String token = authorizationHeader.substring(7);
-        Long userId = jwtUtil.extractUserId(token);
-
-        PostDTO postDTO = postQueryService.getPostById(postId);
-        Long targetId = postDTO.getUserId();
-
-        followService.unFollow(userId, targetId);
+    @DeleteMapping("/{targetId}")
+    public ResponseEntity<?> unFollow(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("targetId") Long targetId) {
+        followService.unFollow(authorizationHeader, targetId);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
-    public boolean isFollowing(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("postId") Long postId){
-
-        String token = authorizationHeader.substring(7);
-        Long userId = jwtUtil.extractUserId(token);
-
-        PostDTO postDTO = postQueryService.getPostById(postId);
-        Long targetId = postDTO.getUserId();
-
-        return followService.isFollowing(userId, targetId);
+    @GetMapping("/is-following/{targetId}")
+    public boolean isFollowing(@RequestHeader("Authorization") String authorizationHeader, @PathVariable("targetId") Long targetId){
+        return followService.isFollowing(authorizationHeader, targetId);
     }
 
     @GetMapping("/follower-list")

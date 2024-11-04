@@ -41,7 +41,7 @@ public class PreferenceServiceImpl implements PreferenceService{
         preferenceRepository.save(foundPreference);
     }
 
-    @Override
+    // 처음에 회원가입 할 때 유저 취향 리스트 선택할텐데, 그때 취향들 등록하는 로직도 업데이트랑 똑같아서 이 메소드 쓰면 됨.
     public void updateUserPreferences(List<Long> preferenceIds, Long userId) {
         // UserPreference 조회 시 존재하지 않으면 새로 생성
         UserPreference userPreference = userPreferenceRepository.findUserPreferenceByUserId(userId)
@@ -51,42 +51,35 @@ public class PreferenceServiceImpl implements PreferenceService{
                     return newUserPreference;
                 });
 
-        // user_preference_id를 가져옵니다.
-        Long userPreferenceId = userPreference.getUserPreferenceId();
-
         // 기존 preferenceInfoList를 가져옵니다
         List<PreferenceInfo> preferenceInfoList = userPreference.getPreferenceInfoList();
 
-        // 기존 preferenceInfoList의 is_selected 상태 업데이트
+        // 선택된 preferenceIds에 따라 선택 여부를 업데이트
         for (PreferenceInfo info : preferenceInfoList) {
-            if (preferenceIds.contains(info.getPreferenceId())) {
-                info.setSelected(true);
-            } else {
-                info.setSelected(false);
-            }
+            boolean isSelected = preferenceIds.contains(info.getPreferenceId());
+            info.setSelected(isSelected);
         }
 
-        // 새로운 취향 추가
+        // 새로운 취향이 추가되었을 때를 위해 기존 preferenceInfoList에 반영
         List<Long> allPreferenceIds = preferenceRepository.findAllPreferenceId();
 
         for (Long id : allPreferenceIds) {
-            boolean exists = preferenceInfoList.stream()
+            boolean isExist = preferenceInfoList.stream()
                     .anyMatch(info -> info.getPreferenceId().equals(id));
-
-            if (!exists) {
+            if (!isExist) {
                 Preference newPreference = preferenceRepository.findPreferenceByPreferenceId(id)
-                        .orElseThrow(() -> new IllegalArgumentException("preference not found: " + id));
+                        .orElseThrow(() -> new IllegalArgumentException("preference not found " + id));
                 PreferenceInfo newInfo = new PreferenceInfo(newPreference.getPreferenceId(), false);
                 preferenceInfoList.add(newInfo);
             }
         }
 
-        // 삭제된 취향 처리
+        // 삭제된 취향 처리 (기존 preferenceInfoList에서 삭제)
         preferenceInfoList.removeIf(info -> !allPreferenceIds.contains(info.getPreferenceId()));
 
-        // 업데이트된 preferenceInfoList 저장
         userPreferenceRepository.save(userPreference);
     }
+
 
     @Override
     public List<PreferenceInfo> findSelectedUserPreferenceList(Long userId) {

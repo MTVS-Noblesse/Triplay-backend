@@ -127,7 +127,6 @@ public class FileService {
 
         File profileImageFile = fileRepository.findFileByFileId(profileFileId);
         String newImageUrl = imageFileService.findImageDownloadLink("profile/" + userId + "/", profileImageFile.getFileName());
-        profileImageFile.setFileUrl(newImageUrl);
 
         return newImageUrl;
     }
@@ -150,6 +149,8 @@ public class FileService {
         if(foundUser != null) {
             imageFileService.deleteProfileImageByUserId(userId);
             fileRepository.deleteById(foundUser.getProfileId());
+            foundUser.setProfileId(null);
+            oAuthRepository.save(foundUser);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.noblesse.backend.clip.service;
 
 import com.noblesse.backend.clip.domain.Clip;
+import com.noblesse.backend.clip.dto.ClipImageUploadRequestDTO;
 import com.noblesse.backend.clip.dto.ClipRegistRequestDTO;
 import com.noblesse.backend.clip.repository.ClipRepository;
 import com.noblesse.backend.file.service.FileService;
@@ -30,29 +31,27 @@ public class ClipService {
     }
 
     @Transactional
-    public void insertClip(ClipRegistRequestDTO clipRegistRequestDTO) throws IOException {
-        try {
-            Clip clip = new Clip(
-                    clipRegistRequestDTO.getClipTitle(),
-                    null, // 임시로 null 설정
-                    clipRegistRequestDTO.getIsOpened(),
-                    clipRegistRequestDTO.getUserId(),
-                    clipRegistRequestDTO.getTripId()
-            );
+    public Long uploadImageFiles(ClipImageUploadRequestDTO clipImageUploadRequestDTO, Long userId) throws IOException {
+        Clip clip = new Clip(
+                null,
+                null,
+                false,
+                userId,
+                clipImageUploadRequestDTO.getTripId()
+        );
+        Clip savedClip = clipRepository.save(clip);
+        fileService.insertClipImageFiles(clipImageUploadRequestDTO.getFiles(), savedClip.getClipId());
+        return savedClip.getClipId();
+    }
 
-            Clip savedClip = clipRepository.save(clip);
+    @Transactional
+    public void insertClip(ClipRegistRequestDTO clipRegistRequestDTO, Long clipId) throws IOException {
+        Clip foundClip = clipRepository.findClipByClipId(clipId);
 
-            // 저장된 후에 clip_url 업데이트
-            String clipUrl = "clip/" + savedClip.getClipId() + "/" + clipRegistRequestDTO.getFile().getOriginalFilename();
-            savedClip.setClipUrl(clipUrl);
-            clipRepository.save(savedClip);
-
-            fileService.insertClipFile(clipRegistRequestDTO.getFile(), savedClip.getClipId(), savedClip.getClipTitle());
-        } catch (IOException e) {
-            // 로그 기록
-            System.err.println("클립 파일 저장 중 오류 발생: " + e.getMessage());
-            // 예외를 다시 던져서 상위 레벨에서 처리할 수 있게 함
-            throw new IOException("클립 파일 저장 중 오류가 발생했습니다.", e);
+        if (foundClip != null) {
+            foundClip.setClipTitle(clipRegistRequestDTO.getClipTitle());
+            foundClip.setOpened(clipRegistRequestDTO.getIsOpened());
+            foundClip.setClipUrl("clip/" + clipId + "/");
         }
     }
 

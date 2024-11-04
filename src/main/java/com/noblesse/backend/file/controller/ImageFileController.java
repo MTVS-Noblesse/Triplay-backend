@@ -66,6 +66,14 @@ public class ImageFileController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/clip/{clipId}")
+    @ResponseBody
+    public ResponseEntity<?> findImageDownloadLinksByClipId(
+            @PathVariable Long clipId) {
+
+        return ResponseEntity.ok(fileService.findImageDownloadLinksByClipId(clipId));
+    }
+
     @PostMapping("/user/profile")
     @ResponseBody
     public ResponseEntity<?> registUserProfileImage(

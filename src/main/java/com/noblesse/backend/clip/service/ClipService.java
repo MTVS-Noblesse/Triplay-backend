@@ -44,7 +44,8 @@ public class ClipService {
                 clipImageUploadRequestDTO.getTripId()
         );
         Clip savedClip = clipRepository.save(clip);
-        savedClip.setClipUrl("clip/" + savedClip.getClipId() + "/" + clipImageUploadRequestDTO.getFiles()[0].getOriginalFilename());
+        String filename = clipImageUploadRequestDTO.getFiles()[0].getOriginalFilename();
+        savedClip.setClipUrl("clip/" + savedClip.getClipId() + "/" + filename.substring(filename.lastIndexOf(".")));
         fileService.insertClipImageFiles(clipImageUploadRequestDTO.getFiles(), savedClip.getClipId());
         return savedClip.getClipId();
     }

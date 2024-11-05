@@ -160,6 +160,11 @@ public class FileService {
         fileRepository.deleteFilesByClipId(clipId);
     }
 
+    @Transactional
+    public String findThumbnailImageByClipUrl(String clipUrl) {
+        return findImageDownloadLinkByFileUrl(clipUrl);
+    }
+
     public List<String> findImageDownloadLinksByClipId(Long clipId) {
         List<File> foundFiles = fileRepository.findFilesByClipIdOrderByClipOrderAsc(clipId);
         List<String> downloadLinks = new ArrayList<>();

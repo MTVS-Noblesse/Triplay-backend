@@ -1,5 +1,6 @@
 package com.noblesse.backend.file.controller;
 
+import com.noblesse.backend.clip.service.ClipService;
 import com.noblesse.backend.file.service.FileService;
 import com.noblesse.backend.oauth2.util.JwtUtil;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,12 @@ import java.util.Map;
 public class ImageFileController {
     private final FileService fileService;
     private final JwtUtil jwtUtil;
+    private final ClipService clipService;
 
-    public ImageFileController(FileService fileService, JwtUtil jwtUtil) {
+    public ImageFileController(FileService fileService, JwtUtil jwtUtil, ClipService clipService) {
         this.fileService = fileService;
         this.jwtUtil = jwtUtil;
+        this.clipService = clipService;
     }
 
     @PostMapping("/{postId}/new")
@@ -64,6 +67,15 @@ public class ImageFileController {
 
         fileService.deleteImageFileByPostIdAndFileName(postId, fileName);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/clip/thumbnail/{clipId}")
+    @ResponseBody
+    public ResponseEntity<?> findImageByFileUrl(
+            @PathVariable(name = "clipId") Long clipId) {
+
+        String publicFileUrl = clipService.findThumbnailImageByClipId(clipId);
+        return ResponseEntity.ok(publicFileUrl);
     }
 
     @GetMapping("/clip/{clipId}")

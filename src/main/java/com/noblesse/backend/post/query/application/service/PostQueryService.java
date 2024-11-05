@@ -1,10 +1,13 @@
 package com.noblesse.backend.post.query.application.service;
 
 import com.noblesse.backend.file.dto.FileDTO;
+import com.noblesse.backend.file.entity.File;
 import com.noblesse.backend.file.entity.QFile;
-import com.noblesse.backend.file.repository.CustomFileRepositoryImpl;
+import com.noblesse.backend.file.repository.FileRepository;
 import com.noblesse.backend.file.service.FileService;
+import com.noblesse.backend.oauth2.entity.OAuthUser;
 import com.noblesse.backend.oauth2.entity.QOAuthUser;
+import com.noblesse.backend.oauth2.repository.OAuthRepository;
 import com.noblesse.backend.post.common.dto.PostCoCommentDTO;
 import com.noblesse.backend.post.common.dto.PostCommentDTO;
 import com.noblesse.backend.post.common.dto.PostDTO;
@@ -16,16 +19,21 @@ import com.noblesse.backend.post.common.exception.PostNotFoundException;
 import com.noblesse.backend.post.common.exception.PostReportNotFoundException;
 import com.noblesse.backend.post.query.infrastructure.persistence.repository.*;
 import com.noblesse.backend.trip.domain.QTrip;
-
+import com.noblesse.backend.trip.domain.Trip;
+import com.noblesse.backend.trip.dto.TripDTO;
+import com.noblesse.backend.trip.repository.TripRepository;
 import com.querydsl.core.Tuple;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,17 +46,17 @@ public class PostQueryService {
     private final PostReportRepository postReportRepository;
     private final CustomPostRepositoryImpl customPostRepository;
     private final FileService fileService;
-    private final CustomFileRepositoryImpl customFileRepository;
+    private final FileRepository fileRepository;
 
     /**
      * ### PostDTO ###
      */
     /** 포스트 고유 ID로 포스팅 검색하는 메서드 */
-    public PostDTO getPostById(Long postId) {
-        Tuple result = customPostRepository.findPostByPostId(postId);
+    public PostDTO getPostById(Long id) {
+        Tuple result = customPostRepository.findPostByPostId(id);
 
-        if (result == null) {
-            throw new PostNotFoundException(postId);
+        if(result == null) {
+            throw new PostNotFoundException(id);
         }
 
         Post post = result.get(QPost.post);
@@ -58,8 +66,12 @@ public class PostQueryService {
         LocalDate tripEndDate = result.get(QTrip.trip.tripEndDate);
         String tripParty = result.get(QTrip.trip.tripParty);
 
-        List<FileDTO> fileDTOs = customFileRepository.findFilesForPostWithPlaces(postId)
+        List<File> postImages = fileRepository.findFilesByPostId(id)
                 .stream()
+                .sorted(Comparator.comparing(File::getPostImageOrder))
+                .collect(Collectors.toList());
+
+        List<FileDTO> fileDTOs = postImages.stream()
                 .map(file -> new FileDTO(file, fileService.findImageDownloadLinkByFileUrl(file.getFileUrl())))
                 .collect(Collectors.toList());
 

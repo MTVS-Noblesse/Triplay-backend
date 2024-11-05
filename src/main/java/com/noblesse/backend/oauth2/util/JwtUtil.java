@@ -97,4 +97,8 @@ public class JwtUtil {
     public String extractUserName(String token) {
         return getClaimFromToken(token, claims -> claims.get("userName", String.class));
     }
+
+    public String extractEmail(String token) {
+        return getClaimFromToken(token, claims -> claims.get("email", String.class));
+    }
 }

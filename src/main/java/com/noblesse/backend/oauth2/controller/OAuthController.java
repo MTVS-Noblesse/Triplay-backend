@@ -77,11 +77,16 @@ public class OAuthController {
         try {
             UserDetails userDetails = oAuth2Service.loadUser(userId);
 
-            UserDTO userDTO = new UserDTO(userId, userDetails.getUsername());
-            return ResponseEntity.ok(userDTO);
+            if (userDetails instanceof PrincipalDetails) {
+                PrincipalDetails principalDetails = (PrincipalDetails) userDetails;
+
+                UserDTO userDTO = new UserDTO(userId, principalDetails.getUsername(), principalDetails.getEmail());
+                return ResponseEntity.ok(userDTO);
+            } else {
+                throw new UsernameNotFoundException("User not found with id: " + userId);
+            }
         } catch (UsernameNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-
 }

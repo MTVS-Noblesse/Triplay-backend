@@ -1,5 +1,6 @@
 package com.noblesse.backend.trip.controller;
 
+import com.noblesse.backend.oauth2.util.JwtUtil;
 import com.noblesse.backend.trip.dto.TripRegisterRequestDTO;
 import com.noblesse.backend.trip.dto.TripUpdateRequestDTO;
 import com.noblesse.backend.trip.service.TripService;
@@ -12,15 +13,25 @@ import org.springframework.web.bind.annotation.*;
 public class TripController {
 
     private final TripService tripService;
+    private final JwtUtil jwtUtil;
 
-    public TripController(TripService tripService) {
+    public TripController(TripService tripService, JwtUtil jwtUtil) {
         this.tripService = tripService;
+        this.jwtUtil = jwtUtil;
     }
 
     @Operation(summary = "전체 여행 목록 조회")
     @GetMapping
     public ResponseEntity<?> getTrips() {
         return ResponseEntity.ok(tripService.findAll());
+    }
+
+    @Operation(summary = "사용자가 작성한 여행 목록 조회")
+    @GetMapping("/user")
+    public ResponseEntity<?> getUserTrips(@RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+        return ResponseEntity.ok(tripService.findTripsByUserId(userId));
     }
 
     @Operation(summary = "여행 상세 조회")

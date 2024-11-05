@@ -26,6 +26,10 @@ public class ClipService {
         return clipRepository.findClipByClipId(ClipId);
     }
 
+    public List<Clip> findClipsByUserId(Long userId) {
+        return clipRepository.findByUserId(userId);
+    }
+
     public List<Clip> findAll() {
         return clipRepository.findAll();
     }

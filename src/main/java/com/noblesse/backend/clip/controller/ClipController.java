@@ -39,6 +39,14 @@ public class ClipController {
         return ResponseEntity.ok(clipService.findAll());
     }
 
+    @Operation(summary = "사용자가 작성한 클립 목록 조회")
+    @GetMapping("/user")
+    public ResponseEntity<?> getUserClips(@RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+        return ResponseEntity.ok(clipService.findClipsByUserId(userId));
+    }
+
     @Operation(summary = "클립 상세 조회")
     @Tag(name = "Clip Query")
     @ApiResponses({

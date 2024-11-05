@@ -3,4 +3,9 @@ package com.noblesse.backend.trip.repository;
 import com.noblesse.backend.trip.domain.Trip;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TripRepository extends JpaRepository<Trip, Long> { }
+import java.util.List;
+
+public interface TripRepository extends JpaRepository<Trip, Long> {
+
+    List<Trip> findByUserId(Long userId);
+}

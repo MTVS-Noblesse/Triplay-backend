@@ -1,5 +1,6 @@
 package com.noblesse.backend.trip.domain;
 
+import com.noblesse.backend.BaseTimeEntity;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "trip")
-public class Trip {
+public class Trip extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,21 +35,19 @@ public class Trip {
     @JoinColumn(name = "trip_id")
     private List<Place> places = new ArrayList<>();
 
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+    @Column(name = "user_id")
+    private Long userId;
 
     public Trip() {}
 
-    public Trip(Long tripId, String tripTitle, String tripParty, LocalDate tripStartDate, LocalDate tripEndDate, List<Place> places) {
+    public Trip(Long tripId, String tripTitle, String tripParty, LocalDate tripStartDate, LocalDate tripEndDate, List<Place> places, Long userId) {
         this.tripId = tripId;
         this.tripTitle = tripTitle;
         this.tripParty = tripParty;
         this.tripStartDate = tripStartDate;
         this.tripEndDate = tripEndDate;
         this.places = places;
+        this.userId = userId;
     }
 
     public Long getTripId() {
@@ -75,14 +74,6 @@ public class Trip {
         return places;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
     public void setTripTitle(String tripTitle) {
         this.tripTitle = tripTitle;
     }
@@ -103,12 +94,12 @@ public class Trip {
         this.places = places;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     @Override
@@ -120,8 +111,7 @@ public class Trip {
                 ", tripStartDate=" + tripStartDate +
                 ", tripEndDate=" + tripEndDate +
                 ", places=" + places +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
+                ", userId=" + userId +
                 '}';
     }
 }

@@ -25,6 +25,10 @@ public class TripService {
                 .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
     }
 
+    public List<Trip> findTripsByUserId(Long userId) {
+        return tripRepository.findByUserId(userId);
+    }
+
     public List<Trip> findAll() {
         return tripRepository.findAll();
     }

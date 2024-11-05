@@ -1,5 +1,6 @@
 HELP.md
 .gradle
+.DS_store
 build/
 src/main/resources/triplayServiceAccountKey.json
 src/main/resources/keystore.p12

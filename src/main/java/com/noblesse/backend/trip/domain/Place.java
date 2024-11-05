@@ -1,6 +1,6 @@
 package com.noblesse.backend.trip.domain;
 
-import com.noblesse.backend.trip.converter.StringListConverter;
+import com.noblesse.backend.common.converter.StringListConverter;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;

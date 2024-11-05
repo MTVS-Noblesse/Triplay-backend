@@ -4,6 +4,7 @@ HELP.md
 build/
 src/main/resources/triplayServiceAccountKey.json
 src/main/resources/keystore.p12
+src/main/generated
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/

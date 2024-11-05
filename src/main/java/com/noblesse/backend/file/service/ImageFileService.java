@@ -60,6 +60,23 @@ public class ImageFileService {
         return blobList;
     }
 
+    @Transactional
+    public List<Blob> uploadClipImageFiles(MultipartFile[] files, String filePath) throws IOException {
+        List<Blob> blobList = new ArrayList<>();
+
+        Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
+
+        for (int i = 0; i<files.length; i++) {
+            String originalFileName = files[i].getOriginalFilename();
+            InputStream content = new ByteArrayInputStream(files[i].getBytes());
+            // 파일 이름에 디렉토리 이름을 포함하여 저장
+            Blob blob = bucket.create(filePath + i + originalFileName.substring(originalFileName.lastIndexOf(".")), content, files[i].getContentType());
+            blobList.add(blob);
+        }
+
+        return blobList;
+    }
+
     public String findImageDownloadLink(String directory, String fileName) {
         Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
         Blob blob = bucket.get(directory + fileName);
@@ -72,20 +89,6 @@ public class ImageFileService {
         Blob blob = bucket.get(fileUrl);
         if(blob == null) return null;
         return blob.signUrl(1, TimeUnit.HOURS).toString();
-    }
-
-    public String findImageDownloadLinkWithPrefix(String prefix) {
-        Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
-
-        Iterable<Blob> blobs = bucket.list(Storage.BlobListOption.prefix(prefix)).iterateAll();
-
-        for (Blob blob : blobs) {
-            if (blob != null) {
-                return blob.signUrl(1, TimeUnit.HOURS).toString();
-            }
-        }
-
-        return null;
     }
 
     @Transactional

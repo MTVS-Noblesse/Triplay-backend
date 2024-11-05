@@ -40,6 +40,7 @@ public class ClipService {
                 clipImageUploadRequestDTO.getTripId()
         );
         Clip savedClip = clipRepository.save(clip);
+        savedClip.setClipUrl("clip/" + savedClip.getClipId() + "/" + clipImageUploadRequestDTO.getFiles()[0].getOriginalFilename());
         fileService.insertClipImageFiles(clipImageUploadRequestDTO.getFiles(), savedClip.getClipId());
         return savedClip.getClipId();
     }
@@ -51,7 +52,6 @@ public class ClipService {
         if (foundClip != null) {
             foundClip.setClipTitle(clipRegistRequestDTO.getClipTitle());
             foundClip.setOpened(clipRegistRequestDTO.getIsOpened());
-            foundClip.setClipUrl("clip/" + clipId + "/");
         }
     }
 
@@ -67,5 +67,13 @@ public class ClipService {
     public void deleteClipByClipId(Long ClipId) {
         fileService.deleteClipFileByClipId(ClipId);
         clipRepository.deleteById(ClipId);
+    }
+
+    public String findThumbnailImageByClipId(Long clipId) {
+        Clip foundClip = findClipByClipId(clipId);
+        if (foundClip != null) {
+            return fileService.findThumbnailImageByClipUrl(foundClip.getClipUrl());
+        }
+        throw new IllegalArgumentException("잘못된 Clip Id로 접근");
     }
 }

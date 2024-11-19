@@ -49,6 +49,12 @@ dependencies {
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+
+    // Prometheus & Micrometer 의존성 추가
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'io.micrometer:micrometer-core'
+
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"

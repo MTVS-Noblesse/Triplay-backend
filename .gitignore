@@ -8,6 +8,8 @@ build/
 src/main/resources/triplayServiceAccountKey.json
 src/main/resources/keystore.p12
 src/main/generated
+/src/main/resources/triplayServiceAccountKey.json  # Firebase 설정 파일
+/src/main/resources/keystore.p12                   # SSL 인증서(개발용)
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/

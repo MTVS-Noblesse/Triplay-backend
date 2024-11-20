@@ -7,7 +7,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface PostRepository extends JpaRepository<Post, Long>, QuerydslPredicateExecutor<Post>, CustomPostRepository {
+public interface PostRepository extends JpaRepository<Post, Long>, QuerydslPredicateExecutor<Post> {
 
     List<Post> findByUserId(Long userId);
 

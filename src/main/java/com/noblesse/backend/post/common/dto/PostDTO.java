@@ -2,6 +2,7 @@ package com.noblesse.backend.post.common.dto;
 
 import com.noblesse.backend.file.dto.FileDTO;
 import com.noblesse.backend.post.common.entity.Post;
+import com.noblesse.backend.trip.dto.PlaceDTO;
 import lombok.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,7 +40,6 @@ public class PostDTO {
     private List<Map<String, Object>> newImages;
 //    private MultipartFile[] newImages;
 
-
     @Nullable
     private LocalDate tripStartDate;
 
@@ -56,7 +56,7 @@ public class PostDTO {
     private String profileImageUrl;
 
     @Nullable
-    private String thumbnailImageUrl;
+    private List<PlaceDTO> places;
 
     // Create 용 생성자
     public PostDTO(String postTitle, String postContent, Boolean isOpened, Long userId, Long tripId, Long clipId) {

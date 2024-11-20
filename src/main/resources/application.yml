@@ -38,6 +38,7 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+
 server:
   port: 8443
   ssl:
@@ -45,6 +46,7 @@ server:
     key-store-password: ${KEY_PASSWORD}
     key-store-type: PKCS12
     key-alias: triplay
+
 app:
   firebase-configuration-file: ./triplayServiceAccountKey.json
   firebase-bucket: ${FIREBASE_STORAGE_BUCKET}
@@ -59,3 +61,6 @@ logging:
     com.noblesse.backend.clip: debug
     com.noblesse.backend.file: debug
     com.noblesse.backend.manage.clip: debug
+
+mybatis:
+  mapper-locations: mapper/**/*.xml

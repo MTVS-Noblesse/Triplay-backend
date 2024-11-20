@@ -1,13 +1,6 @@
 package com.noblesse.backend.post.query.application.service;
 
 import com.noblesse.backend.file.dto.FileDTO;
-import com.noblesse.backend.file.entity.File;
-import com.noblesse.backend.file.entity.QFile;
-import com.noblesse.backend.file.repository.FileRepository;
-import com.noblesse.backend.file.service.FileService;
-import com.noblesse.backend.oauth2.entity.OAuthUser;
-import com.noblesse.backend.oauth2.entity.QOAuthUser;
-import com.noblesse.backend.oauth2.repository.OAuthRepository;
 import com.noblesse.backend.post.common.dto.PostCoCommentDTO;
 import com.noblesse.backend.post.common.dto.PostCommentDTO;
 import com.noblesse.backend.post.common.dto.PostDTO;
@@ -15,25 +8,15 @@ import com.noblesse.backend.post.common.dto.PostReportDTO;
 import com.noblesse.backend.post.common.entity.*;
 import com.noblesse.backend.post.common.exception.PostCoCommentNotFoundException;
 import com.noblesse.backend.post.common.exception.PostCommentNotFoundException;
-import com.noblesse.backend.post.common.exception.PostNotFoundException;
 import com.noblesse.backend.post.common.exception.PostReportNotFoundException;
 import com.noblesse.backend.post.query.infrastructure.persistence.repository.*;
-import com.noblesse.backend.trip.domain.QTrip;
-import com.noblesse.backend.trip.domain.Trip;
-import com.noblesse.backend.trip.dto.TripDTO;
-import com.noblesse.backend.trip.repository.TripRepository;
-import com.querydsl.core.Tuple;
+import com.noblesse.backend.post.query.mapper.PostMapper;
+import com.noblesse.backend.trip.dto.PlaceDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,47 +27,26 @@ public class PostQueryService {
     private final PostCommentRepository postCommentRepository;
     private final PostCoCommentRepository postCoCommentRepository;
     private final PostReportRepository postReportRepository;
-    private final CustomPostRepositoryImpl customPostRepository;
-    private final FileService fileService;
-    private final FileRepository fileRepository;
+
+    private final PostMapper postMapper;
 
     /**
      * ### PostDTO ###
      */
     /** 포스트 고유 ID로 포스팅 검색하는 메서드 */
-    public PostDTO getPostById(Long id) {
-        Tuple result = customPostRepository.findPostByPostId(id);
+    public PostDTO getPostById(Long postId) {
+        PostDTO post = postMapper.getPostByPostId(postId);
 
-        if(result == null) {
-            throw new PostNotFoundException(id);
-        }
+        // Trip에 속한 장소 정보 추가
+        List<PlaceDTO> places = postMapper.getPlacesByTripId(post.getTripId());
+        post.setPlaces(places);
 
-        Post post = result.get(QPost.post);
-        String userName = result.get(QOAuthUser.oAuthUser.userName);
-        String profileImageUrl = fileService.findImageDownloadLinkByFileUrl(result.get(QFile.file.fileUrl));
-        LocalDate tripStartDate = result.get(QTrip.trip.tripStartDate);
-        LocalDate tripEndDate = result.get(QTrip.trip.tripEndDate);
-        String tripParty = result.get(QTrip.trip.tripParty);
+        // Post 및 Place에 연결된 이미지 정보 추가
+        List<FileDTO> images = postMapper.getImagesByPostAndPlaceIds(post.getPostId(), post.getTripId());
+        post.setFiles(images);
 
-        List<File> postImages = fileRepository.findFilesByPostId(id)
-                .stream()
-                .sorted(Comparator.comparing(File::getPostImageOrder))
-                .collect(Collectors.toList());
-
-        List<FileDTO> fileDTOs = postImages.stream()
-                .map(file -> new FileDTO(file, fileService.findImageDownloadLinkByFileUrl(file.getFileUrl())))
-                .collect(Collectors.toList());
-
-        PostDTO dto = new PostDTO(post);
-        dto.setUserName(userName);
-        dto.setProfileImageUrl(profileImageUrl);
-        dto.setTripStartDate(tripStartDate);
-        dto.setTripEndDate(tripEndDate);
-        dto.setTripParty(tripParty);
-        dto.setFiles(fileDTOs);
-
-        System.out.println("DTO: " + dto.toString());
-        return dto;
+        System.out.println("post = " + post);
+        return post;
     }
 
     /** 사용자 고유 ID(userId)로 해당 사용자의 모든 포스트를 조회하는 메서드 */
@@ -97,29 +59,19 @@ public class PostQueryService {
 
     /** 모든 포스트를 조회하는 메서드 */
     public List<PostDTO> getAllPosts() {
-        List<Tuple> results = customPostRepository.findPostsWithDetails();
+        List<PostDTO> posts = postMapper.getAllPostsWithDetails();
 
-        List<PostDTO> posts = new ArrayList<>();
+        for (PostDTO post : posts) {
+            // Trip에 속한 장소 정보 추가
+            List<PlaceDTO> places = postMapper.getPlacesByTripId(post.getTripId());
+            post.setPlaces(places);
 
-        for (Tuple result : results) {
-            Post post = result.get(QPost.post);
-            String userName = result.get(QOAuthUser.oAuthUser.userName);
-            String profileImageUrl = fileService.findImageDownloadLinkByFileUrl(result.get(new QFile("profileFile").fileUrl));
-            LocalDate tripStartDate = result.get(QTrip.trip.tripStartDate);
-            LocalDate tripEndDate = result.get(QTrip.trip.tripEndDate);
-            String tripParty = result.get(QTrip.trip.tripParty);
-            String thumbnailImage =fileService.findImageDownloadLinkByFileUrl(result.get(new QFile("thumbnailFile").fileUrl));
-
-            PostDTO dto = new PostDTO(post);
-            dto.setUserName(userName);
-            dto.setProfileImageUrl(profileImageUrl);
-            dto.setTripStartDate(tripStartDate);
-            dto.setTripEndDate(tripEndDate);
-            dto.setTripParty(tripParty);
-            dto.setThumbnailImageUrl(thumbnailImage);
-
-            posts.add(dto);
+            // Post 및 Place에 연결된 이미지 정보 추가
+            List<FileDTO> images = postMapper.getImagesByPostAndPlaceIds(post.getPostId(), post.getTripId());
+            post.setFiles(images);
         }
+
+        System.out.println("posts = " + posts);
         return posts;
     }
 

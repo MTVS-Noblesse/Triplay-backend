@@ -121,10 +121,16 @@ public class PostQueryService {
 
     /** 포스트 고유 ID(postId)로 포스트 댓글 전체를 조회하는 메서드 */
     public List<PostCommentDTO> getPostCommentsByPostId(Long postId) {
-        List<PostComment> postComments = postCommentRepository.findByPostId(postId);
-        return postComments.stream()
-                .map(PostCommentDTO::new)
-                .collect(Collectors.toList());
+        List<PostCommentDTO> postComments = postCommentRepository.findByPostId(postId);
+
+        postComments.forEach(comment -> {
+            if (comment.getProfileImageUrl() != null) {
+                String convertedUrl = imageFileService.findImageDownloadLinkByFileUrl(comment.getProfileImageUrl());
+                comment.setProfileImageUrl(convertedUrl);
+            }
+        });
+
+        return postComments;
     }
 
     /** 모든 포스트 댓글을 조회하는 메서드 */

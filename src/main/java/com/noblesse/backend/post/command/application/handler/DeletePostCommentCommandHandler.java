@@ -24,12 +24,12 @@ public class DeletePostCommentCommandHandler {
         PostComment postComment = postCommentRepository.findById(command.getPostCommentId())
                 .orElseThrow(() -> new PostCommentNotFoundException(command.getPostCommentId()));
 
-        // 2. 삭제 권한 확인
-//        if (postDomainService.canUserDeletePostComment(postComment, command.getUserId())) {
-//            throw new IllegalStateException(
-//                    String.format("User %d is not allowed to delete post comment %d", command.getUserId(), command.getPostCommentId())
-//            );
-//        }
+//         2. 삭제 권한 확인
+        if (postDomainService.canUserDeletePostComment(postComment, command.getUserId())) {
+            throw new IllegalStateException(
+                    String.format("User %d is not allowed to delete post comment %d", command.getUserId(), command.getPostCommentId())
+            );
+        }
 
         // 3. 게시물 댓글 삭제
         postCommentRepository.delete(postComment);

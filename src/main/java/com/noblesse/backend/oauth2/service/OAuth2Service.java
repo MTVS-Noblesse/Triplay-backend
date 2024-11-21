@@ -1,10 +1,11 @@
 package com.noblesse.backend.oauth2.service;
+import com.noblesse.backend.file.service.FileService;
+import com.noblesse.backend.oauth2.dto.MobileMyPageDTO;
 import com.noblesse.backend.oauth2.dto.TokenDTO;
 import com.noblesse.backend.oauth2.entity.OAuthUser;
 import com.noblesse.backend.oauth2.repository.OAuthRepository;
 import com.noblesse.backend.oauth2.security.PrincipalDetails;
 import com.noblesse.backend.oauth2.util.JwtUtil;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -17,8 +18,6 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,6 +36,9 @@ public class OAuth2Service extends DefaultOAuth2UserService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private FileService fileService;
 
     public OAuth2Service(@Value("${spring.security.oauth2.client.registration.naver.client-id}") String clientId, @Value("${spring.security.oauth2.client.registration.naver.client-secret}") String clientSecret, OAuthRepository oAuthRepository, JwtUtil jwtUtil, RestTemplate restTemplate) {
         this.oAuthRepository = oAuthRepository;
@@ -105,5 +107,35 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         // PrincipalDetails 객체 생성 및 반환
         return new PrincipalDetails(oAuthUser);
     }
+    //findProfileImageUrlByUserId
+    public MobileMyPageDTO getUserData(Long userId) {
+        String url = fileService.findProfileImageUrlByUserId(userId);
+        MobileMyPageDTO mobileMyPageDTO = new MobileMyPageDTO();
+        mobileMyPageDTO.setProfileUrl(url);
+        Optional<OAuthUser> oAuthUser = oAuthRepository.findById(userId);
+        if(oAuthUser.isPresent()) {
+            OAuthUser userData = oAuthUser.get();
+            mobileMyPageDTO.setEmail(userData.getEmail());
+            mobileMyPageDTO.setUserName(userData.getUserName());
+            return mobileMyPageDTO;
+        }
+        return null;
+    }
 
+    public MobileMyPageDTO modifyUser(Long userId, MobileMyPageDTO mobileMyPageDTO) {
+        Optional<OAuthUser> oAuthUser = oAuthRepository.findById(userId);
+        if(oAuthUser.isPresent()) {
+            OAuthUser oAuthUserData = oAuthUser.get();
+            oAuthUserData.setEmail(mobileMyPageDTO.getEmail());
+            oAuthUserData.setUserName(mobileMyPageDTO.getUserName());
+            oAuthRepository.save(oAuthUserData);
+            return mobileMyPageDTO;
+        }
+        return null;
+    }
+
+
+    public void deleteUser(Long userId) {
+        oAuthRepository.updateIsFiredAndTimestamp(userId);
+    }
 }

@@ -43,7 +43,7 @@ public class Place {
     @Column(name = "idx")
     private int idx;
 
-    @Column(name = "photo_url")
+    @Column(name = "photo_url", columnDefinition = "text")
     private String photoUrl;
 
     @Column(name = "plan_day")

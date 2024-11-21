@@ -1,38 +1,21 @@
 package com.noblesse.backend.oauth2.controller;
 
 import com.noblesse.backend.oauth2.dto.UserDTO;
-import com.noblesse.backend.oauth2.entity.OAuthUser;
-import com.noblesse.backend.oauth2.repository.OAuthRepository;
-import com.noblesse.backend.oauth2.security.PrincipalDetails;
 import com.noblesse.backend.oauth2.service.OAuth2Service;
 import com.noblesse.backend.oauth2.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.client.RestTemplate;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import static com.fasterxml.jackson.databind.type.LogicalType.Map;
-
 @Controller
 public class OAuthController {
-    @Autowired
-    private OAuthRepository oAuthRepository;
+
     @Autowired
     private JwtUtil jwtUtil;
+
     @Autowired
     private OAuth2Service oAuth2Service;
 
@@ -59,34 +42,27 @@ public class OAuthController {
     }
 
     @GetMapping
-    public ResponseEntity<UserDTO> getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<Long> getUserId(@RequestHeader("Authorization") String authorizationHeader) {
         String accessToken = authorizationHeader.substring(7);
         if (jwtUtil.validateAccessToken(accessToken)) {
             Long userId = jwtUtil.extractUserId(accessToken);
-            String userName = jwtUtil.extractUserName(accessToken);
-
-            UserDTO userDTO = new UserDTO(userId, userName);
-            return ResponseEntity.ok(userDTO);
+            return ResponseEntity.ok(userId);
         } else {
             return ResponseEntity.status(401).body(null);
         }
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<UserDTO> getUserInfoById(@PathVariable("userId") Long userId) {
-        try {
-            UserDetails userDetails = oAuth2Service.loadUser(userId);
+    @GetMapping("/profile")
+    public ResponseEntity<UserDTO> getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
+        String accessToken = authorizationHeader.substring(7);
+        if (jwtUtil.validateAccessToken(accessToken)) {
+            Long userId = jwtUtil.extractUserId(accessToken);
+            UserDTO user = oAuth2Service.getUserProfile(userId);
 
-            if (userDetails instanceof PrincipalDetails) {
-                PrincipalDetails principalDetails = (PrincipalDetails) userDetails;
-
-                UserDTO userDTO = new UserDTO(userId, principalDetails.getUsername(), principalDetails.getEmail());
-                return ResponseEntity.ok(userDTO);
-            } else {
-                throw new UsernameNotFoundException("User not found with id: " + userId);
-            }
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(401).body(null);
         }
     }
+
 }

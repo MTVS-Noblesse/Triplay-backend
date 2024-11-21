@@ -7,7 +7,6 @@ import com.noblesse.backend.preference.dto.NewPreferenceDTO;
 import com.noblesse.backend.preference.repository.PreferenceRepository;
 import com.noblesse.backend.preference.service.PreferenceServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,25 +26,22 @@ public class PreferenceController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PreferenceInfo>> getUserPreferences(
-            @RequestHeader("Authorization") String authorizationHeader) {
+    public List<PreferenceInfo> getPreferences(@RequestHeader("Authorization") String authorizationHeader) {
+
         String token = authorizationHeader.substring(7);
         Long userId = jwtUtil.extractUserId(token);
 
-        List<PreferenceInfo> preferences = preferenceServiceImpl.findSelectedUserPreferenceList(userId);
-        return ResponseEntity.ok(preferences);
+        return preferenceServiceImpl.findSelectedUserPreferenceList(userId);
     }
 
     @PostMapping
-    public ResponseEntity<String> updateUserPreferences(
+    public void updateUserPreferences(
             @RequestHeader("Authorization") String authorizationHeader,
-            @RequestBody List<Long> preferenceIds) {
+            @RequestBody Map<String, Object> body) {
         String token = authorizationHeader.substring(7);
         Long userId = jwtUtil.extractUserId(token);
-
+        List<Long> preferenceIds = (List<Long>) body.get("preferenceIds");
         preferenceServiceImpl.updateUserPreferences(preferenceIds, userId);
-
-        return ResponseEntity.ok("취향 정보 등록이 완료되었습니다.");
     }
 
     @DeleteMapping

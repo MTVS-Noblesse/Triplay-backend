@@ -1,13 +1,26 @@
+### Spring Boot ###
 HELP.md
 .gradle
 .DS_store
 build/
+/src/main/resources/triplayServiceAccountKey.json  # Firebase 설정 파일
+/src/main/resources/keystore.p12                   # SSL 인증서(개발용)
 src/main/resources/triplayServiceAccountKey.json
 src/main/resources/keystore.p12
 src/main/generated
+/src/main/resources/triplayServiceAccountKey.json  # Firebase 설정 파일
+/src/main/resources/keystore.p12                   # SSL 인증서(개발용)
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+
+### monitoring & metrics ###
+prometheus.yml  # Prometheus 설정 파일
+web-config.yml  # Prometheus 웹 설정 파일
+/ssl/**  # SSL 인증서 디렉토리
+
+### Docker ###
+docker-compose.yml  # 로컬 Docker Compose 설정
 
 ### STS ###
 .apt_generated
@@ -41,6 +54,6 @@ out/
 .vscode/
 
 ### Local Configuration ###
-.env
+.env  # 환경 변수
+/src/main/resources/application.yml
 
-/src/main/resources/application.properties

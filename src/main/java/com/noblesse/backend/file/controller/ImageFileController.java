@@ -111,16 +111,4 @@ public class ImageFileController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/profile/{userId}")
-    public ResponseEntity<String> getProfileImageUrlByUserId(@PathVariable Long userId) {
-
-        String imageUrl = fileService.findProfileImageUrlByUserId(userId);
-
-        if (imageUrl != null) {
-            return ResponseEntity.ok(imageUrl);
-        } else {
-            return ResponseEntity.ok("default");
-        }
-    }
-
 }

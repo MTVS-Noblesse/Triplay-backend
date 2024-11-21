@@ -1,12 +1,15 @@
 package com.noblesse.backend.trip.controller;
 
 import com.noblesse.backend.oauth2.util.JwtUtil;
+import com.noblesse.backend.trip.dto.TripDTO;
 import com.noblesse.backend.trip.dto.TripRegisterRequestDTO;
 import com.noblesse.backend.trip.dto.TripUpdateRequestDTO;
 import com.noblesse.backend.trip.service.TripService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/trip")
@@ -32,6 +35,14 @@ public class TripController {
         String token = authorizationHeader.substring(7);
         Long userId = jwtUtil.extractUserId(token);
         return ResponseEntity.ok(tripService.findTripsByUserId(userId));
+    }
+
+    @Operation(summary = "모바일 전용 여행 상세정보 조회")
+    @GetMapping("/user/mobile")
+    public ResponseEntity<List<TripDTO>> getMobileTrips(@RequestHeader("Authorization") String authorizationHeader) {
+        String token = authorizationHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+        return ResponseEntity.ok(tripService.findTripsMobileByUserId(userId));
     }
 
     @Operation(summary = "여행 상세 조회")

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,17 @@ public class TripService {
 
     public List<Trip> findTripsByUserId(Long userId) {
         return tripRepository.findByUserId(userId);
+    }
+
+    public List<TripDTO> findTripsMobileByUserId(Long userId) {
+        List<Trip> trips = tripRepository.findMobileByUserId(userId);
+        List<TripDTO> tripDTOs = new ArrayList<>();
+
+        for (Trip trip : trips) {
+            tripDTOs.add(new TripDTO(trip));
+        }
+
+        return tripDTOs;
     }
 
     public List<Trip> findAll() {

@@ -168,4 +168,24 @@ public class FileService {
         });
         return downloadLinks;
     }
+    public String findProfileImageUrlByUserId(Long userId) {
+        Optional<OAuthUser> userOptional = oAuthRepository.findById(userId);
+
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found with id: " + userId);
+        }
+
+        OAuthUser user = userOptional.get();
+        Long profileFileId = user.getProfileId();
+        if (profileFileId == null) {
+            return null;
+        }
+        File profileImageFile = fileRepository.findFileByFileId(profileFileId);
+        String newImageUrl = imageFileService.findImageDownloadLink("profile/" + userId + "/", profileImageFile.getFileName());
+        profileImageFile.setFileUrl(newImageUrl);
+
+        return newImageUrl;
+    }
+
+
 }

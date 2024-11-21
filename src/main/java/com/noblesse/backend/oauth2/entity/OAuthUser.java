@@ -11,14 +11,20 @@ public class OAuthUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name="user_name")
     private String userName;
     private String email;
+
     private String provider;
+    @Column(name="provider_id")
     private String providerId;
+    @Column(name="profile_id")
     private Long profileId;
 
     // 추가
+    @Column(name="fired_at")
     private LocalDateTime firedAt; // 정지 일자
+    @Column(name="is_fired")
     private boolean isFired; // 정지 유무
 
     public OAuthUser() {}

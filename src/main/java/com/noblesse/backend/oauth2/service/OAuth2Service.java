@@ -2,6 +2,7 @@ package com.noblesse.backend.oauth2.service;
 import com.noblesse.backend.file.service.FileService;
 import com.noblesse.backend.oauth2.dto.MobileMyPageDTO;
 import com.noblesse.backend.oauth2.dto.TokenDTO;
+import com.noblesse.backend.oauth2.dto.UserDTO;
 import com.noblesse.backend.oauth2.entity.OAuthUser;
 import com.noblesse.backend.oauth2.repository.OAuthRepository;
 import com.noblesse.backend.oauth2.security.PrincipalDetails;
@@ -93,6 +94,7 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         tokens.setRefresh(jwtUtil.generateRefreshToken(oAuthUser.getId()));
         return tokens;
     }
+
     public UserDetails loadUser(Long userId) {
         // 사용자 정보를 데이터베이스에서 조회
         Optional<OAuthUser> optionalOAuthUser = oAuthRepository.findById(userId);
@@ -120,6 +122,22 @@ public class OAuth2Service extends DefaultOAuth2UserService {
             return mobileMyPageDTO;
         }
         return null;
+    }
+
+    public UserDTO getUserProfile(Long userId) {
+        Optional<OAuthUser> optionalOAuthUser = oAuthRepository.findById(userId);
+
+        UserDTO user = new UserDTO();
+        user.setUserId(userId);
+        user.setUserName(optionalOAuthUser.get().getUserName());
+        user.setEmail(optionalOAuthUser.get().getEmail());
+        user.setProfileUrl(fileService.findProfileImageUrlById(optionalOAuthUser.get().getProfileId()));
+
+        if (optionalOAuthUser.isEmpty()) {
+            throw new UsernameNotFoundException("User not found with id: " + userId);
+        }
+
+        return user;
     }
 
     public MobileMyPageDTO modifyUser(Long userId, MobileMyPageDTO mobileMyPageDTO) {

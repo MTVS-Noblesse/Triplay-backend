@@ -113,23 +113,14 @@ public class FileService {
     }
 
     @Transactional
-    public String findProfileImageUrlByUserId(Long userId) {
-        Optional<OAuthUser> userOptional = oAuthRepository.findById(userId);
+    public String findProfileImageUrlById(Long profileId) {
 
-        if (userOptional.isEmpty()) {
-            throw new RuntimeException("User not found with id: " + userId);
+        if (profileId == null) {
+            return "default";
         }
 
-        OAuthUser user = userOptional.get();
-        Long profileFileId = user.getProfileId();
-
-        if (profileFileId == null) {
-            return null;
-        }
-
-        File profileImageFile = fileRepository.findFileByFileId(profileFileId);
-        String newImageUrl = imageFileService.findImageDownloadLink("profile/" + userId + "/", profileImageFile.getFileName());
-        profileImageFile.setFileUrl(newImageUrl);
+        File profileImageFile = fileRepository.findFileByFileId(profileId);
+        String newImageUrl = imageFileService.findImageDownloadLinkByFileUrl(profileImageFile.getFileUrl());
 
         return newImageUrl;
     }
@@ -152,6 +143,8 @@ public class FileService {
         if(foundUser != null) {
             imageFileService.deleteProfileImageByUserId(userId);
             fileRepository.deleteById(foundUser.getProfileId());
+            foundUser.setProfileId(null);
+            oAuthRepository.save(foundUser);
         }
     }
 

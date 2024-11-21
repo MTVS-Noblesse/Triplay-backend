@@ -1,13 +1,13 @@
 package com.noblesse.backend.file.dto;
 
 import com.noblesse.backend.file.entity.File;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class FileDTO {
 
     private Long fileId;

@@ -1,5 +1,6 @@
 package com.noblesse.backend.post.api.command;
 
+import com.noblesse.backend.oauth2.util.JwtUtil;
 import com.noblesse.backend.post.command.application.handler.CreatePostCommentCommandHandler;
 import com.noblesse.backend.post.command.application.handler.DeletePostCommentCommandHandler;
 import com.noblesse.backend.post.command.application.handler.UpdatePostCommentCommandHandler;
@@ -22,6 +23,8 @@ public class PostCommentCommandController {
     private final UpdatePostCommentCommandHandler updatePostCommentCommandHandler;
     private final DeletePostCommentCommandHandler deletePostCommentCommandHandler;
 
+    private final JwtUtil jwtUtil;
+
     @Operation(summary = "포스트 댓글 추가")
     @ApiResponse(
             responseCode = "201",
@@ -29,8 +32,13 @@ public class PostCommentCommandController {
     )
     @PostMapping
     public ResponseEntity<Long> createPostComment(
+            @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody PostCommentDTO command
     ) {
+        String token = authorizationHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+        command.setUserId(userId);
+
         Long postCommentId = createPostCommentCommandHandler.handle(command);
         return ResponseEntity.status(HttpStatus.CREATED).body(postCommentId);
     }
@@ -42,11 +50,16 @@ public class PostCommentCommandController {
     )
     @PutMapping("/{postCommentId}")
     public ResponseEntity<Void> updatePostComment(
+            @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable("postCommentId") Long postCommentId,
             @RequestBody PostCommentDTO command
     ) {
+        String token = authorizationHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+        command.setUserId(userId);
         command.setPostCommentId(postCommentId);
         updatePostCommentCommandHandler.handle(command);
+
         return ResponseEntity.noContent().build();
     }
 
@@ -57,10 +70,16 @@ public class PostCommentCommandController {
     )
     @DeleteMapping("/{postCommentId}")
     public ResponseEntity<Void> deletePostComment(
-            @PathVariable("postCommentId") Long postCommentId,
-            @RequestBody PostCommentDTO command
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable("postCommentId") Long postCommentId
     ) {
+        PostCommentDTO command = new PostCommentDTO();
+
+        String token = authorizationHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+        command.setUserId(userId);
         command.setPostCommentId(postCommentId);
+        System.out.println("command = " + command);
         deletePostCommentCommandHandler.handle(command);
         return ResponseEntity.noContent().build();
     }

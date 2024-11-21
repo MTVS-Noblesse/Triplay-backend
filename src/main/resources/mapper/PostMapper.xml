@@ -1,0 +1,94 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.noblesse.backend.post.query.mapper.PostMapper">
+
+    <!-- 모든 포스트와 관련 데이터를 가져오는 쿼리 -->
+    <select id="getAllPostsWithDetails" resultType="com.noblesse.backend.post.common.dto.PostDTO">
+        SELECT
+            p.post_id AS postId,
+            p.post_title AS postTitle,
+            p.post_content AS postContent,
+            p.written_datetime AS writtenDatetime,
+            p.modified_datetime AS modifiedDatetime,
+            p.is_opened AS isOpened,
+            p.user_id AS userId,
+            p.trip_id AS tripId,
+            p.clip_id AS clipId,
+            u.user_name AS userName,
+            f.file_url AS profileImageUrl,
+            t.trip_title AS tripTitle,
+            t.trip_party AS tripParty,
+            t.trip_start_date AS tripStartDate,
+            t.trip_end_date AS tripEndDate,
+            (
+                SELECT file_url
+                FROM file f2
+                WHERE f2.post_id = p.post_id
+                ORDER BY f2.post_image_order ASC
+                LIMIT 1
+            ) AS thumbnailUrl
+        FROM post p
+            LEFT JOIN user u ON p.user_id = u.id
+            LEFT JOIN file f ON u.profile_id = f.file_id
+            LEFT JOIN trip t ON p.trip_id = t.trip_id
+        WHERE p.is_opened = true
+    </select>
+
+    <select id="getPostByPostId" resultType="com.noblesse.backend.post.common.dto.PostDTO">
+        SELECT
+        p.post_id AS postId,
+        p.post_title AS postTitle,
+        p.post_content AS postContent,
+        p.written_datetime AS writtenDatetime,
+        p.modified_datetime AS modifiedDatetime,
+        p.is_opened AS isOpened,
+        p.user_id AS userId,
+        p.trip_id AS tripId,
+        p.clip_id AS clipId,
+        u.user_name AS userName,
+        f.file_url AS profileImageUrl,
+        t.trip_title AS tripTitle,
+        t.trip_party AS tripParty,
+        t.trip_start_date AS tripStartDate,
+        t.trip_end_date AS tripEndDate
+        FROM post p
+        LEFT JOIN user u ON p.user_id = u.id
+        LEFT JOIN file f ON u.profile_id = f.file_id
+        LEFT JOIN trip t ON p.trip_id = t.trip_id
+        WHERE p.post_id = #{postId}
+    </select>
+
+    <!-- 특정 Trip에 속한 Place 정보 가져오기 -->
+    <select id="getPlacesByTripId" resultType="com.noblesse.backend.trip.dto.PlaceDTO">
+        SELECT
+        pl.place_id AS placeId,
+        pl.location_name AS locationName,
+        pl.address AS address,
+        pl.lat AS lat,
+        pl.lng AS lng,
+        pl.open_data AS openData,
+        pl.departure_time AS departureTime,
+        pl.arrival_time AS arrivalTime,
+        pl.idx AS idx,
+        pl.photo_url AS photoUrl,
+        pl.plan_day AS planDay,
+        pl.phone_number AS phoneNumber
+        FROM place pl
+        WHERE pl.trip_id = #{tripId}
+        ORDER BY pl.idx ASC
+    </select>
+
+    <!-- 특정 Place에 연결된 이미지 가져오기 -->
+    <select id="getImagesByPlaceId" resultType="com.noblesse.backend.file.dto.FileDTO">
+        SELECT
+            fi.file_id AS fileId,
+            fi.file_url AS fileUrl,
+            fi.post_id AS postId,
+            fi.post_place_id AS postPlaceId,
+            fi.post_image_order AS postImageOrder
+        FROM file fi
+        WHERE fi.post_place_id = #{placeId}
+        ORDER BY fi.post_image_order ASC
+    </select>
+
+
+</mapper>

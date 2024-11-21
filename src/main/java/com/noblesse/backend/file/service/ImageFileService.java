@@ -104,13 +104,12 @@ public class ImageFileService {
     public void deleteProfileImageByUserId(Long userId) {
         Bucket bucket = StorageClient.getInstance().bucket(firebaseBucket);
 
-        boolean isDeleted = false;
-        for (String ex : imageExtensions) {
-            isDeleted = bucket.get("profile/" + userId + ex).delete();
-        }
+        Iterable<Blob> blobs = bucket.list(Storage.BlobListOption.prefix("profile/" + userId + "/")).getValues();
+        List<Blob> blobList = StreamSupport.stream(blobs.spliterator(), false).toList();
 
-        if(isDeleted) System.out.println("프로필 삭제 완료 : " + userId);
-        else System.out.println("프로필 삭제 오류 : " + userId);
+        blobList.forEach(Blob::delete);
+
+        System.out.println("프로필 사진 삭제 성공 : " + LocalDateTime.now());
     }
 
     @Transactional

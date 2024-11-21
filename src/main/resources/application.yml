@@ -91,4 +91,12 @@ management:
       enabled: true
 
 logging:
+  level:
+    com.noblesse.backend: debug
+    com.noblesse.backend.clip: debug
+    com.noblesse.backend.file: debug
+    com.noblesse.backend.manage.clip: debug
+
+mybatis:
+  mapper-locations: mapper/**/*.xml
   config: classpath:logback-spring.xml

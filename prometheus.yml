@@ -1,0 +1,30 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'spring-actuator'
+    metrics_path: '/actuator/prometheus'
+    scheme: https
+    tls_config:
+      cert_file: /etc/ssl/triplay.crt
+      key_file: /etc/ssl/triplay.key
+      insecure_skip_verify: true
+    static_configs:
+      - targets: ['host.docker.internal:8443']
+    basic_auth:
+      username: admin
+      password: admin
+
+  - job_name: 'prometheus'
+    metrics_path: '/metrics'
+    scheme: https
+    tls_config:
+      cert_file: /etc/ssl/triplay.crt
+      key_file: /etc/ssl/triplay.key
+      insecure_skip_verify: true
+    static_configs:
+      - targets: ['localhost:9090']
+    basic_auth:
+      username: admin
+      password: admin

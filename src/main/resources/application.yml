@@ -1,9 +1,19 @@
 spring:
+  application:
+    name: triplay
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://223.130.152.102/test_triplay
+#    url: jdbc:mysql://223.130.152.102/test_triplay
+    jdbc-url: jdbc:mysql://223.130.152.102/test_triplay
     username: user
     password: 1234
+
+    logs:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+#      url: jdbc:mysql://223.130.152.102/test_triplay_logs
+      jdbc-url: jdbc:mysql://223.130.152.102/test_triplay_logs
+      username: user
+      password: 1234
   jpa:
     show-sql: true
     database: mysql
@@ -55,6 +65,31 @@ google:
   maps:
     api-key: ${GOOGLE_MAPS_API_KEY}
 
+management:
+  metrics:
+    enable:
+      all: true
+    jdbc:
+      instrumentation:
+        enabled: true # JDBC 계측 활성화
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: ${spring.application.name}
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # 모든 엔드포인트 노출
+    enabled-by-default: true
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+
 logging:
   level:
     com.noblesse.backend: debug
@@ -64,3 +99,4 @@ logging:
 
 mybatis:
   mapper-locations: mapper/**/*.xml
+  config: classpath:logback-spring.xml

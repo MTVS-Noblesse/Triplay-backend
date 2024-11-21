@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -20,6 +21,11 @@ public class PostCommentDTO {
 //    private List<PostCoCommentDTO> coComments;
 
     // Create 용 생성자
+    public PostCommentDTO(String postCommentContent, Long postId) {
+        this.postCommentContent = postCommentContent;
+        this.postId = postId;
+    }
+
     public PostCommentDTO(String postCommentContent, Long userId, Long postId) {
         this.postCommentContent = postCommentContent;
         this.userId = userId;

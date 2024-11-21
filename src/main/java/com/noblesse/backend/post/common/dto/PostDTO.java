@@ -31,7 +31,7 @@ public class PostDTO {
     // private List<PostCommentDTO> comments;
 
     @Nullable
-    private List<FileDTO> files;
+    private String thumbNailUrl;
 
     @Nullable
     private List<String> imageUrlsToRemove;

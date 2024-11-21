@@ -21,6 +21,6 @@ public interface PostMapper {
     List<PlaceDTO> getPlacesByTripId(@Param("tripId") Long tripId);
 
     // 특정 Post 및 Place에 연결된 이미지 가져오기
-    List<FileDTO> getImagesByPostAndPlaceIds(@Param("postId") Long postId, @Param("tripId") Long tripId);
+    List<FileDTO> getImagesByPlaceId(@Param("placeId") Long placeId);
 
 }

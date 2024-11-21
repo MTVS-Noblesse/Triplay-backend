@@ -3,6 +3,7 @@ package com.noblesse.backend.post.common.dto;
 import com.noblesse.backend.post.common.entity.PostComment;
 import lombok.*;
 
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 
 @Getter
@@ -18,6 +19,11 @@ public class PostCommentDTO {
     private LocalDateTime modifiedDatetime;
     private Long userId;
     private Long postId;
+    private String userName;
+
+    @Nullable
+    private String profileImageUrl;
+
 //    private List<PostCoCommentDTO> coComments;
 
     // Create 용 생성자

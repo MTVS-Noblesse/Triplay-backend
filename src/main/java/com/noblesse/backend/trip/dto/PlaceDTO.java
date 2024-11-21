@@ -2,6 +2,7 @@ package com.noblesse.backend.trip.dto;
 
 import com.noblesse.backend.file.dto.FileDTO;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -25,6 +26,8 @@ public class PlaceDTO {
     private String photoUrl;
     private int planDay;
     private String phoneNumber;
+
+    @Nullable
     private List<FileDTO> files; // Place와 연결된 이미지 파일
 }
 

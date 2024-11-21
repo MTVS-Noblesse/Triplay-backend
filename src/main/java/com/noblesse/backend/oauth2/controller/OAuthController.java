@@ -1,12 +1,17 @@
 package com.noblesse.backend.oauth2.controller;
 
+import com.noblesse.backend.oauth2.dto.MobileMyPageDTO;
 import com.noblesse.backend.oauth2.dto.UserDTO;
+import com.noblesse.backend.oauth2.repository.OAuthRepository;
+import com.noblesse.backend.oauth2.security.PrincipalDetails;
 import com.noblesse.backend.oauth2.service.OAuth2Service;
 import com.noblesse.backend.oauth2.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,4 +70,23 @@ public class OAuthController {
         }
     }
 
+    @GetMapping("/user/mypage")
+    public ResponseEntity<MobileMyPageDTO> getUserDataForMyPage(@RequestHeader("Authorization") String authorizationHeader) {
+        Long userId = jwtUtil.extractUserId(authorizationHeader.substring(7));
+        MobileMyPageDTO mobileMyPageDTO = oAuth2Service.getUserData(userId);
+        return ResponseEntity.ok(mobileMyPageDTO);
+    }
+    @PatchMapping("/user/mypage")
+    public ResponseEntity<MobileMyPageDTO> modifyUserDataForMyPage(@RequestHeader("Authorization") String authorizationHeader,
+                                                                   @RequestBody(required = true) MobileMyPageDTO mobileMyPageDTO) {
+        Long userId = jwtUtil.extractUserId(authorizationHeader.substring(7));
+        oAuth2Service.modifyUser(userId, mobileMyPageDTO);
+        return ResponseEntity.ok(mobileMyPageDTO);
+    }
+    @DeleteMapping("/user/delete")
+    public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String authorizationHeader) {
+        Long userId = jwtUtil.extractUserId(authorizationHeader.substring(7));
+        oAuth2Service.deleteUser(userId);
+        return ResponseEntity.noContent().build();
+    }
 }

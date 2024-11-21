@@ -1,5 +1,6 @@
 package com.noblesse.backend.oauth2.service;
 import com.noblesse.backend.file.service.FileService;
+import com.noblesse.backend.oauth2.dto.MobileMyPageDTO;
 import com.noblesse.backend.oauth2.dto.TokenDTO;
 import com.noblesse.backend.oauth2.dto.UserDTO;
 import com.noblesse.backend.oauth2.entity.OAuthUser;
@@ -108,6 +109,20 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         // PrincipalDetails 객체 생성 및 반환
         return new PrincipalDetails(oAuthUser);
     }
+    //findProfileImageUrlByUserId
+    public MobileMyPageDTO getUserData(Long userId) {
+        String url = fileService.findProfileImageUrlByUserId(userId);
+        MobileMyPageDTO mobileMyPageDTO = new MobileMyPageDTO();
+        mobileMyPageDTO.setProfileUrl(url);
+        Optional<OAuthUser> oAuthUser = oAuthRepository.findById(userId);
+        if(oAuthUser.isPresent()) {
+            OAuthUser userData = oAuthUser.get();
+            mobileMyPageDTO.setEmail(userData.getEmail());
+            mobileMyPageDTO.setUserName(userData.getUserName());
+            return mobileMyPageDTO;
+        }
+        return null;
+    }
 
     public UserDTO getUserProfile(Long userId) {
         Optional<OAuthUser> optionalOAuthUser = oAuthRepository.findById(userId);
@@ -125,4 +140,20 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         return user;
     }
 
+    public MobileMyPageDTO modifyUser(Long userId, MobileMyPageDTO mobileMyPageDTO) {
+        Optional<OAuthUser> oAuthUser = oAuthRepository.findById(userId);
+        if(oAuthUser.isPresent()) {
+            OAuthUser oAuthUserData = oAuthUser.get();
+            oAuthUserData.setEmail(mobileMyPageDTO.getEmail());
+            oAuthUserData.setUserName(mobileMyPageDTO.getUserName());
+            oAuthRepository.save(oAuthUserData);
+            return mobileMyPageDTO;
+        }
+        return null;
+    }
+
+
+    public void deleteUser(Long userId) {
+        oAuthRepository.updateIsFiredAndTimestamp(userId);
+    }
 }

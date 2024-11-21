@@ -50,11 +50,16 @@ public class PostCommentCommandController {
     )
     @PutMapping("/{postCommentId}")
     public ResponseEntity<Void> updatePostComment(
+            @RequestHeader("Authorization") String authorizationHeader,
             @PathVariable("postCommentId") Long postCommentId,
             @RequestBody PostCommentDTO command
     ) {
+        String token = authorizationHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+        command.setUserId(userId);
         command.setPostCommentId(postCommentId);
         updatePostCommentCommandHandler.handle(command);
+
         return ResponseEntity.noContent().build();
     }
 
@@ -65,10 +70,16 @@ public class PostCommentCommandController {
     )
     @DeleteMapping("/{postCommentId}")
     public ResponseEntity<Void> deletePostComment(
-            @PathVariable("postCommentId") Long postCommentId,
-            @RequestBody PostCommentDTO command
+            @RequestHeader("Authorization") String authorizationHeader,
+            @PathVariable("postCommentId") Long postCommentId
     ) {
+        PostCommentDTO command = new PostCommentDTO();
+
+        String token = authorizationHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+        command.setUserId(userId);
         command.setPostCommentId(postCommentId);
+        System.out.println("command = " + command);
         deletePostCommentCommandHandler.handle(command);
         return ResponseEntity.noContent().build();
     }

@@ -1,6 +1,7 @@
 package com.noblesse.backend.post.query.application.service;
 
 import com.noblesse.backend.file.dto.FileDTO;
+import com.noblesse.backend.file.service.ImageFileService;
 import com.noblesse.backend.post.common.dto.PostCoCommentDTO;
 import com.noblesse.backend.post.common.dto.PostCommentDTO;
 import com.noblesse.backend.post.common.dto.PostDTO;
@@ -30,6 +31,8 @@ public class PostQueryService {
 
     private final PostMapper postMapper;
 
+    private final ImageFileService imageFileService;
+
     /**
      * ### PostDTO ###
      */
@@ -41,9 +44,22 @@ public class PostQueryService {
         List<PlaceDTO> places = postMapper.getPlacesByTripId(post.getTripId());
         post.setPlaces(places);
 
-        // Post 및 Place에 연결된 이미지 정보 추가
-        List<FileDTO> images = postMapper.getImagesByPostAndPlaceIds(post.getPostId(), post.getTripId());
-        post.setFiles(images);
+        for (PlaceDTO place : places) {
+            // Place에 연결된 이미지 정보 추가
+            List<FileDTO> images = postMapper.getImagesByPlaceId(place.getPlaceId()); // 각 Place에 대한 이미지 조회
+
+            List<FileDTO> transformedImages = images.stream()
+                    .map(image -> {
+                        String signedUrl = imageFileService.findImageDownloadLinkByFileUrl(image.getFileUrl());
+                        image.setFileUrl(signedUrl); // 변환된 URL을 설정
+                        return image;
+                    })
+                    .filter(image -> image.getFileUrl() != null) // 변환이 실패한 URL은 제외
+                    .collect(Collectors.toList());
+
+            // Place에 이미지 설정
+            place.setFiles(transformedImages);
+        }
 
         System.out.println("post = " + post);
         return post;
@@ -62,13 +78,11 @@ public class PostQueryService {
         List<PostDTO> posts = postMapper.getAllPostsWithDetails();
 
         for (PostDTO post : posts) {
-            // Trip에 속한 장소 정보 추가
-            List<PlaceDTO> places = postMapper.getPlacesByTripId(post.getTripId());
-            post.setPlaces(places);
+            // 프로필 이미지 URL 변환
+            post.setProfileImageUrl(imageFileService.findImageDownloadLinkByFileUrl(post.getProfileImageUrl()));
 
-            // Post 및 Place에 연결된 이미지 정보 추가
-            List<FileDTO> images = postMapper.getImagesByPostAndPlaceIds(post.getPostId(), post.getTripId());
-            post.setFiles(images);
+            // 대표 이미지 URL 변환
+            post.setThumbNailUrl(imageFileService.findImageDownloadLinkByFileUrl(post.getThumbNailUrl()));
         }
 
         System.out.println("posts = " + posts);

@@ -1,10 +1,11 @@
 package com.noblesse.backend.oauth2.service;
+import com.noblesse.backend.file.service.FileService;
 import com.noblesse.backend.oauth2.dto.TokenDTO;
+import com.noblesse.backend.oauth2.dto.UserDTO;
 import com.noblesse.backend.oauth2.entity.OAuthUser;
 import com.noblesse.backend.oauth2.repository.OAuthRepository;
 import com.noblesse.backend.oauth2.security.PrincipalDetails;
 import com.noblesse.backend.oauth2.util.JwtUtil;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -17,8 +18,6 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,6 +36,9 @@ public class OAuth2Service extends DefaultOAuth2UserService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private FileService fileService;
 
     public OAuth2Service(@Value("${spring.security.oauth2.client.registration.naver.client-id}") String clientId, @Value("${spring.security.oauth2.client.registration.naver.client-secret}") String clientSecret, OAuthRepository oAuthRepository, JwtUtil jwtUtil, RestTemplate restTemplate) {
         this.oAuthRepository = oAuthRepository;
@@ -91,6 +93,7 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         tokens.setRefresh(jwtUtil.generateRefreshToken(oAuthUser.getId()));
         return tokens;
     }
+
     public UserDetails loadUser(Long userId) {
         // 사용자 정보를 데이터베이스에서 조회
         Optional<OAuthUser> optionalOAuthUser = oAuthRepository.findById(userId);
@@ -104,6 +107,22 @@ public class OAuth2Service extends DefaultOAuth2UserService {
 
         // PrincipalDetails 객체 생성 및 반환
         return new PrincipalDetails(oAuthUser);
+    }
+
+    public UserDTO getUserProfile(Long userId) {
+        Optional<OAuthUser> optionalOAuthUser = oAuthRepository.findById(userId);
+
+        UserDTO user = new UserDTO();
+        user.setUserId(userId);
+        user.setUserName(optionalOAuthUser.get().getUserName());
+        user.setEmail(optionalOAuthUser.get().getEmail());
+        user.setProfileUrl(fileService.findProfileImageUrlById(optionalOAuthUser.get().getProfileId()));
+
+        if (optionalOAuthUser.isEmpty()) {
+            throw new UsernameNotFoundException("User not found with id: " + userId);
+        }
+
+        return user;
     }
 
 }

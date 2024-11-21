@@ -40,6 +40,8 @@ public class PostQueryService {
     public PostDTO getPostById(Long postId) {
         PostDTO post = postMapper.getPostByPostId(postId);
 
+        post.setProfileImageUrl(imageFileService.findImageDownloadLinkByFileUrl(post.getProfileImageUrl()));
+
         // Trip에 속한 장소 정보 추가
         List<PlaceDTO> places = postMapper.getPlacesByTripId(post.getTripId());
         post.setPlaces(places);
@@ -85,7 +87,6 @@ public class PostQueryService {
             post.setThumbNailUrl(imageFileService.findImageDownloadLinkByFileUrl(post.getThumbNailUrl()));
         }
 
-        System.out.println("posts = " + posts);
         return posts;
     }
 

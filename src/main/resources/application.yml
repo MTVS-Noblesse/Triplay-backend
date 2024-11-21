@@ -3,9 +3,17 @@ spring:
     name: triplay
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://223.130.152.102/test_triplay
+#    url: jdbc:mysql://223.130.152.102/test_triplay
+    jdbc-url: jdbc:mysql://223.130.152.102/test_triplay
     username: user
     password: 1234
+
+    logs:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+#      url: jdbc:mysql://223.130.152.102/test_triplay_logs
+      jdbc-url: jdbc:mysql://223.130.152.102/test_triplay_logs
+      username: user
+      password: 1234
   jpa:
     show-sql: true
     database: mysql
@@ -83,16 +91,4 @@ management:
       enabled: true
 
 logging:
-  level:
-    com.noblesse.backend: debug
-    com.noblesse.backend.clip: debug
-    com.noblesse.backend.file: debug
-    com.noblesse.backend.manage.clip: debug
-
-    # Actuator 로깅
-    org.springframework.web: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.actuator: DEBUG
-
-    # 메트릭 디버깅을 위한 로깅
-    io.micrometer: DEBUG
+  config: classpath:logback-spring.xml

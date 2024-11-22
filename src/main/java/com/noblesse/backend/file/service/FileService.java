@@ -5,6 +5,7 @@ import com.noblesse.backend.file.repository.FileRepository;
 import com.noblesse.backend.oauth2.entity.OAuthUser;
 import com.noblesse.backend.oauth2.repository.OAuthRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,7 +57,6 @@ public class FileService {
                     "profile",
                     originalFileName,
                     "profile/" + userId + "/" + originalFileName,
-
                     null,
                     null,
                     null,
@@ -69,24 +69,22 @@ public class FileService {
     }
 
     @Transactional
-    public void insertClipImageFiles(MultipartFile[] files, Long clipId) throws IOException {
-        String filePath = "clip/" + clipId + "/";
+    public void insertClipFile(MultipartFile file, Long clipId, String clipTitle) throws IOException {
+        String fileName = file.getOriginalFilename();
+        String fileUrl = "clip/" + clipId + "/" + fileName;
 
-        imageFileService.uploadClipImageFiles(files, filePath);
+        imageFileService.uploadImageFile(file, "clip/" + clipId + "/");
 
-        for (int i = 0; i<files.length; i++) {
-            String originalFileName = files[i].getOriginalFilename();
-            fileRepository.save(new File(
-                    "clip",
-                    i + originalFileName.substring(originalFileName.lastIndexOf(".")),
-                    filePath + i + originalFileName.substring(originalFileName.lastIndexOf(".")),
-                    null,
-                    null,
-                    null,
-                    clipId,
-                    (long) i
-            ));
-        }
+        fileRepository.save(new File(
+                "clip",
+                fileName,
+                fileUrl,
+                null,
+                null,
+                null,
+                clipId,
+                null
+        ));
 
         System.out.println("클립 파일 추가 시간 : " + LocalDateTime.now());
     }
@@ -113,14 +111,22 @@ public class FileService {
     }
 
     @Transactional
-    public String findProfileImageUrlById(Long profileId) {
+    public String findProfileImageUrlByUserId(Long userId) {
+        Optional<OAuthUser> userOptional = oAuthRepository.findById(userId);
 
-        if (profileId == null) {
-            return "default";
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User not found with id: " + userId);
         }
 
-        File profileImageFile = fileRepository.findFileByFileId(profileId);
-        String newImageUrl = imageFileService.findImageDownloadLinkByFileUrl(profileImageFile.getFileUrl());
+        OAuthUser user = userOptional.get();
+        Long profileFileId = user.getProfileId();
+
+        if (profileFileId == null) {
+            return null;
+        }
+
+        File profileImageFile = fileRepository.findFileByFileId(profileFileId);
+        String newImageUrl = imageFileService.findImageDownloadLink("profile/" + userId + "/", profileImageFile.getFileName());
 
         return newImageUrl;
     }
@@ -153,39 +159,4 @@ public class FileService {
         imageFileService.deleteImagesByClipId(clipId);
         fileRepository.deleteFilesByClipId(clipId);
     }
-
-    @Transactional
-    public String findThumbnailImageByClipUrl(String clipUrl) {
-        return findImageDownloadLinkByFileUrl(clipUrl);
-    }
-
-    public List<String> findImageDownloadLinksByClipId(Long clipId) {
-        List<File> foundFiles = fileRepository.findFilesByClipIdOrderByClipOrderAsc(clipId);
-        List<String> downloadLinks = new ArrayList<>();
-        foundFiles.forEach(file -> {
-            String newImageUrl = imageFileService.findImageDownloadLinkByFileUrl(file.getFileUrl());
-            downloadLinks.add(newImageUrl);
-        });
-        return downloadLinks;
-    }
-    public String findProfileImageUrlByUserId(Long userId) {
-        Optional<OAuthUser> userOptional = oAuthRepository.findById(userId);
-
-        if (userOptional.isEmpty()) {
-            throw new RuntimeException("User not found with id: " + userId);
-        }
-
-        OAuthUser user = userOptional.get();
-        Long profileFileId = user.getProfileId();
-        if (profileFileId == null) {
-            return null;
-        }
-        File profileImageFile = fileRepository.findFileByFileId(profileFileId);
-        String newImageUrl = imageFileService.findImageDownloadLink("profile/" + userId + "/", profileImageFile.getFileName());
-        profileImageFile.setFileUrl(newImageUrl);
-
-        return newImageUrl;
-    }
-
-
 }

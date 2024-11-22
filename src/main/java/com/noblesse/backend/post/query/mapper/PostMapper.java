@@ -1,6 +1,7 @@
 package com.noblesse.backend.post.query.mapper;
 
 import com.noblesse.backend.post.common.dto.PostDTO;
+import com.noblesse.backend.post.common.entity.Post;
 import com.noblesse.backend.trip.dto.PlaceDTO;
 import com.noblesse.backend.file.dto.FileDTO;
 import org.apache.ibatis.annotations.Mapper;
@@ -23,4 +24,6 @@ public interface PostMapper {
     // 특정 Post 및 Place에 연결된 이미지 가져오기
     List<FileDTO> getImagesByPlaceId(@Param("placeId") Long placeId);
 
+    //특정 사용자가 작성한 모든 포스트 조회
+    List<PostDTO> getPostsByUserId(@Param("userId") Long userId);
 }

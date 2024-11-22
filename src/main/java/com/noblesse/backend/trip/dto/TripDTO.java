@@ -18,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TripDTO {
     private Long tripId;
+    private Long userId;
     private String tripTitle;
     private String tripParty;
     private LocalDate tripStartDate;
@@ -26,6 +27,7 @@ public class TripDTO {
 
     public TripDTO(Trip trip) {
         this.tripId = trip.getTripId();
+        this.userId = trip.getUserId();
         this.tripTitle = trip.getTripTitle();
         this.tripParty = trip.getTripParty();
         this.tripStartDate = trip.getTripStartDate();

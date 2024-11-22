@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,10 +70,20 @@ public class PostQueryService {
 
     /** 사용자 고유 ID(userId)로 해당 사용자의 모든 포스트를 조회하는 메서드 */
     public List<PostDTO> getPostsByUserId(Long userId) {
-        List<Post> posts = postRepository.findByUserId(userId);
-        return posts.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        List<PostDTO> posts = postMapper.getPostsByUserId(userId);
+
+        if (posts == null || posts.isEmpty()) {
+            return Collections.emptyList(); // 빈 리스트 반환
+        }
+
+        for (PostDTO post : posts) {
+            if (post != null) {
+                post.setProfileImageUrl(imageFileService.findImageDownloadLinkByFileUrl(post.getProfileImageUrl()));
+                post.setThumbNailUrl(imageFileService.findImageDownloadLinkByFileUrl(post.getThumbNailUrl()));
+            }
+        }
+
+        return posts;
     }
 
     /** 모든 포스트를 조회하는 메서드 */

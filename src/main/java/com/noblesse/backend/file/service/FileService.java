@@ -159,4 +159,52 @@ public class FileService {
         imageFileService.deleteImagesByClipId(clipId);
         fileRepository.deleteFilesByClipId(clipId);
     }
+    @Transactional
+    public void insertClipImageFiles(MultipartFile[] files, Long clipId) throws IOException {
+        String filePath = "clip/" + clipId + "/";
+
+        imageFileService.uploadClipImageFiles(files, filePath);
+
+        for (int i = 0; i<files.length; i++) {
+            String originalFileName = files[i].getOriginalFilename();
+            fileRepository.save(new File(
+                    "clip",
+                    i + originalFileName.substring(originalFileName.lastIndexOf(".")),
+                    filePath + i + originalFileName.substring(originalFileName.lastIndexOf(".")),
+                    null,
+                    null,
+                    null,
+                    clipId,
+                    (long) i
+            ));
+        }
+
+        System.out.println("클립 파일 추가 시간 : " + LocalDateTime.now());
+    }
+    @Transactional
+    public String findThumbnailImageByClipUrl(String clipUrl) {
+        return findImageDownloadLinkByFileUrl(clipUrl);
+    }
+
+    public List<String> findImageDownloadLinksByClipId(Long clipId) {
+        List<File> foundFiles = fileRepository.findFilesByClipIdOrderByClipOrderAsc(clipId);
+        List<String> downloadLinks = new ArrayList<>();
+        foundFiles.forEach(file -> {
+            String newImageUrl = imageFileService.findImageDownloadLinkByFileUrl(file.getFileUrl());
+            downloadLinks.add(newImageUrl);
+        });
+        return downloadLinks;
+    }
+    @Transactional
+    public String findProfileImageUrlById(Long profileId) {
+
+        if (profileId == null) {
+            return "default";
+        }
+
+        File profileImageFile = fileRepository.findFileByFileId(profileId);
+        String newImageUrl = imageFileService.findImageDownloadLinkByFileUrl(profileImageFile.getFileUrl());
+
+        return newImageUrl;
+    }
 }

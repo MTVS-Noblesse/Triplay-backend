@@ -33,6 +33,37 @@
         WHERE p.is_opened = true
     </select>
 
+    <select id="getPostsByUserId" resultType="com.noblesse.backend.post.common.dto.PostDTO">
+        SELECT
+            p.post_id AS postId,
+            p.post_title AS postTitle,
+            p.post_content AS postContent,
+            p.written_datetime AS writtenDatetime,
+            p.modified_datetime AS modifiedDatetime,
+            p.is_opened AS isOpened,
+            p.user_id AS userId,
+            p.trip_id AS tripId,
+            p.clip_id AS clipId,
+            u.user_name AS userName,
+            f.file_url AS profileImageUrl,
+            t.trip_title AS tripTitle,
+            t.trip_party AS tripParty,
+            t.trip_start_date AS tripStartDate,
+            t.trip_end_date AS tripEndDate,
+            (
+                SELECT file_url
+                FROM file f2
+                WHERE f2.post_id = p.post_id
+                ORDER BY f2.post_image_order ASC
+                LIMIT 1
+            ) AS thumbnailUrl
+        FROM post p
+            LEFT JOIN user u ON p.user_id = u.id
+            LEFT JOIN file f ON u.profile_id = f.file_id
+            LEFT JOIN trip t ON p.trip_id = t.trip_id
+        WHERE p.user_id = #{userId}
+    </select>
+
     <select id="getPostByPostId" resultType="com.noblesse.backend.post.common.dto.PostDTO">
         SELECT
         p.post_id AS postId,
